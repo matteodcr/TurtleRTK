@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Button, Pressable, StyleSheet, Text, View } from "react-native";
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,8 +9,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import CasterScreen from './src/ui/Screens/CasterScreen';
-import BluetoothScreen from './src/ui/Screens/BluetoothScreen';
-import LogScreen from './src/ui/Screens/LogScreen';
+import RoverScreen from './src/ui/Screens/RoverScreen';
+import RecordingScreen from './src/ui/Screens/RecordingScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,18 +33,18 @@ function SettingsStack() {
   );
 }
 
-function LogStack() {
+function RecordingStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Logs"
+      initialRouteName="Recording"
       screenOptions={{
         headerStyle: { backgroundColor: '#42f44b' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
       }}>
       <Stack.Screen
-        name="LogsScr"
-        component={LogScreen}
+        name="RecordingScr"
+        component={RecordingScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
@@ -69,22 +69,30 @@ function CasterStack() {
   );
 }
 
-function BluetoothStack() {
+function RoverStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Bluetooth"
+      initialRouteName="Rover"
       screenOptions={{
         headerStyle: { backgroundColor: '#42f44b' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
       }}>
       <Stack.Screen
-        name="BluetoothScr"
-        component={BluetoothScreen}
+        name="RoverScr"
+        component={RoverScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
+}
+
+function casterMoreButton() {
+  alert('TODO Caster')
+}
+
+function roverMoreButton() {
+  alert('TODO Rover')
 }
 
 export default function App() {
@@ -92,33 +100,43 @@ export default function App() {
     <View style={styles.container}>
       <NavigationContainer>
         <Tab.Navigator
-          initialRouteName="Feed"
+          initialRouteName="Rover"
           >
           <Tab.Screen
             name="Caster"
             component={CasterStack}
             options={{
               tabBarLabel: 'Caster',
+              headerRight: () => (
+                <Pressable style={styles.button} onPress={casterMoreButton}>
+                  <Text style={{color: "white", fontSize: 25}}>+</Text>
+                </Pressable>
+              ),
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="server-network" color={color} size={size} />
               ),
             }}
           />
           <Tab.Screen
-            name="Bluetooth"
-            component={BluetoothStack}
+            name="Rover"
+            component={RoverStack}
             options={{
-              tabBarLabel: 'Bluetooth',
+              tabBarLabel: "Rover",
+              headerRight: () => (
+                <Pressable style={styles.button} onPress={roverMoreButton}>
+                  <Text style={{color: "white", fontSize: 25}}>+</Text>
+                </Pressable>
+              ),
               tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="bluetooth" color={color} size={size} />
+                <MaterialCommunityIcons name="antenna" color={color} size={size} />
               ),
             }}
           />
           <Tab.Screen
-            name="Logs"
-            component={LogStack}
+            name="Recording"
+            component={RecordingStack}
             options={{
-              tabBarLabel: 'Log',
+              tabBarLabel: 'Recording',
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="content-save" color={color} size={size} />
               ),
@@ -145,43 +163,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  title: {
-    flex: 1,
-    marginTop: 40,
-    fontSize: 20,
-    color: 'red',
-  },
-  header: {
-    flex: 1,
-    backgroundColor: "#666",
-    alignContent: "center",
-    alignItems: "center",
-  },
-  content: {
-    flex: 10,
-    backgroundColor: "#165",
-  },
-  toolBar: {
-    backgroundColor: "#aaa",
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "stretch",
-  },
   button: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
     paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    marginBottom: 10,
-  },
-  buttonIcon: {
-    flex: 1,
-    alignContent: "center",
-    justifyContent: "center",
-    width: 50,
-    height: 25,
+    backgroundColor: '#fff',
   }
 });
