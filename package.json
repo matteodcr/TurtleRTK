@@ -10,12 +10,15 @@
     "backend": "ts-node-esm src/fc/Caster/SourceTable.ts"
   },
   "dependencies": {
-    "@expo/webpack-config": "^0.17.2",
+    "@expo/webpack-config": "^18.0.1",
     "@ntrip/caster": "^0.3.2",
+    "@react-navigation/bottom-tabs": "^6.5.3",
+    "@react-navigation/native": "^6.1.2",
+    "@react-navigation/stack": "^6.3.11",
     "add": "^2.0.6",
     "babel-preset-react-native": "^2.1.0",
     "csv": "^6.2.5",
-    "expo": "~47.0.12",
+    "expo": "^47.0.13",
     "expo-keep-awake": "^11.0.1",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
