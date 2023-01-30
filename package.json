@@ -6,9 +6,13 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "backend": "ts-node-esm src/fc/Caster/SourceTable.ts"
   },
   "dependencies": {
+    "@expo/webpack-config": "^0.17.2",
+    "@ntrip/caster": "^0.3.2",
+    "csv": "^6.2.5",
     "expo": "~47.0.12",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
@@ -18,8 +22,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@types/node": "^18.11.18",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.70.6",
+    "prettier": "2.8.3",
     "typescript": "^4.6.3"
   },
   "private": true
