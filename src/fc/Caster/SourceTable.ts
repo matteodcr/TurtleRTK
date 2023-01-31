@@ -28,7 +28,10 @@ export default class SourceTable {
         this.adress = adress;
     }
 
-    async getSourceTable(adress: string) {
+    async getSourceTable(adress?: string) {
+        if (adress==null){
+            adress = this.adress;
+        }
         try {
             var rawSourceTable = await (await fetch(adress, {
                 headers: {
@@ -91,7 +94,7 @@ export default class SourceTable {
 async function main(adress: string) {
     let st: SourceTable = new SourceTable(adress);
     st.entries = await st.getSourceTable(adress);
-    console.log(st.entries.baseList);
+    //console.log(st.entries.baseList);
 }
 
 main("http://caster.centipede.fr:2101/")

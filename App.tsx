@@ -1,14 +1,14 @@
 import 'react-native-gesture-handler';
 
 import React from "react";
-import { Button, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
-import CasterScreen from './src/ui/Screens/CasterScreen';
+import CasterScreen, { getCasterData } from './src/ui/Screens/CasterScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
 
@@ -88,7 +88,7 @@ function RoverStack() {
 }
 
 function casterMoreButton() {
-  alert('TODO Caster')
+  getCasterData();
 }
 
 function roverMoreButton() {
