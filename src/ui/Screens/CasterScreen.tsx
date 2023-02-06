@@ -1,28 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet } from "react-native";
+import Base from "../../fc/Caster/Base";
 import Caster from "../../fc/Caster/Caster";
-import SourceTable from "../../fc/Caster/SourceTable";
+import Network from "../../fc/Caster/Network";
+import SourceTable, { SourceTableEntries } from "../../fc/Caster/SourceTable";
 
-let DATA: Array<string>  = [];
+let DATA = [];
     
 export async function getCasterData() {
-    let st: SourceTable = new SourceTable("http://caster.centipede.fr:2101/");
-    st.entries = await st.getSourceTable();
-    let dataList: Array<string>;
-    for(var caster of st.entries.casterList){
-        dataList.push(caster.identifier)
+  let st: SourceTable = new SourceTable("http://caster.centipede.fr:2101/");
+    try{
+      st.entries = await st.getSourceTable();
+    }catch(e){
+      console.log(e);
+    }
+    let dataList=[];
+    for(var base of st.entries.baseList){
+        dataList.push({title: base.mountpoint})
     }
     DATA = dataList;
 }
 
 const CasterScreen = () => {
-    getCasterData();
-    const [searchText, onChangeSearch] = useState('');
+
+    useEffect(() => {
+      try{
+        getCasterData();
+      }catch(e){
+        console.log(e);
+      }
+    }, []);
+    
     const [filteredData, setFilteredData] = useState([]);
+    const [searchText, onChangeSearch] = useState('');
 
     useEffect(() => {
         const filtered = DATA.filter(item =>
-        item.toLowerCase().includes(searchText.toLowerCase()),
+        item.title.toLowerCase().includes(searchText.toLowerCase()),
         );
         if (searchText === '') {
         return setFilteredData(DATA);

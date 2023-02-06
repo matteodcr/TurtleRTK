@@ -8,9 +8,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
-import CasterScreen, { getCasterData } from './src/ui/Screens/CasterScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
+import CasterScreen, { getCasterData } from './src/ui/Screens/CasterScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,7 +62,7 @@ function CasterStack() {
       }}>
       <Stack.Screen
         name="CasterScr"
-        component={CasterScreen}
+        getComponent={() => require('./src/ui/Screens/CasterScreen').default}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
@@ -88,7 +88,13 @@ function RoverStack() {
 }
 
 function casterMoreButton() {
-  getCasterData();
+  try {
+    getCasterData();
+  } catch (error) {
+    console.error(error);
+    throw new Error("Response error")
+}
+  
 }
 
 function roverMoreButton() {
