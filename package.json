@@ -26,12 +26,15 @@
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
     "react-native-country-flag": "^1.1.9",
+    "react-native-dropdown-picker": "^5.4.4",
+    "react-native-element-dropdown": "^2.6.0",
     "react-native-elements": "^3.4.3",
     "react-native-ico-flags": "^3.3.1",
     "react-native-paper": "^5.2.0",
     "react-native-radio-buttons-group": "^2.3.0",
     "react-native-svg": "^13.8.0",
     "react-native-unimodules": "^0.14.10",
+    "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.9"
   },
   "devDependencies": {
