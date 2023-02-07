@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet, Pressable } from "react-native";
+import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet, Pressable, RefreshControl } from "react-native";
 import SourceTable from "../../fc/Caster/SourceTable";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CountryFlag from "react-native-country-flag";
 import { countryToAlpha2 } from "country-to-iso";
 import { Dropdown } from 'react-native-element-dropdown';
+import {getDistance, getPreciseDistance} from 'geolib';
+
+let myLatitude = 45.184434;
+let MyLongitude = 5.753970;
 
 const CasterScreen = () => {
 
@@ -22,7 +26,9 @@ const CasterScreen = () => {
         dataList.push({key: base.identifier+':'+base.mountpoint, 
                       title: base.mountpoint, 
                       country: countryToAlpha2(base.country),
-                      identifier: base.identifier})
+                      identifier: base.identifier,
+                      latitude: base.latitude,
+                      longitude: base.longitude})
     }
     setDATA(dataList);
   }
@@ -43,9 +49,61 @@ const CasterScreen = () => {
     }
   }
 
+  const sorter = (Base1, Base2) => {
+    switch (selectedSorterType) {
+      case SorterKey.city :
+        switch(sorting) {
+          case SorterTypes.alphabetical :
+            return (Base1.identifier.toLowerCase() > Base2.identifier.toLowerCase() ? 1 : -1);
+          case SorterTypes.anti_alphabetical :
+            return (Base1.identifier.toLowerCase() < Base2.identifier.toLowerCase() ? 1 : -1);
+          case SorterTypes.distance :
+            return (getDistance(
+              { latitude: Base1.latitude, longitude: Base1.longitude },
+              { latitude: myLatitude, longitude: MyLongitude }) > 
+              getDistance(
+                { latitude: Base2.latitude, longitude: Base2.longitude },
+                { latitude: myLatitude, longitude: MyLongitude }) ? 1 : -1);
+        }
+      case SorterKey.country :
+        switch(sorting) {
+          case SorterTypes.alphabetical :
+            if(Base1.country==null && Base2.country==null) return 0;
+            if(Base1.country==null) return 1;
+            if(Base2.country==null) return -1;
+            return (Base1.country.toLowerCase() > Base2.country.toLowerCase() ? 1 : -1);
+          case SorterTypes.anti_alphabetical :
+            if(Base1.country==null && Base2.country==null) return 0;
+            if(Base1.country==null) return 1;
+            if(Base2.country==null) return -1;
+            return (Base1.country.toLowerCase() < Base2.country.toLowerCase() ? 1 : -1);
+          case SorterTypes.distance :
+            return (getDistance(
+              { latitude: Base1.latitude, longitude: Base1.longitude },
+              { latitude: myLatitude, longitude: MyLongitude }) > 
+              getDistance(
+                { latitude: Base2.latitude, longitude: Base2.longitude },
+                { latitude: myLatitude, longitude: MyLongitude }) ? 1 : -1);
+        }
+      case SorterKey.mountpoint :
+        switch(sorting) {
+          case SorterTypes.alphabetical :
+            return (Base1.title.toLowerCase() > Base2.title.toLowerCase() ? 1 : -1);
+          case SorterTypes.anti_alphabetical :
+            return (Base1.title.toLowerCase() < Base2.title.toLowerCase() ? 1 : -1);
+          case SorterTypes.distance :
+            return (getDistance(
+              { latitude: Base1.latitude, longitude: Base1.longitude },
+              { latitude: myLatitude, longitude: MyLongitude }) > 
+              getDistance(
+                { latitude: Base2.latitude, longitude: Base2.longitude },
+                { latitude: myLatitude, longitude: MyLongitude }) ? 1 : -1);
+        }    
+    }
+  }
+
   // refreshing datas
   useEffect(() => {
-    console.log('test1');
     try{
       getCasterData();
     }catch(e){
@@ -63,6 +121,7 @@ const CasterScreen = () => {
   const [sorting, setsortingFilter] = useState(SorterTypes.alphabetical);               //sorter type selected
   const [selectedSorterType, setselectedSorterType] = useState(SorterKey.mountpoint);   //sorter key selected
   const [isFocus, setIsFocus] = useState(false);
+  const [refreshList, setRefreshList] = useState(false);
 
   const sorterTypeData = [
     { label: 'By City', value: SorterKey.city },
@@ -72,15 +131,18 @@ const CasterScreen = () => {
 
   //used to filter items by sorter key
   useEffect(() => {
-      const filtered = DATA.filter(filter);
+      let filtered = DATA.filter(filter);
+      filtered.sort(sorter);
+      let datas = DATA;
+      datas.sort(sorter);
       if (searchText === '') {
-        return setFilteredData(DATA);
+        return setFilteredData(datas);
       }
       setFilteredData(filtered);
-  }, [searchText, selectedSorterType, DATA]);
+  }, [searchText, selectedSorterType, DATA, sorting]);
 
   //how is the item shown in list
-  const Item = ({title, country, identifier}) => (
+  const Item = ({title, country, identifier, latitude, longitude}) => (
       <View style={styles.item}>
         <View style={{ flexDirection: 'row', alignItems: 'center'}}>
         {country==null ? 
@@ -88,11 +150,16 @@ const CasterScreen = () => {
             <CountryFlag isoCode={country} size={21} />}
           <Text style={styles.title}>{'  '+title}</Text>
         </View>
-        <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>{identifier}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>{identifier}</Text>
+          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>   {getDistance(
+              { latitude: latitude, longitude: longitude },
+              { latitude: myLatitude, longitude: MyLongitude })/1000} km</Text>
+        </View>
       </View>
   );
 
-  const renderItem = ({item}) => <Item title={item.title} country={item.country} identifier={item.identifier} />;
+  const renderItem = ({item}) => <Item title={item.title} country={item.country} identifier={item.identifier} latitude={item.latitude} longitude={item.longitude} />;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -123,7 +190,6 @@ const CasterScreen = () => {
           placeholderStyle={{fontSize: 16}}
           selectedTextStyle={{fontSize: 16}}
           inputSearchStyle={{height: 40, fontSize: 16}}
-          iconStyle={{backgroundColor: 'invisible'}}
           data={sorterTypeData}
           maxHeight={300}
           labelField="label"
@@ -161,6 +227,10 @@ const CasterScreen = () => {
         data={filteredData}
         renderItem={renderItem}
         keyExtractor={(item, index) => item.key}
+        refreshControl={<RefreshControl
+          refreshing={refreshList}
+          onRefresh={() => {getCasterData}}
+        />}
     />
     </SafeAreaView>
   );
