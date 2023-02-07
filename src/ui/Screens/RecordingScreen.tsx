@@ -1,16 +1,16 @@
 import React from "react";
 import { SafeAreaView, View, Text } from "react-native";
 
-const BluetoothScreen = () => {
+const RecordingScreen = () => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View>
                 <Text>
-                    Bluetooth
+                    Recording
                 </Text>
             </View>
         </SafeAreaView>
     )
 }
 
-export default BluetoothScreen;
+export default RecordingScreen;

@@ -1,16 +1,16 @@
 import React from "react";
 import { SafeAreaView, View, Text } from "react-native";
 
-const LogScreen = () => {
+const RoverScreen = () => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View>
                 <Text>
-                    Logs
+                    Rover
                 </Text>
             </View>
         </SafeAreaView>
     )
 }
 
-export default LogScreen;
+export default RoverScreen;
