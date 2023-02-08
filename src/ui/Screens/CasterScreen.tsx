@@ -12,6 +12,32 @@ let MyLongitude = 5.753970;
 
 const CasterScreen = () => {
 
+  // our hooks and enums
+  enum SorterKey {city='city', country='country', mountpoint='mountpoint'}
+  enum SorterTypes { anti_alphabetical,alphabetical, distance}
+  const [DATA, setDATA] = useState([]);                           //data from sourcetable
+  const [searchText, onChangeSearch] = useState('');
+  const [favs, setFavsFilter] = useState(true);                   //show favorites
+  const [sorting, setsortingFilter] = useState(SorterTypes.alphabetical);               //sorter type selected
+  const [selectedSorterType, setselectedSorterType] = useState(SorterKey.mountpoint);   //sorter key selected
+  const [isFocus, setIsFocus] = useState(false);
+  const [refreshList, setRefreshList] = useState(false);
+
+  const sorterTypeData = [
+    { label: 'By City', value: SorterKey.city },
+    { label: 'By Country', value: SorterKey.country },
+    { label: 'By Mountpoint', value: SorterKey.mountpoint },
+  ];
+
+  // refreshing datas
+  useEffect(() => {
+    try{
+      getCasterData();
+    }catch(e){
+      console.log(e);
+    }
+  }, []);
+
   //Allows caster screen to refresh its datas
   async function getCasterData() {
   
@@ -48,6 +74,8 @@ const CasterScreen = () => {
         return item.title.toLowerCase().includes(searchText.toLowerCase());            
     }
   }
+
+  const filteredBaseList = DATA.filter(filter);
 
   const sorter = (Base1, Base2) => {
     switch (selectedSorterType) {
@@ -102,44 +130,7 @@ const CasterScreen = () => {
     }
   }
 
-  // refreshing datas
-  useEffect(() => {
-    try{
-      getCasterData();
-    }catch(e){
-      console.log(e);
-    }
-  }, []);
-  
-  // our hooks and enums
-  enum SorterKey {city='city', country='country', mountpoint='mountpoint'}
-  enum SorterTypes { anti_alphabetical,alphabetical, distance}
-  const [DATA, setDATA] = useState([]);                           //data from sourcetable
-  const [filteredData, setFilteredData] = useState([]);
-  const [searchText, onChangeSearch] = useState('');
-  const [favs, setFavsFilter] = useState(true);                   //show favorites
-  const [sorting, setsortingFilter] = useState(SorterTypes.alphabetical);               //sorter type selected
-  const [selectedSorterType, setselectedSorterType] = useState(SorterKey.mountpoint);   //sorter key selected
-  const [isFocus, setIsFocus] = useState(false);
-  const [refreshList, setRefreshList] = useState(false);
-
-  const sorterTypeData = [
-    { label: 'By City', value: SorterKey.city },
-    { label: 'By Country', value: SorterKey.country },
-    { label: 'By Mountpoint', value: SorterKey.mountpoint },
-  ];
-
-  //used to filter items by sorter key
-  useEffect(() => {
-      let filtered = DATA.filter(filter);
-      filtered.sort(sorter);
-      let datas = DATA;
-      datas.sort(sorter);
-      if (searchText === '') {
-        return setFilteredData(datas);
-      }
-      setFilteredData(filtered);
-  }, [searchText, selectedSorterType, DATA, sorting]);
+  const sortedBaseList = filteredBaseList.sort(sorter);
 
   //how is the item shown in list
   const Item = ({title, country, identifier, latitude, longitude}) => (
@@ -158,75 +149,61 @@ const CasterScreen = () => {
         </View>
       </View>
   );
-
   const renderItem = ({item}) => <Item title={item.title} country={item.country} identifier={item.identifier} latitude={item.latitude} longitude={item.longitude} />;
+
+  //rendering header
+  const renderHeader = () => {
+    return(
+      <View>
+        <View style={{ flexDirection: 'row'}}>
+          <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.alphabetical)}}>
+            <Icon name="sort-alphabetical-ascending" color={sorting==SorterTypes.alphabetical ? 'white' :'darkgrey'} size={30} />
+          </Pressable>
+          <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.anti_alphabetical)}}>
+            <Icon name="sort-alphabetical-descending" color={sorting==SorterTypes.anti_alphabetical ? 'white' :'darkgrey'} size={30} />
+          </Pressable>
+          <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.distance)}}>
+            <Icon name="map-marker-distance" color={sorting==SorterTypes.distance ? 'white' :'darkgrey'} size={30} />
+          </Pressable>
+          <Pressable style={styles.sortButton} onPress={() => {setFavsFilter(!favs)}}>
+            <Icon name="star" color={favs ? 'yellow' :'darkgrey'} size={30} />
+          </Pressable>
+        </View>
+        
+        <View style={{alignContent: 'center', flexDirection: 'row', marginTop: 15}}>
+          <Text style={{alignSelf: 'center', marginLeft: 20}}>Filter key :</Text>
+          {/*displays every radio button for sorting keys*/}
+          <View style={{marginLeft: 20, flex: 1, marginRight: 20}}>
+            <Dropdown
+              style={[styles.dropdown, isFocus && { borderColor: 'white' }]}
+              placeholderStyle={{fontSize: 16}} selectedTextStyle={{fontSize: 16}} inputSearchStyle={{height: 40, fontSize: 16}}
+              data={sorterTypeData}
+              maxHeight={300} labelField="label" valueField="value" 
+              value={selectedSorterType}
+              onChange={item => {setselectedSorterType(item.value);}}
+            />
+          </View>
+        </View>
+      </View>
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-
-    {/*Sorting types selection*/}
-    <View style={{ flexDirection: 'row'}}>
-      <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.alphabetical)}}>
-        <Icon name="sort-alphabetical-ascending" color={sorting==SorterTypes.alphabetical ? 'white' :'darkgrey'} size={30} />
-      </Pressable>
-      <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.anti_alphabetical)}}>
-        <Icon name="sort-alphabetical-descending" color={sorting==SorterTypes.anti_alphabetical ? 'white' :'darkgrey'} size={30} />
-      </Pressable>
-      <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.distance)}}>
-        <Icon name="map-marker-distance" color={sorting==SorterTypes.distance ? 'white' :'darkgrey'} size={30} />
-      </Pressable>
-      <Pressable style={styles.sortButton} onPress={() => {setFavsFilter(!favs)}}>
-        <Icon name="star" color={favs ? 'yellow' :'darkgrey'} size={30} />
-      </Pressable>
-    </View>
-
-    {/*Sorting keys selection*/}
-    <View style={{alignContent: 'center', flexDirection: 'row', marginTop: 15}}>
-      <Text style={{alignSelf: 'center', marginLeft: 20}}>Filter key :</Text>
-      {/*displays every radio button for sorting keys*/}
-      <View style={{marginLeft: 20, flex: 1, marginRight: 20}}>
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: 'white' }]}
-          placeholderStyle={{fontSize: 16}}
-          selectedTextStyle={{fontSize: 16}}
-          inputSearchStyle={{height: 40, fontSize: 16}}
-          data={sorterTypeData}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? 'Select item' : '...'}
-          searchPlaceholder="Search..."
-          value={selectedSorterType}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            setselectedSorterType(item.value);
-            setIsFocus(false);
-          }}
-          
-        />
-      </View>
-    </View>
+    {renderHeader()}   
 
     {/*Research bar*/}
     <TextInput
-        style={{
-        height: 50,
-        borderColor: '#919191',
-        borderWidth: 1,
-        margin: 10,
-        paddingLeft: 15,
-        borderRadius: 10,
-        }}
+        style={styles.textinput}
         onChangeText={newText => onChangeSearch(newText)}
         placeholder="Caster identifier ..."
     />
     
     {/*Filtered list display*/}
     <FlatList
-        data={filteredData}
+        data={sortedBaseList}
         renderItem={renderItem}
-        keyExtractor={(item, index) => item.key}
+        keyExtractor={(item) => item.key}
         refreshControl={<RefreshControl
           refreshing={refreshList}
           onRefresh={() => {getCasterData}}
@@ -240,10 +217,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight/2 || 0,
-    marginBottom: 75,
+    marginBottom: 10,
   },
   item: {
-    backgroundColor: '#ededed',
+    backgroundColor: '#3F4141',
     padding: 20,
     marginVertical: 2,
     marginHorizontal: 10,
@@ -269,6 +246,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
   },
+  textinput: {
+    height: 50,
+    borderColor: '#919191',
+    borderWidth: 1,
+    margin: 10,
+    paddingLeft: 15,
+    borderRadius: 10,
+  }
 });
 
 export default CasterScreen;
