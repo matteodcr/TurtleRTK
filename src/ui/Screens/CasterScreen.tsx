@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet, Pressable, RefreshControl } from "react-native";
+import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet, Pressable, RefreshControl, Button } from "react-native";
 import SourceTable from "../../fc/Caster/SourceTable";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CountryFlag from "react-native-country-flag";
@@ -132,29 +132,43 @@ const CasterScreen = () => {
 
   const sortedBaseList = filteredBaseList.sort(sorter);
 
+  const limitCityName = (name:string) => {
+    if(name.length<20) return name;
+    return name.substring(0, 20)+'...';
+  }
+
   //how is the item shown in list
   const Item = ({title, country, identifier, latitude, longitude}) => (
-      <View style={styles.item}>
-        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-        {country==null ? 
-            <Icon name="map-marker-question-outline" color={'white'} size={30} /> :
-            <CountryFlag isoCode={country} size={21} />}
-          <Text style={styles.title}>{'  '+title}</Text>
+    <View style={styles.item}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{flexDirection: 'column'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+          {country==null ? 
+              <Icon name="map-marker-question-outline" color={'white'} size={30} /> :
+              <CountryFlag isoCode={country} size={21} />}
+            <Text style={styles.title}>{'  '+title}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>{limitCityName(identifier)}</Text>
+            <Text style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>   {getDistance(
+                { latitude: latitude, longitude: longitude },
+                { latitude: myLatitude, longitude: MyLongitude })/1000} km</Text>
+          </View>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>{identifier}</Text>
-          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>   {getDistance(
-              { latitude: latitude, longitude: longitude },
-              { latitude: myLatitude, longitude: MyLongitude })/1000} km</Text>
-        </View>
+        <Pressable onPress={() => {alert('TODO')}}>
+          <Text style={{color: "white", fontSize: 25}}>...</Text>
+        </Pressable>
       </View>
+      
+    </View>
+      
   );
   const renderItem = ({item}) => <Item title={item.title} country={item.country} identifier={item.identifier} latitude={item.latitude} longitude={item.longitude} />;
 
   //rendering header
   const renderHeader = () => {
     return(
-      <View>
+      <View style={{marginBottom: 15}}>
         <View style={{ flexDirection: 'row'}}>
           <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.alphabetical)}}>
             <Icon name="sort-alphabetical-ascending" color={sorting==SorterTypes.alphabetical ? 'white' :'darkgrey'} size={30} />
@@ -190,7 +204,7 @@ const CasterScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    {renderHeader()}   
+    
 
     {/*Research bar*/}
     <TextInput
@@ -198,6 +212,8 @@ const CasterScreen = () => {
         onChangeText={newText => onChangeSearch(newText)}
         placeholder="Caster identifier ..."
     />
+
+    {renderHeader()}   
     
     {/*Filtered list display*/}
     <FlatList
