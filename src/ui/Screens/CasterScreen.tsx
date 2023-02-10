@@ -3,7 +3,6 @@ import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet, P
 import SourceTable from "../../fc/Caster/SourceTable";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CountryFlag from "react-native-country-flag";
-import { countryToAlpha2 } from "country-to-iso";
 import { Dropdown } from 'react-native-element-dropdown';
 import {getDistance, getPreciseDistance} from 'geolib';
 
@@ -18,15 +17,15 @@ const CasterScreen = () => {
   const [DATA, setDATA] = useState([]);                           //data from sourcetable
   const [searchText, onChangeSearch] = useState('');
   const [favs, setFavsFilter] = useState(true);                   //show favorites
-  const [sorting, setsortingFilter] = useState(SorterTypes.alphabetical);               //sorter type selected
+  const [sorting, setsortingFilter] = useState(SorterTypes.distance);               //sorter type selected
   const [selectedSorterType, setselectedSorterType] = useState(SorterKey.mountpoint);   //sorter key selected
   const [isFocus, setIsFocus] = useState(false);
   const [refreshList, setRefreshList] = useState(false);
 
   const sorterTypeData = [
-    { label: 'By City', value: SorterKey.city },
-    { label: 'By Country', value: SorterKey.country },
-    { label: 'By Mountpoint', value: SorterKey.mountpoint },
+    { label: 'City', value: SorterKey.city },
+    { label: 'Country', value: SorterKey.country },
+    { label: 'Mountpoint', value: SorterKey.mountpoint },
   ];
 
   // refreshing datas
@@ -47,16 +46,7 @@ const CasterScreen = () => {
     }catch(e){
       console.log(e);
     }
-    let dataList=[];
-    for(var base of st.entries.baseList){
-        dataList.push({key: base.identifier+':'+base.mountpoint, 
-                      title: base.mountpoint, 
-                      country: countryToAlpha2(base.country),
-                      identifier: base.identifier,
-                      latitude: base.latitude,
-                      longitude: base.longitude})
-    }
-    setDATA(dataList);
+    setDATA(st.entries.baseList);
   }
 
   //filter for bases
@@ -71,7 +61,7 @@ const CasterScreen = () => {
           return false;
         }
       case SorterKey.mountpoint :
-        return item.title.toLowerCase().includes(searchText.toLowerCase());            
+        return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());            
     }
   }
 
@@ -116,9 +106,9 @@ const CasterScreen = () => {
       case SorterKey.mountpoint :
         switch(sorting) {
           case SorterTypes.alphabetical :
-            return (Base1.title.toLowerCase() > Base2.title.toLowerCase() ? 1 : -1);
+            return (Base1.mountpoint.toLowerCase() > Base2.mountpoint.toLowerCase() ? 1 : -1);
           case SorterTypes.anti_alphabetical :
-            return (Base1.title.toLowerCase() < Base2.title.toLowerCase() ? 1 : -1);
+            return (Base1.mountpoint.toLowerCase() < Base2.mountpoint.toLowerCase() ? 1 : -1);
           case SorterTypes.distance :
             return (getDistance(
               { latitude: Base1.latitude, longitude: Base1.longitude },
@@ -137,16 +127,18 @@ const CasterScreen = () => {
     return name.substring(0, 20)+'...';
   }
 
+  const itemOnPress = () => {alert('TODO')}
+
   //how is the item shown in list
-  const Item = ({title, country, identifier, latitude, longitude}) => (
+  const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
     <View style={styles.item}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'column'}}>
-          <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-          {country==null ? 
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            {country==null ? 
               <Icon name="map-marker-question-outline" color={'white'} size={30} /> :
               <CountryFlag isoCode={country} size={21} />}
-            <Text style={styles.title}>{'  '+title}</Text>
+            <Text style={styles.title}>{'  '+mountpoint}</Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center'}}>
             <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>{limitCityName(identifier)}</Text>
@@ -155,7 +147,7 @@ const CasterScreen = () => {
                 { latitude: myLatitude, longitude: MyLongitude })/1000} km</Text>
           </View>
         </View>
-        <Pressable onPress={() => {alert('TODO')}}>
+        <Pressable onPress={itemOnPress}>
           <Text style={{color: "white", fontSize: 25}}>...</Text>
         </Pressable>
       </View>
@@ -163,41 +155,81 @@ const CasterScreen = () => {
     </View>
       
   );
-  const renderItem = ({item}) => <Item title={item.title} country={item.country} identifier={item.identifier} latitude={item.latitude} longitude={item.longitude} />;
+  const renderItem = ({item}) => <Item mountpoint={item.mountpoint} country={item.country} identifier={item.identifier} latitude={item.latitude} longitude={item.longitude} />;
+
+  const sortertypesIcon = () => {
+    switch(sorting) {
+      case SorterTypes.alphabetical :
+        return "sort-alphabetical-ascending";
+      case SorterTypes.anti_alphabetical :
+        return "sort-alphabetical-descending";
+      case SorterTypes.distance :
+        return "map-marker-distance";
+    }
+  }
+
+  const cycleSortertypes = (type: SorterTypes) => {
+    switch(type) {
+      case SorterTypes.alphabetical :
+        setsortingFilter(SorterTypes.anti_alphabetical);
+        break;
+      case SorterTypes.anti_alphabetical :
+        setsortingFilter(SorterTypes.distance);
+        break;
+      case SorterTypes.distance :
+        setsortingFilter(SorterTypes.alphabetical);
+        break;
+    }
+    console.log(type+' : '+sorting)
+  }
 
   //rendering header
-  const renderHeader = () => {
+  const renderFilterView = () => {
     return(
-      <View style={{marginBottom: 15}}>
-        <View style={{ flexDirection: 'row'}}>
-          <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.alphabetical)}}>
-            <Icon name="sort-alphabetical-ascending" color={sorting==SorterTypes.alphabetical ? 'white' :'darkgrey'} size={30} />
+      <View>
+        {/*Research bar*/}
+        <TextInput
+            style={styles.textinput}
+            onChangeText={newText => onChangeSearch(newText)}
+            placeholder="Caster identifier ..."
+        />
+
+        <View style={{marginBottom: 15, flexDirection: 'row'}}>
+          <Pressable style={styles.sortButton} onPress={() => {cycleSortertypes(sorting)}}>
+            <Icon name={sortertypesIcon()} color='white' size={30} />
           </Pressable>
-          <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.anti_alphabetical)}}>
-            <Icon name="sort-alphabetical-descending" color={sorting==SorterTypes.anti_alphabetical ? 'white' :'darkgrey'} size={30} />
-          </Pressable>
-          <Pressable style={styles.sortButton} onPress={() => {setsortingFilter(SorterTypes.distance)}}>
-            <Icon name="map-marker-distance" color={sorting==SorterTypes.distance ? 'white' :'darkgrey'} size={30} />
-          </Pressable>
+          <View style={{flex: 3, alignContent: 'center', flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{marginLeft: 5, flex:1}}>
+              <Dropdown
+                renderRightIcon={() => (<Icon name='filter-menu' color='white' size={28} style={{marginRight: 5}}/>)}
+                style={[styles.dropdown, isFocus && { borderColor: 'white' }]}
+                placeholderStyle={{fontSize: 16}} selectedTextStyle={{fontSize: 16}} inputSearchStyle={{height: 40, fontSize: 16}}
+                data={sorterTypeData}
+                maxHeight={300} labelField="label" valueField="value" 
+                value={selectedSorterType}
+                onChange={item => {setselectedSorterType(item.value);}}
+              />
+            </View>
+          </View>
           <Pressable style={styles.sortButton} onPress={() => {setFavsFilter(!favs)}}>
             <Icon name="star" color={favs ? 'yellow' :'darkgrey'} size={30} />
           </Pressable>
         </View>
-        
-        <View style={{alignContent: 'center', flexDirection: 'row', marginTop: 15}}>
-          <Text style={{alignSelf: 'center', marginLeft: 20}}>Filter key :</Text>
-          {/*displays every radio button for sorting keys*/}
-          <View style={{marginLeft: 20, flex: 1, marginRight: 20}}>
-            <Dropdown
-              style={[styles.dropdown, isFocus && { borderColor: 'white' }]}
-              placeholderStyle={{fontSize: 16}} selectedTextStyle={{fontSize: 16}} inputSearchStyle={{height: 40, fontSize: 16}}
-              data={sorterTypeData}
-              maxHeight={300} labelField="label" valueField="value" 
-              value={selectedSorterType}
-              onChange={item => {setselectedSorterType(item.value);}}
-            />
-          </View>
-        </View>
+      </View>
+    )
+  }
+
+  const HeaderMoreButton = () => {
+    alert('TODO Caster')  
+  }
+
+  const renderHeaderTab = () => {
+    return(
+      <View style={styles.headerTab}>
+        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold'}}>Caster Screen</Text>
+        <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
+          <Text style={{color: "white", fontSize: 25}}>+</Text>
+        </Pressable>
       </View>
     )
   }
@@ -205,15 +237,9 @@ const CasterScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
     
+    {renderHeaderTab()}
 
-    {/*Research bar*/}
-    <TextInput
-        style={styles.textinput}
-        onChangeText={newText => onChangeSearch(newText)}
-        placeholder="Caster identifier ..."
-    />
-
-    {renderHeader()}   
+    {renderFilterView()}   
     
     {/*Filtered list display*/}
     <FlatList
@@ -233,7 +259,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight/2 || 0,
-    marginBottom: 10,
   },
   item: {
     backgroundColor: '#3F4141',
@@ -249,7 +274,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#151515',
     padding: 10,
-    marginVertical: 2,
     marginHorizontal: 10,
     borderRadius: 20,
     alignSelf: 'flex-start',
@@ -269,6 +293,21 @@ const styles = StyleSheet.create({
     margin: 10,
     paddingLeft: 15,
     borderRadius: 10,
+  },
+  TabButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  headerTab: {
+    backgroundColor: '#FFF',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderBottomColor: '#DDD',
+    borderBottomWidth: 1,
+    height: 50,
+    marginTop: 20,
+    alignItems: 'center'
   }
 });
 
