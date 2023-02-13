@@ -58,6 +58,7 @@ function CasterStack() {
         headerStyle: { backgroundColor: '#42f44b' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
+        
       }}>
       <Stack.Screen
         name="CasterScr"
@@ -86,10 +87,6 @@ function RoverStack() {
   );
 }
 
-function casterMoreButton() {
-  alert('TODO Caster')  
-}
-
 function roverMoreButton() {
   alert('TODO Rover')
 }
@@ -105,12 +102,7 @@ export default function App() {
             name="Caster"
             component={CasterStack}
             options={{
-              tabBarLabel: 'Caster',
-              headerRight: () => (
-                <Pressable style={styles.button} onPress={casterMoreButton}>
-                  <Text style={{color: "white", fontSize: 25}}>+</Text>
-                </Pressable>
-              ),
+              headerShown: false,
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="server-network" color={color} size={size} />
               ),
@@ -120,12 +112,7 @@ export default function App() {
             name="Rover"
             component={RoverStack}
             options={{
-              tabBarLabel: "Rover",
-              headerRight: () => (
-                <Pressable style={styles.button} onPress={roverMoreButton}>
-                  <Text style={{color: "white", fontSize: 25}}>+</Text>
-                </Pressable>
-              ),
+              headerShown: false,
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="antenna" color={color} size={size} />
               ),
@@ -135,7 +122,7 @@ export default function App() {
             name="Recording"
             component={RecordingStack}
             options={{
-              tabBarLabel: 'Recording',
+              headerShown: false,
               tabBarIcon: ({ color, size }) => (
                 <MaterialCommunityIcons name="content-save" color={color} size={size} />
               ),
@@ -145,7 +132,7 @@ export default function App() {
             name="Settings"
             component={SettingsStack}
             options={{
-              tabBarLabel: 'Settings',
+              headerShown: false,
               tabBarIcon: ({ color, size }) => (
                 <AntDesign name="setting" color={color} size={size} />
               ),
