@@ -15,7 +15,14 @@
       "fallbackToCacheTimeout": 0
     },
     "packagerOpts": {
-      "sourceExts": [ "js", "json", "ts", "tsx", "jsx", "vue"]
+      "sourceExts": [
+        "js",
+        "json",
+        "ts",
+        "tsx",
+        "jsx",
+        "vue"
+      ]
     },
     "assetBundlePatterns": [
       "**/*"
@@ -34,9 +41,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "80074407-80a0-4868-bdff-e4eed679e5bf"
+        "projectId": "718e7cfc-f546-4ca0-b59a-21917948a2c6"
       }
     },
-    "owner": "ppcocopp"
+    "owner": "openntrip"
   }
 }
