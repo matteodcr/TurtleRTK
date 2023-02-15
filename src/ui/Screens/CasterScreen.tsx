@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CountryFlag from "react-native-country-flag";
 import { Dropdown } from 'react-native-element-dropdown';
 import {getDistance, getPreciseDistance} from 'geolib';
+global.Buffer = global.Buffer || require('buffer').Buffer
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.753970;
