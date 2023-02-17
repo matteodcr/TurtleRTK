@@ -1,49 +1,14 @@
 {
-  "expo": {
-    "name": "OpenNtrip",
-    "slug": "openntrip",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
+  "name": "OpenNtrip",
+  "displayName": "openntrip",
     "packagerOpts": {
       "sourceExts": [
         "js",
         "json",
-        "ts",
         "tsx",
+        "ts",
         "jsx",
         "vue"
       ]
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "718e7cfc-f546-4ca0-b59a-21917948a2c6"
-      }
-    },
-    "owner": "openntrip"
-  }
+    }
 }

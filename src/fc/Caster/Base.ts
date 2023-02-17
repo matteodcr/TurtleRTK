@@ -10,7 +10,7 @@ export default class Base {
     carrier: number; // Phase L1-L2
     navSystem: string; // Navigation system
     network: string; // Network name
-    country: string; // ISO 3166 alpha 2 country code
+    country: string | null; // ISO 3166 alpha 2 country code
     latitude: number; // Position, Latitude in degree
     longitude: number; // Position, Longitude in degree
     nmea: boolean; // SourceTable requires NMEA input (T) or not (F)

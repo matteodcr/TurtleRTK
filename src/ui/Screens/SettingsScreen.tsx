@@ -1,10 +1,10 @@
 import React from "react";
-import { SafeAreaView, View, Text, Pressable, StyleSheet, StatusBar } from "react-native";
+import { SafeAreaView, View, Text, Pressable, StyleSheet, StatusBar, Alert } from "react-native";
 
 const SettingsScreen = () => {
 
     const HeaderMoreButton = () => {
-        alert('TODO Screen')  
+        Alert.alert('TODO Screen')
     }
 
     const renderHeaderTab = () => {
@@ -17,7 +17,7 @@ const SettingsScreen = () => {
           </View>
         )
     }
-    
+
     return (
         <SafeAreaView style={styles.container}>
             {renderHeaderTab()}
@@ -33,7 +33,7 @@ const SettingsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: StatusBar.currentHeight/2 || 0,
+        marginTop: (StatusBar.currentHeight)!,
       },
     TabButton: {
         alignItems: 'center',

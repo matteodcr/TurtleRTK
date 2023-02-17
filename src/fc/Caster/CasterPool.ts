@@ -1,4 +1,4 @@
-interface CasterPoolEntry {
+export default interface CasterPoolEntry {
     url: string;
     // name: string; // get with the sourcetable and to be print on UI
     username: string;

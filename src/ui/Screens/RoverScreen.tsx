@@ -1,10 +1,10 @@
 import React from "react";
-import { SafeAreaView, View, Text, Pressable, StatusBar, StyleSheet } from "react-native";
+import {SafeAreaView, View, Text, Pressable, StyleSheet, Alert, StatusBar} from "react-native";
 
 const RoverScreen = () => {
 
     const HeaderMoreButton = () => {
-        alert('TODO Screen')  
+        Alert.alert('TODO Screen')
     }
 
     const renderHeaderTab = () => {
@@ -33,7 +33,7 @@ const RoverScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: StatusBar.currentHeight/2 || 0,
+        marginTop: (StatusBar.currentHeight)!,
       },
     TabButton: {
         alignItems: 'center',

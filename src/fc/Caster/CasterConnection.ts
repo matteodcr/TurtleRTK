@@ -1,4 +1,4 @@
-import { NtripClient } from 'ntrip-client';
+import { NtripClient } from 'react-native-ntrip-client';
 
 class CasterConnection {
     caster: string;

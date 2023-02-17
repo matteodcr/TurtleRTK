@@ -1,8 +1,9 @@
 import 'react-native-gesture-handler';
 
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import { StyleSheet, View, Alert } from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -58,7 +59,7 @@ function CasterStack() {
         headerStyle: { backgroundColor: '#42f44b' },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
-        
+
       }}>
       <Stack.Screen
         name="CasterScr"
@@ -88,7 +89,7 @@ function RoverStack() {
 }
 
 function roverMoreButton() {
-  alert('TODO Rover')
+    Alert.alert('TODO Rover')
 }
 
 export default function App() {

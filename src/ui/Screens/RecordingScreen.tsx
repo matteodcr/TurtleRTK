@@ -1,10 +1,10 @@
 import React from "react";
-import { SafeAreaView, View, Text, StyleSheet, Pressable, StatusBar } from "react-native";
+import {SafeAreaView, View, Text, StyleSheet, Pressable, StatusBar, Alert} from "react-native";
 
 const RecordingScreen = () => {
 
     const HeaderMoreButton = () => {
-        alert('TODO Screen')  
+        Alert.alert('TODO Screen')
     }
 
     const renderHeaderTab = () => {
@@ -33,7 +33,7 @@ const RecordingScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: StatusBar.currentHeight/2 || 0,
+        marginTop: (StatusBar.currentHeight)!,
       },
     TabButton: {
         alignItems: 'center',

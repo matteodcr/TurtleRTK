@@ -4,6 +4,7 @@ import Caster from "./Caster";
 import { NtripClient } from "react-native-ntrip-client";
 import waitForEvent from "wait-for-event-promise";
 global.Buffer = global.Buffer || require('buffer').Buffer
+const net = require('react-native-tcp-socket');
 
 export const FAKE_MOUNTPOINT = "TEST"; // TODO: find a universal fake mountpoint name
 export const ENDSOURCETABLE = "ENDSOURCETABLE";
@@ -39,7 +40,7 @@ export default class SourceTable {
     port?: number,
     username?: string,
     password?: string
-  ) {
+  ) : Promise<SourceTableEntries> {
     let rawSourceTable = "";
     if (adress == null) {
       adress = this.adress;
@@ -169,7 +170,6 @@ async function main(adress: string) {
     "centipede",
     "centipede"
   );
-  console.log(entries.baseList);
 }
 
 main("caster.centipede.fr");
