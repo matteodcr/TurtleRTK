@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet, Pressable, RefreshControl, Button, Alert} from "react-native";
 import SourceTable from "../../fc/Caster/SourceTable";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import CountryFlag from "react-native-country-flag";
 import { Dropdown } from 'react-native-element-dropdown';
 import {getDistance} from 'geolib';
@@ -42,7 +43,6 @@ const CasterScreen = () => {
 
   //Allows caster screen to refresh its datas
   async function getCasterData() {
-
     let st: SourceTable = new SourceTable("caster.centipede.fr");
     try{
       st.entries = await st.getSourceTable(
