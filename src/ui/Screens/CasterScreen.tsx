@@ -5,26 +5,36 @@ import {
   Text,
   TextInput,
   FlatList,
-  StatusBar,
   StyleSheet,
   Pressable,
   RefreshControl,
-  Button,
   Alert,
 } from 'react-native';
 import SourceTable from '../../fc/Caster/SourceTable';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import CountryFlag from 'react-native-country-flag';
 import {Dropdown} from 'react-native-element-dropdown';
 import {getDistance} from 'geolib';
+import Geolocation from '@react-native-community/geolocation';
 import Base from '../../fc/Caster/Base';
-const net = require('react-native-tcp-socket');
 import centipedeSourceTable from '../../fc/Caster/cache';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
+
+Geolocation.getCurrentPosition(
+  position => {
+    myLatitude = position.coords.latitude;
+    MyLongitude = position.coords.longitude;
+    console.log(myLatitude, MyLongitude);
+  },
+  error => {
+    console.log(error.code, error.message);
+  },
+  {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+);
+
 const DEBUG = true;
 
 const CasterScreen = () => {
@@ -69,7 +79,6 @@ const CasterScreen = () => {
     let st: SourceTable = new SourceTable('caster.centipede.fr');
     if (DEBUG) {
       var entries = st.parseSourceTable(centipedeSourceTable);
-      console.log(entries);
       setDATA(entries.baseList);
     } else {
       try {
@@ -358,7 +367,13 @@ const CasterScreen = () => {
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
-        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold', color: 'white'}}>
+        <Text
+          style={{
+            marginLeft: 15,
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: 'white',
+          }}>
           Caster Screen
         </Text>
         <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
@@ -384,6 +399,17 @@ const CasterScreen = () => {
             refreshing={refreshList}
             onRefresh={() => {
               getCasterData;
+              Geolocation.getCurrentPosition(
+                position => {
+                  myLatitude = position.coords.latitude;
+                  MyLongitude = position.coords.longitude;
+                  console.log(myLatitude, MyLongitude);
+                },
+                error => {
+                  console.log(error.code, error.message);
+                },
+                {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+              );
             }}
           />
         }
@@ -406,7 +432,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    color: 'white'
+    color: 'white',
   },
   sortButton: {
     flex: 1,
