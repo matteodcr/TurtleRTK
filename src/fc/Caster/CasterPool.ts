@@ -1,11 +1,11 @@
-interface CasterPoolEntry {
-  url: string;
+import SourceTable from './SourceTable';
+
+export interface CasterPoolEntry {
+  sourceTable: SourceTable;
   // name: string; // get with the sourcetable and to be print on UI
   username: string;
   password: string;
 }
-
-export default CasterPoolEntry;
 
 class CasterPool {
   subscribed: Array<CasterPoolEntry>; // casters dont les bases sont affichées
@@ -18,22 +18,25 @@ class CasterPool {
     this.unsubscribed = [];
   }
 
-  static findCaster(url: string, list: Array<CasterPoolEntry>): number {
+  static findCaster(
+    sourceTable: SourceTable,
+    list: Array<CasterPoolEntry>,
+  ): number {
     for (const [index, value] of list.entries()) {
-      if (value.url === url) {
+      if (value.sourceTable.adress === sourceTable.adress) {
         return index;
       }
     }
     return -1;
   }
 
-  addCaster(url: string, username: string, password: string) {
+  addCaster(sourceTable: SourceTable, username: string, password: string) {
     if (
-      CasterPool.findCaster(url, this.subscribed) === -1 &&
-      CasterPool.findCaster(url, this.unsubscribed) === -1
+      CasterPool.findCaster(sourceTable, this.subscribed) === -1 &&
+      CasterPool.findCaster(sourceTable, this.unsubscribed) === -1
     ) {
       this.subscribed.push({
-        url,
+        sourceTable,
         username,
         password,
       });
@@ -41,31 +44,35 @@ class CasterPool {
     }
     throw new Error('Caster déja dans la liste.');
   }
-  removeCaster(url: string) {
-    let index = CasterPool.findCaster(url, this.subscribed);
+  removeCaster(sourceTable: SourceTable) {
+    let index = CasterPool.findCaster(sourceTable, this.subscribed);
     if (index !== -1) {
       this.subscribed.splice(index);
     }
-    index = CasterPool.findCaster(url, this.unsubscribed);
+    index = CasterPool.findCaster(sourceTable, this.unsubscribed);
     if (index !== -1) {
       this.unsubscribed.splice(index, 1);
     }
   }
 
-  subscribe(url: string) {
-    let index = CasterPool.findCaster(url, this.unsubscribed);
+  subscribe(sourceTable: SourceTable) {
+    let index = CasterPool.findCaster(sourceTable, this.unsubscribed);
     if (index !== -1) {
       let el = this.unsubscribed.splice(index)[0];
       this.subscribed.push(el);
+      return;
     }
     throw new Error('Caster pas unsubscribed');
   }
-  unsubscribe(url: string) {
-    let index = CasterPool.findCaster(url, this.subscribed);
+  unsubscribe(sourceTable: SourceTable) {
+    let index = CasterPool.findCaster(sourceTable, this.subscribed);
     if (index !== -1) {
       let el = this.subscribed.splice(index)[0];
       this.unsubscribed.push(el);
+      return;
     }
     throw new Error('Caster pas subscribed');
   }
 }
+
+export default CasterPool;
