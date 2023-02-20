@@ -1,12 +1,13 @@
 import 'react-native-gesture-handler';
 
-import React from "react";
-import { StyleSheet, View, Alert } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from 'react';
+import {StyleSheet, View, Alert} from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Appearance} from 'react-native';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
@@ -80,8 +81,12 @@ export default function App() {
             component={CasterStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="server-network" color={color} size={size} />
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="server-network"
+                  color={color}
+                  size={size}
+                />
               ),
             }}
           />
@@ -90,8 +95,12 @@ export default function App() {
             component={RoverStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="antenna" color={color} size={size} />
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="antenna"
+                  color={color}
+                  size={size}
+                />
               ),
             }}
           />
@@ -100,8 +109,12 @@ export default function App() {
             component={RecordingStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="content-save" color={color} size={size} />
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="content-save"
+                  color={color}
+                  size={size}
+                />
               ),
             }}
           />
@@ -110,7 +123,7 @@ export default function App() {
             component={SettingsStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({color, size}) => (
                 <AntDesign name="setting" color={color} size={size} />
               ),
             }}
