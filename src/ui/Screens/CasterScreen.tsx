@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, TextInput, FlatList, StatusBar, StyleSheet, Pressable, RefreshControl, Button, Alert} from "react-native";
 import SourceTable from "../../fc/Caster/SourceTable";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import CountryFlag from "react-native-country-flag";
 import { Dropdown } from 'react-native-element-dropdown';
@@ -143,7 +143,7 @@ const CasterScreen = () => {
         <View style={{flexDirection: 'column'}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             {country==null ?
-              <Icon name="map-marker-question-outline" color={'white'} size={30} /> :
+              <FontAwesome5 name='search-location' style={{fontSize: 30, color:'white'}}/> :
               <CountryFlag isoCode={country} size={21} />}
             <Text style={styles.title}>{'  '+mountpoint}</Text>
           </View>
@@ -164,14 +164,14 @@ const CasterScreen = () => {
   );
   const renderItem = ({item}) => <Item mountpoint={item.mountpoint} country={item.country} identifier={item.identifier} latitude={item.latitude} longitude={item.longitude} />;
 
-  const sortertypesIcon = () => {
+  function sortertypesIcon(): string {
     switch(sorting) {
       case SorterTypes.alphabetical :
-        return "sort-alphabetical-ascending";
+        return 'sort-alpha-asc';
       case SorterTypes.anti_alphabetical :
-        return "sort-alphabetical-descending";
+        return 'sort-alpha-desc';
       case SorterTypes.distance :
-        return "map-marker-distance";
+        return 'paper-plane';
     }
   }
 
@@ -187,7 +187,6 @@ const CasterScreen = () => {
         setsortingFilter(SorterTypes.alphabetical);
         break;
     }
-    console.log(type+' : '+sorting)
   }
 
   //rendering header
@@ -203,15 +202,17 @@ const CasterScreen = () => {
 
         <View style={{marginBottom: 15, flexDirection: 'row'}}>
           <Pressable style={styles.sortButton} onPress={() => {cycleSortertypes(sorting)}}>
-            <Icon name={sortertypesIcon()} color='white' size={30} />
+            <FontAwesome5 name={sortertypesIcon()} style={{fontSize: 32, color:'white'}}/>
           </Pressable>
           <View style={{flex: 3, alignContent: 'center', flexDirection: 'row', alignItems: 'center'}}>
             <View style={{marginLeft: 5, flex:1}}>
               <Dropdown
-                renderRightIcon={() => (<Icon name='filter-menu' color='white' size={28} style={{marginRight: 5}}/>)}
-                style={[styles.dropdown, isFocus && { borderColor: 'white' }]}
+                renderRightIcon={() => (<FontAwesome5 name={'filter'} style={{fontSize: 28, color:'white', marginRight: 5}}/>)}
+                style={styles.dropdown}
                 placeholderStyle={{fontSize: 16}} selectedTextStyle={{fontSize: 16}} inputSearchStyle={{height: 40, fontSize: 16}}
                 data={sorterTypeData}
+                itemContainerStyle={{backgroundColor: '#222222'}}
+                activeColor='#444444'
                 maxHeight={300} labelField="label" valueField="value"
                 value={selectedSorterType}
                 onChange={item => {setselectedSorterType(item.value);}}
@@ -219,7 +220,7 @@ const CasterScreen = () => {
             </View>
           </View>
           <Pressable style={styles.sortButton} onPress={() => {setFavsFilter(!favs)}}>
-            <Icon name="star" color={favs ? 'yellow' :'darkgrey'} size={30} />
+          <FontAwesome5 name={'star'} style={{fontSize: 32, color:favs ? 'yellow' :'darkgrey'}}/>
           </Pressable>
         </View>
       </View>
@@ -265,7 +266,7 @@ const CasterScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: (StatusBar.currentHeight)! /2,
+    backgroundColor: '#222',
   },
   item: {
     backgroundColor: '#3F4141',
@@ -307,13 +308,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   headerTab: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#111111',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    borderBottomColor: '#DDD',
+    borderBottomColor: '#151515',
     borderBottomWidth: 1,
     height: 50,
-    marginTop: 20,
     alignItems: 'center'
   }
 });

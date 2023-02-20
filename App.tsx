@@ -17,13 +17,7 @@ const Tab = createBottomTabNavigator();
 
 function SettingsStack() {
   return (
-    <Stack.Navigator
-      initialRouteName="Settings"
-      screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
-      }}>
+    <Stack.Navigator initialRouteName="Settings">
       <Stack.Screen
         name="SettingsScr"
         component={SettingsScreen}
@@ -35,13 +29,7 @@ function SettingsStack() {
 
 function RecordingStack() {
   return (
-    <Stack.Navigator
-      initialRouteName="Recording"
-      screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
-      }}>
+    <Stack.Navigator initialRouteName="Recording">
       <Stack.Screen
         name="RecordingScr"
         component={RecordingScreen}
@@ -53,14 +41,7 @@ function RecordingStack() {
 
 function CasterStack() {
   return (
-    <Stack.Navigator
-      initialRouteName="Caster"
-      screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
-
-      }}>
+    <Stack.Navigator initialRouteName="Caster">
       <Stack.Screen
         name="CasterScr"
         getComponent={() => require('./src/ui/Screens/CasterScreen').default}
@@ -72,13 +53,7 @@ function CasterStack() {
 
 function RoverStack() {
   return (
-    <Stack.Navigator
-      initialRouteName="Rover"
-      screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
-      }}>
+    <Stack.Navigator initialRouteName="Rover">
       <Stack.Screen
         name="RoverScr"
         component={RoverScreen}
@@ -88,16 +63,17 @@ function RoverStack() {
   );
 }
 
-function roverMoreButton() {
-    Alert.alert('TODO Rover')
-}
-
 export default function App() {
   return (
     <View style={styles.container}>
       <NavigationContainer>
         <Tab.Navigator
           initialRouteName="Rover"
+          screenOptions={{
+            tabBarStyle:{
+              backgroundColor:'#151515'
+            },
+          }}
           >
           <Tab.Screen
             name="Caster"
@@ -147,13 +123,6 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
+    flex: 1
   },
-  button: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-    backgroundColor: '#fff',
-  }
 });

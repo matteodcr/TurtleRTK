@@ -33,7 +33,7 @@ const RoverScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: (StatusBar.currentHeight)!,
+        backgroundColor: '#222',
       },
     TabButton: {
         alignItems: 'center',
@@ -41,13 +41,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
     },
     headerTab: {
-      backgroundColor: '#FFF',
+      backgroundColor: '#111111',
       justifyContent: 'space-between',
       flexDirection: 'row',
-      borderBottomColor: '#DDD',
+      borderBottomColor: '#151515',
       borderBottomWidth: 1,
       height: 50,
-      marginTop: 20,
       alignItems: 'center'
     }
   });
