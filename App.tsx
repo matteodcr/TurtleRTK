@@ -1,12 +1,13 @@
 import 'react-native-gesture-handler';
 
-import React from "react";
-import { StyleSheet, View, Alert } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from 'react';
+import {StyleSheet, View, Alert} from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Appearance} from 'react-native';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
@@ -20,9 +21,9 @@ function SettingsStack() {
     <Stack.Navigator
       initialRouteName="Settings"
       screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
+        headerStyle: {backgroundColor: '#42f44b'},
         headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
+        headerTitleStyle: {fontWeight: 'bold'},
       }}>
       <Stack.Screen
         name="SettingsScr"
@@ -38,9 +39,9 @@ function RecordingStack() {
     <Stack.Navigator
       initialRouteName="Recording"
       screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
+        headerStyle: {backgroundColor: '#42f44b'},
         headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
+        headerTitleStyle: {fontWeight: 'bold'},
       }}>
       <Stack.Screen
         name="RecordingScr"
@@ -56,10 +57,9 @@ function CasterStack() {
     <Stack.Navigator
       initialRouteName="Caster"
       screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
+        headerStyle: {backgroundColor: '#42f44b'},
         headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
-
+        headerTitleStyle: {fontWeight: 'bold'},
       }}>
       <Stack.Screen
         name="CasterScr"
@@ -75,9 +75,9 @@ function RoverStack() {
     <Stack.Navigator
       initialRouteName="Rover"
       screenOptions={{
-        headerStyle: { backgroundColor: '#42f44b' },
+        headerStyle: {backgroundColor: '#42f44b'},
         headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' },
+        headerTitleStyle: {fontWeight: 'bold'},
       }}>
       <Stack.Screen
         name="RoverScr"
@@ -89,23 +89,25 @@ function RoverStack() {
 }
 
 function roverMoreButton() {
-    Alert.alert('TODO Rover')
+  Alert.alert('TODO Rover');
 }
 
 export default function App() {
   return (
     <View style={styles.container}>
       <NavigationContainer>
-        <Tab.Navigator
-          initialRouteName="Rover"
-          >
+        <Tab.Navigator initialRouteName="Rover">
           <Tab.Screen
             name="Caster"
             component={CasterStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="server-network" color={color} size={size} />
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="server-network"
+                  color={color}
+                  size={size}
+                />
               ),
             }}
           />
@@ -114,8 +116,12 @@ export default function App() {
             component={RoverStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="antenna" color={color} size={size} />
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="antenna"
+                  color={color}
+                  size={size}
+                />
               ),
             }}
           />
@@ -124,8 +130,12 @@ export default function App() {
             component={RecordingStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="content-save" color={color} size={size} />
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="content-save"
+                  color={color}
+                  size={size}
+                />
               ),
             }}
           />
@@ -134,7 +144,7 @@ export default function App() {
             component={SettingsStack}
             options={{
               headerShown: false,
-              tabBarIcon: ({ color, size }) => (
+              tabBarIcon: ({color, size}) => (
                 <AntDesign name="setting" color={color} size={size} />
               ),
             }}
@@ -148,12 +158,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   button: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
     backgroundColor: '#fff',
-  }
+  },
 });
