@@ -11,7 +11,8 @@ import {
   Alert,
 } from 'react-native';
 import SourceTable from '../../fc/Caster/SourceTable';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CountryFlag from 'react-native-country-flag';
 import {Dropdown} from 'react-native-element-dropdown';
 import {getDistance} from 'geolib';
@@ -37,7 +38,7 @@ Geolocation.getCurrentPosition(
 
 const DEBUG = true;
 
-const CasterScreen = () => {
+const CasterScreen = ({navigation}) => {
   // our hooks and enums
   enum SorterKey {
     city = 'city',
@@ -226,7 +227,7 @@ const CasterScreen = () => {
         <View style={{flexDirection: 'column'}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             {country == null ? (
-              <Icon
+              <MaterialCommunityIcons
                 name="map-marker-question-outline"
                 color={'white'}
                 size={30}
@@ -311,7 +312,11 @@ const CasterScreen = () => {
             onPress={() => {
               cycleSortertypes(sorting);
             }}>
-            <Icon name={sortertypesIcon()} color="white" size={30} />
+            <MaterialCommunityIcons
+              name={sortertypesIcon()}
+              color="white"
+              size={30}
+            />
           </Pressable>
           <View
             style={{
@@ -323,7 +328,7 @@ const CasterScreen = () => {
             <View style={{marginLeft: 5, flex: 1}}>
               <Dropdown
                 renderRightIcon={() => (
-                  <Icon
+                  <MaterialCommunityIcons
                     name="filter-menu"
                     color="white"
                     size={28}
@@ -353,7 +358,11 @@ const CasterScreen = () => {
             onPress={() => {
               setFavsFilter(!favs);
             }}>
-            <Icon name="star" color={favs ? 'yellow' : 'darkgrey'} size={30} />
+            <MaterialCommunityIcons
+              name="star"
+              color={favs ? 'yellow' : 'darkgrey'}
+              size={30}
+            />
           </Pressable>
         </View>
       </View>
@@ -361,7 +370,7 @@ const CasterScreen = () => {
   };
 
   const HeaderMoreButton = () => {
-    Alert.alert('TODO Caster');
+    navigation.navigate('CasterPoolScreen');
   };
 
   const renderHeaderTab = () => {
@@ -377,7 +386,7 @@ const CasterScreen = () => {
           Caster Screen
         </Text>
         <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
-          <Text style={{color: 'white', fontSize: 25}}>+</Text>
+          <MaterialIcons name="library-add" color={'white'} size={25} />
         </Pressable>
       </View>
     );
@@ -462,7 +471,7 @@ const styles = StyleSheet.create({
   TabButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 20,
   },
   headerTab: {
     backgroundColor: '#111111',

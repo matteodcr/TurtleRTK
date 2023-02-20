@@ -24,7 +24,7 @@ export default class Base {
   key: string; // for typescript lists
 
   constructor(sourceTable: SourceTable, line: string[]) {
-    if (line.length == 19) {
+    if (line.length === 19) {
       this.parentSourceTable = sourceTable;
       this.mountpoint = line[1].trim();
       this.identifier = line[2].trim();
@@ -36,12 +36,12 @@ export default class Base {
       this.country = countryToAlpha2(line[8].trim());
       this.latitude = +line[9];
       this.longitude = +line[10];
-      this.nmea = +line[11] == 1;
-      this.solution = +line[12] == 1;
+      this.nmea = +line[11] === 1;
+      this.solution = +line[12] === 1;
       this.generator = line[13].trim();
       this.compression = line[14].trim();
       this.authentification = line[15].trim();
-      this.fee = +line[16] == 1;
+      this.fee = +line[16] === 1;
       this.bitrate = +line[17];
       this.misc = line[18].trim();
       this.key = this.identifier + ':' + this.mountpoint;

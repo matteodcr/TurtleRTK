@@ -3,7 +3,7 @@ import Network from './Network';
 import Caster from './Caster';
 import {NtripClient} from 'react-native-ntrip-client';
 import waitForEvent from 'wait-for-event-promise';
-import centipedeSourceTable from "./cache";
+import centipedeSourceTable from './cache';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 export const FAKE_MOUNTPOINT = 'TEST'; // TODO: find a universal fake mountpoint name
