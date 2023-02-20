@@ -1,39 +1,46 @@
-import React from "react";
-import { SafeAreaView, View, Text, StyleSheet, Pressable, StatusBar } from "react-native";
+import React from 'react';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  StatusBar,
+  Alert,
+} from 'react-native';
 
 const RecordingScreen = () => {
+  const HeaderMoreButton = () => {
+    Alert.alert('TODO Screen');
+  };
 
-    const HeaderMoreButton = () => {
-        alert('TODO Screen')  
-    }
-
-    const renderHeaderTab = () => {
-        return(
-          <View style={styles.headerTab}>
-            <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold'}}>Recording Screen</Text>
-            <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
-              <Text style={{color: "white", fontSize: 25}}>+</Text>
-            </Pressable>
-          </View>
-        )
-    }
-
+  const renderHeaderTab = () => {
     return (
-        <SafeAreaView style={styles.container}>
-            {renderHeaderTab()}
-            <View>
-                <Text>
-                    Recording
-                </Text>
-            </View>
-        </SafeAreaView>
-    )
-}
+      <View style={styles.headerTab}>
+        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold'}}>
+          Recording Screen
+        </Text>
+        <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
+          <Text style={{color: 'white', fontSize: 25}}>+</Text>
+        </Pressable>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {renderHeaderTab()}
+      <View>
+        <Text>Recording</Text>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: StatusBar.currentHeight/2 || 0,
+        backgroundColor: '#222',
       },
     TabButton: {
         alignItems: 'center',
@@ -41,13 +48,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
     },
     headerTab: {
-      backgroundColor: '#FFF',
+      backgroundColor: '#111111',
       justifyContent: 'space-between',
       flexDirection: 'row',
-      borderBottomColor: '#DDD',
+      borderBottomColor: '#151515',
       borderBottomWidth: 1,
       height: 50,
-      marginTop: 20,
       alignItems: 'center'
     }
   });
