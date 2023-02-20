@@ -12,6 +12,7 @@
     "connection": "ts-node-esm src/fc/Caster/CasterConnection.ts"
   },
   "dependencies": {
+    "@react-native-community/geolocation": "^3.0.5",
     "@react-navigation/bottom-tabs": "^6.5.5",
     "@react-navigation/stack": "^6.3.14",
     "@types/node": "^18.13.0",
