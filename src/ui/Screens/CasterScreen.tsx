@@ -20,11 +20,12 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {getDistance} from 'geolib';
 import Base from '../../fc/Caster/Base';
 const net = require('react-native-tcp-socket');
+import centipedeSourceTable from '../../fc/Caster/cache';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
-
+const DEBUG = true;
 
 const CasterScreen = () => {
   // our hooks and enums
@@ -66,17 +67,23 @@ const CasterScreen = () => {
   //Allows caster screen to refresh its datas
   async function getCasterData() {
     let st: SourceTable = new SourceTable('caster.centipede.fr');
-    try {
-      st.entries = await st.getSourceTable(
-        'caster.centipede.fr',
-        2101,
-        'centipede',
-        'centipede',
-      );
-    } catch (e) {
-      console.log(e);
+    if (DEBUG) {
+      var entries = st.parseSourceTable(centipedeSourceTable);
+      console.log(entries);
+      setDATA(entries.baseList);
+    } else {
+      try {
+        st.entries = await st.getSourceTable(
+          'caster.centipede.fr',
+          2101,
+          'centipede',
+          'centipede',
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      setDATA(st.entries.baseList);
     }
-    setDATA(st.entries.baseList);
   }
 
   //filter for bases
@@ -126,16 +133,28 @@ const CasterScreen = () => {
       case SorterKey.country:
         switch (sorting) {
           case SorterTypes.alphabetical:
-            if (Base1.country == null && Base2.country == null) return 0;
-            if (Base1.country == null) return 1;
-            if (Base2.country == null) return -1;
+            if (Base1.country == null && Base2.country == null) {
+              return 0;
+            }
+            if (Base1.country == null) {
+              return 1;
+            }
+            if (Base2.country == null) {
+              return -1;
+            }
             return Base1.country.toLowerCase() > Base2.country.toLowerCase()
               ? 1
               : -1;
           case SorterTypes.anti_alphabetical:
-            if (Base1.country == null && Base2.country == null) return 0;
-            if (Base1.country == null) return 1;
-            if (Base2.country == null) return -1;
+            if (Base1.country == null && Base2.country == null) {
+              return 0;
+            }
+            if (Base1.country == null) {
+              return 1;
+            }
+            if (Base2.country == null) {
+              return -1;
+            }
             return Base1.country.toLowerCase() < Base2.country.toLowerCase()
               ? 1
               : -1;
@@ -181,7 +200,9 @@ const CasterScreen = () => {
   const sortedBaseList = filteredBaseList.sort(sorter);
 
   const limitCityName = (name: string) => {
-    if (name.length < 20) return name;
+    if (name.length < 20) {
+      return name;
+    }
     return name.substring(0, 20) + '...';
   };
 
@@ -261,7 +282,7 @@ const CasterScreen = () => {
         setsortingFilter(SorterTypes.alphabetical);
         break;
     }
-  }
+  };
 
   //rendering header
   const renderFilterView = () => {
@@ -272,6 +293,7 @@ const CasterScreen = () => {
           style={styles.textinput}
           onChangeText={newText => onChangeSearch(newText)}
           placeholder="Caster identifier ..."
+          placeholderTextColor={'white'}
         />
 
         <View style={{marginBottom: 15, flexDirection: 'row'}}>
@@ -300,12 +322,13 @@ const CasterScreen = () => {
                   />
                 )}
                 placeholderStyle={{fontSize: 16}}
-                selectedTextStyle={{fontSize: 16}}
+                selectedTextStyle={{fontSize: 16, color: 'white'}}
                 inputSearchStyle={{height: 40, fontSize: 16}}
                 style={styles.dropdown}
                 data={sorterTypeData}
-                activeColor='#444444'
+                activeColor="#444444"
                 itemContainerStyle={{backgroundColor: '#222222'}}
+                itemTextStyle={{color: 'white'}}
                 valueField="value"
                 labelField="label"
                 maxHeight={300}
@@ -335,11 +358,11 @@ const CasterScreen = () => {
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
-        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold'}}>
+        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold', color: 'white'}}>
           Caster Screen
         </Text>
         <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
-          <Text style={{color: 'black', fontSize: 25}}>+</Text>
+          <Text style={{color: 'white', fontSize: 25}}>+</Text>
         </Pressable>
       </View>
     );
@@ -383,6 +406,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+    color: 'white'
   },
   sortButton: {
     flex: 1,
@@ -407,6 +431,7 @@ const styles = StyleSheet.create({
     margin: 10,
     paddingLeft: 15,
     borderRadius: 10,
+    color: 'white',
   },
   TabButton: {
     alignItems: 'center',
@@ -420,8 +445,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#151515',
     borderBottomWidth: 1,
     height: 50,
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 });
 
 export default CasterScreen;

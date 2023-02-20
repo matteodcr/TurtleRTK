@@ -3,12 +3,13 @@ import Network from './Network';
 import Caster from './Caster';
 import {NtripClient} from 'react-native-ntrip-client';
 import waitForEvent from 'wait-for-event-promise';
+import centipedeSourceTable from "./cache";
 global.Buffer = global.Buffer || require('buffer').Buffer;
 // const net = require('react-native-tcp-socket');
 
 export const FAKE_MOUNTPOINT = 'TEST'; // TODO: find a universal fake mountpoint name
 export const ENDSOURCETABLE = 'ENDSOURCETABLE';
-export const SOURCETABLE_LINE_SEPARATOR = '\r\n';
+export const SOURCETABLE_LINE_SEPARATOR = '\n';
 export const STREAM_IDENTIFIER = 'STR';
 export const NETWORK_IDENTIFIER = 'NET';
 export const CASTER_IDENTIFIER = 'CAS';
@@ -164,12 +165,18 @@ export default class SourceTable {
 
 async function main(adress: string) {
   let st: SourceTable = new SourceTable(adress);
-  let entries: SourceTableEntries = await st.getSourceTable(
-    st.adress,
-    2101,
-    'centipede',
-    'centipede',
-  );
+  var entries;
+  if (true) {
+    entries = st.parseSourceTable(centipedeSourceTable);
+  } else {
+    let st: SourceTable = new SourceTable(adress);
+    entries = await st.getSourceTable(
+      st.adress,
+      2101,
+      'centipede',
+      'centipede',
+    );
+  }
   console.log(entries);
 }
 
