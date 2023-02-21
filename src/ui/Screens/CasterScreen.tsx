@@ -38,6 +38,55 @@ Geolocation.getCurrentPosition(
 
 const DEBUG = true;
 
+const limitCityName = (name: string) => {
+  if (name.length < 20) {
+    return name;
+  }
+  return name.substring(0, 20) + '...';
+};
+
+const itemOnPress = () => {
+  Alert.alert('TODO');
+};
+
+const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
+  <View style={styles.item}>
+    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{flexDirection: 'column'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          {country == null ? (
+            <MaterialCommunityIcons
+              name="map-marker-question-outline"
+              color={'white'}
+              size={30}
+            />
+          ) : (
+            <CountryFlag isoCode={country} size={21} />
+          )}
+          <Text style={styles.title}>{'  ' + mountpoint}</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
+            {limitCityName(identifier)}
+          </Text>
+          <Text
+            style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
+            {' '}
+            {getDistance(
+              {latitude: latitude, longitude: longitude},
+              {latitude: myLatitude, longitude: MyLongitude},
+            ) / 1000}{' '}
+            km
+          </Text>
+        </View>
+      </View>
+      <Pressable onPress={itemOnPress}>
+        <Text style={{color: 'white', fontSize: 25}}>...</Text>
+      </Pressable>
+    </View>
+  </View>
+);
+
 const CasterScreen = ({navigation}) => {
   // our hooks and enums
   enum SorterKey {
@@ -140,6 +189,7 @@ const CasterScreen = ({navigation}) => {
               ? 1
               : -1;
         }
+        break;
       case SorterKey.country:
         switch (sorting) {
           case SorterTypes.alphabetical:
@@ -180,6 +230,7 @@ const CasterScreen = ({navigation}) => {
               ? 1
               : -1;
         }
+        break;
       case SorterKey.mountpoint:
         switch (sorting) {
           case SorterTypes.alphabetical:
@@ -209,56 +260,8 @@ const CasterScreen = ({navigation}) => {
 
   const sortedBaseList = filteredBaseList.sort(sorter);
 
-  const limitCityName = (name: string) => {
-    if (name.length < 20) {
-      return name;
-    }
-    return name.substring(0, 20) + '...';
-  };
-
-  const itemOnPress = () => {
-    Alert.alert('TODO');
-  };
-
   //how is the item shown in list
-  const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
-    <View style={styles.item}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <View style={{flexDirection: 'column'}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            {country == null ? (
-              <MaterialCommunityIcons
-                name="map-marker-question-outline"
-                color={'white'}
-                size={30}
-              />
-            ) : (
-              <CountryFlag isoCode={country} size={21} />
-            )}
-            <Text style={styles.title}>{'  ' + mountpoint}</Text>
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text
-              style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
-              {limitCityName(identifier)}
-            </Text>
-            <Text
-              style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
-              {' '}
-              {getDistance(
-                {latitude: latitude, longitude: longitude},
-                {latitude: myLatitude, longitude: MyLongitude},
-              ) / 1000}{' '}
-              km
-            </Text>
-          </View>
-        </View>
-        <Pressable onPress={itemOnPress}>
-          <Text style={{color: 'white', fontSize: 25}}>...</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
+
   const renderItem = ({item}) => (
     <Item
       mountpoint={item.mountpoint}
