@@ -5,29 +5,40 @@ import {
   Text,
   TextInput,
   FlatList,
-  StatusBar,
   StyleSheet,
   Pressable,
   RefreshControl,
-  Button,
   Alert,
 } from 'react-native';
 import SourceTable from '../../fc/Caster/SourceTable';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CountryFlag from 'react-native-country-flag';
 import {Dropdown} from 'react-native-element-dropdown';
 import {getDistance} from 'geolib';
+import Geolocation from '@react-native-community/geolocation';
 import Base from '../../fc/Caster/Base';
-const net = require('react-native-tcp-socket');
 import centipedeSourceTable from '../../fc/Caster/cache';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
+
+Geolocation.getCurrentPosition(
+  position => {
+    myLatitude = position.coords.latitude;
+    MyLongitude = position.coords.longitude;
+    console.log(myLatitude, MyLongitude);
+  },
+  error => {
+    console.log(error.code, error.message);
+  },
+  {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+);
+
 const DEBUG = true;
 
-const CasterScreen = () => {
+const CasterScreen = ({navigation}) => {
   // our hooks and enums
   enum SorterKey {
     city = 'city',
@@ -69,7 +80,6 @@ const CasterScreen = () => {
     let st: SourceTable = new SourceTable('caster.centipede.fr');
     if (DEBUG) {
       var entries = st.parseSourceTable(centipedeSourceTable);
-      console.log(entries);
       setDATA(entries.baseList);
     } else {
       try {
@@ -217,7 +227,7 @@ const CasterScreen = () => {
         <View style={{flexDirection: 'column'}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             {country == null ? (
-              <Icon
+              <MaterialCommunityIcons
                 name="map-marker-question-outline"
                 color={'white'}
                 size={30}
@@ -302,7 +312,11 @@ const CasterScreen = () => {
             onPress={() => {
               cycleSortertypes(sorting);
             }}>
-            <Icon name={sortertypesIcon()} color="white" size={30} />
+            <MaterialCommunityIcons
+              name={sortertypesIcon()}
+              color="white"
+              size={30}
+            />
           </Pressable>
           <View
             style={{
@@ -314,7 +328,7 @@ const CasterScreen = () => {
             <View style={{marginLeft: 5, flex: 1}}>
               <Dropdown
                 renderRightIcon={() => (
-                  <Icon
+                  <MaterialCommunityIcons
                     name="filter-menu"
                     color="white"
                     size={28}
@@ -344,7 +358,11 @@ const CasterScreen = () => {
             onPress={() => {
               setFavsFilter(!favs);
             }}>
-            <Icon name="star" color={favs ? 'yellow' : 'darkgrey'} size={30} />
+            <MaterialCommunityIcons
+              name="star"
+              color={favs ? 'yellow' : 'darkgrey'}
+              size={30}
+            />
           </Pressable>
         </View>
       </View>
@@ -352,17 +370,23 @@ const CasterScreen = () => {
   };
 
   const HeaderMoreButton = () => {
-    Alert.alert('TODO Caster');
+    navigation.navigate('CasterPoolScreen');
   };
 
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
-        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold', color: 'white'}}>
+        <Text
+          style={{
+            marginLeft: 15,
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: 'white',
+          }}>
           Caster Screen
         </Text>
         <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
-          <Text style={{color: 'white', fontSize: 25}}>+</Text>
+          <MaterialIcons name="library-add" color={'white'} size={25} />
         </Pressable>
       </View>
     );
@@ -384,6 +408,17 @@ const CasterScreen = () => {
             refreshing={refreshList}
             onRefresh={() => {
               getCasterData;
+              Geolocation.getCurrentPosition(
+                position => {
+                  myLatitude = position.coords.latitude;
+                  MyLongitude = position.coords.longitude;
+                  console.log(myLatitude, MyLongitude);
+                },
+                error => {
+                  console.log(error.code, error.message);
+                },
+                {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+              );
             }}
           />
         }
@@ -399,14 +434,14 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: '#3F4141',
-    padding: 20,
+    padding: 12,
     marginVertical: 2,
     marginHorizontal: 10,
     borderRadius: 20,
   },
   title: {
     fontSize: 20,
-    color: 'white'
+    color: 'white',
   },
   sortButton: {
     flex: 1,
@@ -436,7 +471,7 @@ const styles = StyleSheet.create({
   TabButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 20,
   },
   headerTab: {
     backgroundColor: '#111111',

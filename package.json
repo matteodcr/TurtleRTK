@@ -12,6 +12,7 @@
     "connection": "ts-node-esm src/fc/Caster/CasterConnection.ts"
   },
   "dependencies": {
+    "@react-native-community/geolocation": "^3.0.5",
     "@react-navigation/bottom-tabs": "^6.5.5",
     "@react-navigation/stack": "^6.3.14",
     "@types/node": "^18.13.0",
@@ -28,6 +29,7 @@
     "react-native-fontawesome": "^7.0.0",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-ntrip-client": "^1.0.5",
+    "react-native-paper": "^5.2.0",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.20.0",
     "react-native-tcp-socket": "^6.0.6",

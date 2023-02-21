@@ -1,13 +1,12 @@
 import 'react-native-gesture-handler';
 
 import React from 'react';
-import {StyleSheet, View, Alert} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Appearance} from 'react-native';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
@@ -48,6 +47,13 @@ function CasterStack() {
         getComponent={() => require('./src/ui/Screens/CasterScreen').default}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="CasterPoolScreen"
+        getComponent={() =>
+          require('./src/ui/Screens/CasterPoolScreen').default
+        }
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
@@ -71,11 +77,10 @@ export default function App() {
         <Tab.Navigator
           initialRouteName="Rover"
           screenOptions={{
-            tabBarStyle:{
-              backgroundColor:'#151515'
+            tabBarStyle: {
+              backgroundColor: '#151515',
             },
-          }}
-          >
+          }}>
           <Tab.Screen
             name="Caster"
             component={CasterStack}
@@ -136,6 +141,6 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
 });

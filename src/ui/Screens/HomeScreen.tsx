@@ -5,7 +5,6 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  StatusBar,
   Alert,
 } from 'react-native';
 
@@ -38,24 +37,24 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#222',
-      },
-    TabButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 32,
-    },
-    headerTab: {
-      backgroundColor: '#111111',
-      justifyContent: 'space-between',
-      flexDirection: 'row',
-      borderBottomColor: '#151515',
-      borderBottomWidth: 1,
-      height: 50,
-      alignItems: 'center'
-    }
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#222',
+  },
+  TabButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  headerTab: {
+    backgroundColor: '#111111',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderBottomColor: '#151515',
+    borderBottomWidth: 1,
+    height: 50,
+    alignItems: 'center',
+  },
+});
 
 export default HomeScreen;
