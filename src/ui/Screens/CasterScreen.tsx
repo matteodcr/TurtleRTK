@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: '#3F4141',
-    padding: 20,
+    padding: 12,
     marginVertical: 2,
     marginHorizontal: 10,
     borderRadius: 20,

@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from 'react';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
+  Alert,
+  Pressable,
   SafeAreaView,
   SectionList,
   StatusBar,
@@ -45,6 +48,22 @@ const CasterPoolScreen = () => {
     ];
   }
 
+  function showCasterInfo(item:CasterPoolEntry){
+    return(
+      Alert.alert('TODO')
+    )
+  }
+
+  function upArrow(item:CasterPoolEntry){
+    setUnsubscribed(unsubscribed.filter((i) => i!=item));
+    setSubscribed(subscribed => [...subscribed, item]);
+  }
+
+  function downArrow(item:CasterPoolEntry){
+    setSubscribed(subscribed.filter((i) => i!=item));
+    setUnsubscribed(unsubscribed => [...unsubscribed, item]);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <SectionList
@@ -53,6 +72,18 @@ const CasterPoolScreen = () => {
         renderItem={({item}) => (
           <View style={styles.item}>
             <Text style={styles.title}>{item.sourceTable.adress}</Text>
+            <View style={{marginRight: 10, flexDirection: 'row'}}>
+              {unsubscribed.includes(item) ? 
+              <Pressable style={{padding: 3}} onPress={() => {upArrow(item)}}>
+                <MaterialIcons name="arrow-upward" color={'#5bcf70'} size={25} />
+              </Pressable> :
+              <Pressable style={{padding: 3}} onPress={() => {downArrow(item)}}>
+                <MaterialIcons name="arrow-downward" color={'#d43f35'} size={25} />
+              </Pressable>}
+              <Pressable style={{padding: 3}} onPress={() => {showCasterInfo(item)}}>
+                <MaterialIcons name="info" color={'white'} size={25} />
+              </Pressable>
+            </View>
           </View>
         )}
         renderSectionHeader={({section: {title}}) => (
@@ -66,19 +97,24 @@ const CasterPoolScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
     backgroundColor: '#222',
   },
   item: {
     backgroundColor: '#3F4141',
-    padding: 20,
+    padding: 12,
     marginVertical: 2,
     marginHorizontal: 10,
     borderRadius: 20,
+    justifyContent: 'space-between',
+    flex: 1,
+    flexDirection: 'row',
   },
   header: {
-    fontSize: 32,
+    fontSize: 25,
     color: 'white',
+    marginLeft: 15,
+    paddingTop: 20,
+    paddingBottom: 5,
   },
 
   title: {
