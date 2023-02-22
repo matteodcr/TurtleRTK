@@ -16,14 +16,6 @@ import SourceTable from '../../fc/Caster/SourceTable';
 
 const CasterPoolScreen = () => {
   const casterPool: CasterPool = new CasterPool();
-  casterPool.addCaster(
-    new SourceTable('caster.centipede.fr'),
-    'centipede',
-    'centipede',
-  );
-  casterPool.addCaster(new SourceTable('rtk2go.com'), 'centipede', 'centipede');
-  casterPool.addCaster(new SourceTable('caster.rus'), 'centipede', 'centipede');
-  casterPool.unsubscribe(new SourceTable('caster.rus'));
   const [subscribed, setSubscribed] = useState<CasterPoolEntry[]>([]);
   const [unsubscribed, setUnsubscribed] = useState<CasterPoolEntry[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -51,6 +43,11 @@ const CasterPoolScreen = () => {
   const handleFormSubmit = () => {
     // Handle form submission logic here
     toggleModal();
+    casterPool.addCaster(new SourceTable(address), username, password);
+    setSubscribed(casterPool.subscribed);
+    setUnsubscribed(casterPool.unsubscribed);
+
+
     console.log(
       `Address: ${address}, Port: ${port}, Username: ${username}, Password: ${password}`,
     );
