@@ -47,7 +47,6 @@ const CasterPoolScreen = () => {
     setSubscribed(casterPool.subscribed);
     setUnsubscribed(casterPool.unsubscribed);
 
-
     console.log(
       `Address: ${address}, Port: ${port}, Username: ${username}, Password: ${password}`,
     );
@@ -127,14 +126,8 @@ const CasterPoolScreen = () => {
         swipeDirection={['down']}
         animationIn="slideInUp"
         animationOut="slideOutDown">
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: '#222',
-            padding: 25,
-            borderRadius: 20,
-            marginTop: 65,
-          }}>
+        <View style={styles.container}>
+          <Text style={styles.header}>Ajouter un caster</Text>
           <TextInput
             style={styles.textinput}
             placeholder="Address"
@@ -166,16 +159,7 @@ const CasterPoolScreen = () => {
             secureTextEntry
           />
           <Pressable style={styles.TabButton} onPress={handleFormSubmit}>
-            <View
-              style={{
-                marginRight: 10,
-                flexDirection: 'row',
-                backgroundColor: '#3F4141',
-                padding: 12,
-                marginVertical: 2,
-                marginHorizontal: 10,
-                borderRadius: 20,
-              }}>
+            <View style={styles.item}>
               <Text style={styles.title}>Ajouter Caster</Text>
               <MaterialIcons name="add" color={'white'} size={25} />
             </View>
@@ -240,10 +224,6 @@ const styles = StyleSheet.create({
   },
   modal: {
     margin: 0, // This is the important style you need to set
-    alignItems: undefined,
-    justifyContent: undefined,
-    paddingHorizontal: 20,
-    paddingBottom: 400,
   },
   item: {
     backgroundColor: '#3F4141',
@@ -252,7 +232,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 20,
     justifyContent: 'space-between',
-    flex: 1,
+
     flexDirection: 'row',
   },
   header: {
