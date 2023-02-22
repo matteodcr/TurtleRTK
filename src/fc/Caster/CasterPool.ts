@@ -11,11 +11,11 @@ class CasterPool {
   subscribed: Array<CasterPoolEntry>; // casters dont les bases sont affichées
   unsubscribed: Array<CasterPoolEntry>; // casters enregistrés mais dont les bases sont pas affichées
 
-  constructor() {
+  constructor(subscribed, unsubscribed) {
     // TODO : Récupérer du cache
     // sinon
-    this.subscribed = [];
-    this.unsubscribed = [];
+    this.subscribed = subscribed;
+    this.unsubscribed = unsubscribed;
   }
 
   static findCaster(
@@ -56,19 +56,23 @@ class CasterPool {
   }
 
   subscribe(sourceTable: SourceTable) {
-    let index = CasterPool.findCaster(sourceTable, this.unsubscribed);
+    const index = this.unsubscribed.findIndex(
+      entry => entry.sourceTable === sourceTable,
+    );
     if (index !== -1) {
-      let el = this.unsubscribed.splice(index)[0];
-      this.subscribed.push(el);
+      const [entry] = this.unsubscribed.splice(index, 1);
+      this.subscribed.push(entry);
       return;
     }
     throw new Error('Caster pas unsubscribed');
   }
   unsubscribe(sourceTable: SourceTable) {
-    let index = CasterPool.findCaster(sourceTable, this.subscribed);
+    const index = this.subscribed.findIndex(
+      entry => entry.sourceTable === sourceTable,
+    );
     if (index !== -1) {
-      let el = this.subscribed.splice(index)[0];
-      this.unsubscribed.push(el);
+      const [entry] = this.subscribed.splice(index, 1);
+      this.unsubscribed.push(entry);
       return;
     }
     throw new Error('Caster pas subscribed');

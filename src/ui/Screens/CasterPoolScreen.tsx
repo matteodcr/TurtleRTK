@@ -15,9 +15,9 @@ import CasterPool, {CasterPoolEntry} from '../../fc/Caster/CasterPool';
 import SourceTable from '../../fc/Caster/SourceTable';
 
 const CasterPoolScreen = () => {
-  const casterPool: CasterPool = new CasterPool();
-  const [subscribed, setSubscribed] = useState<CasterPoolEntry[]>([]);
-  const [unsubscribed, setUnsubscribed] = useState<CasterPoolEntry[]>([]);
+  const [casterPool, setCasterPool] = useState<CasterPool>(
+    new CasterPool([], []),
+  );
   const [isModalVisible, setModalVisible] = useState(false);
   const [address, setAddress] = useState('');
   const [port, setPort] = useState('');
@@ -44,9 +44,8 @@ const CasterPoolScreen = () => {
     // Handle form submission logic here
     toggleModal();
     casterPool.addCaster(new SourceTable(address), username, password);
-    setSubscribed(casterPool.subscribed);
-    setUnsubscribed(casterPool.unsubscribed);
-
+    setCasterPool(casterPool);
+    console.log(casterPool);
     console.log(
       `Address: ${address}, Port: ${port}, Username: ${username}, Password: ${password}`,
     );
@@ -58,8 +57,7 @@ const CasterPoolScreen = () => {
 
   useEffect(() => {
     try {
-      setSubscribed(casterPool.subscribed);
-      setUnsubscribed(casterPool.unsubscribed);
+      setCasterPool(casterPool);
     } catch (e) {
       console.log(e);
     }
@@ -69,11 +67,11 @@ const CasterPoolScreen = () => {
     return [
       {
         title: 'Active casters',
-        data: subscribed,
+        data: casterPool.subscribed,
       },
       {
         title: 'Saved casters',
-        data: unsubscribed,
+        data: casterPool.unsubscribed,
       },
     ];
   }
@@ -83,13 +81,19 @@ const CasterPoolScreen = () => {
   }
 
   function upArrow(item: CasterPoolEntry) {
-    setUnsubscribed(unsubscribed.filter(i => i != item));
-    setSubscribed(subscribed => [...subscribed, item]);
+    console.log(casterPool);
+    casterPool.subscribe(item.sourceTable);
+    setCasterPool(
+      new CasterPool(casterPool.subscribed, casterPool.unsubscribed),
+    );
   }
 
   function downArrow(item: CasterPoolEntry) {
-    setSubscribed(subscribed.filter(i => i != item));
-    setUnsubscribed(unsubscribed => [...unsubscribed, item]);
+    console.log(casterPool);
+    casterPool.unsubscribe(item.sourceTable);
+    setCasterPool(
+      new CasterPool(casterPool.subscribed, casterPool.unsubscribed),
+    );
   }
 
   const HeaderMoreButton = () => {
@@ -174,7 +178,10 @@ const CasterPoolScreen = () => {
           <View style={styles.item}>
             <Text style={styles.title}>{item.sourceTable.adress}</Text>
             <View style={{marginRight: 10, flexDirection: 'row'}}>
-              {unsubscribed.includes(item) ? (
+              {CasterPool.findCaster(
+                item.sourceTable,
+                casterPool.unsubscribed,
+              ) !== -1 ? (
                 <Pressable
                   style={{padding: 3}}
                   onPress={() => {
@@ -232,7 +239,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 20,
     justifyContent: 'space-between',
-
     flexDirection: 'row',
   },
   header: {
