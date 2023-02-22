@@ -72,10 +72,12 @@ const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
           <Text
             style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
             {' '}
-            {getDistance(
-              {latitude: latitude, longitude: longitude},
-              {latitude: myLatitude, longitude: MyLongitude},
-            ) / 1000}{' '}
+            {Math.floor(
+              getDistance(
+                {latitude: latitude, longitude: longitude},
+                {latitude: myLatitude, longitude: MyLongitude},
+              ) / 1000,
+            )}{' '}
             km
           </Text>
         </View>
