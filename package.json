@@ -23,6 +23,7 @@
     "link": "^1.5.1",
     "react": "18.2.0",
     "react-native": "^0.71.3",
+    "react-native-ble-manager": "^8.8.0",
     "react-native-ble-plx": "^2.0.3",
     "react-native-country-flag": "^1.1.9",
     "react-native-element-dropdown": "^2.6.0",

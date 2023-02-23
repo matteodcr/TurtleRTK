@@ -9,6 +9,7 @@ import {
   FlatList,
   LogBox,
 } from 'react-native';
+import { requestLocationPermission } from '../../../App';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 LogBox.ignoreAllLogs();
@@ -19,6 +20,11 @@ const RoverScreen = () => {
   const [devices, setDevices] = useState<Device[]>([]);
 
   async function reloadStateText(){
+    try {
+      requestLocationPermission();
+    } catch (e) {
+      console.log(e);
+    }
     setState(await BLEmanager.state());
     setDevices([]);
     BLEmanager.startDeviceScan(null, null, (error, device) => {

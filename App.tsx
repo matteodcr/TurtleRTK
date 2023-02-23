@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, PermissionsAndroid, Alert} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
@@ -70,7 +70,27 @@ function RoverStack() {
   );
 }
 
+export async function requestLocationPermission() 
+{
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    )
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    } else {
+      Alert.alert("You won't be able to use location and Bluetooth");
+    }
+  } catch (err) {
+    console.warn(err)
+  }
+}
+
 export default function App() {
+  try {
+    requestLocationPermission();
+  } catch (e) {
+    console.log(e);
+  }
   return (
     <View style={styles.container}>
       <NavigationContainer>
