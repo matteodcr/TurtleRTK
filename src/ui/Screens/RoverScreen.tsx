@@ -1,67 +1,63 @@
 import React, {useEffect, useState} from 'react';
-import { BleManager, Device, State } from 'react-native-ble-plx';
+import BleManager from 'react-native-ble-manager';
 import {
   SafeAreaView,
   View,
   Text,
   Pressable,
   StyleSheet,
-  FlatList,
   LogBox,
 } from 'react-native';
-import { requestLocationPermission } from '../../../App';
+import { Observable, from } from 'rxjs';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']);
 LogBox.ignoreAllLogs();
 
 const RoverScreen = () => {
-  let BLEmanager = new BleManager();
-  const [state, setState] = useState(State.PoweredOff);
-  const [devices, setDevices] = useState<Device[]>([]);
+  const [devices, setDevices] = useState<Array<any>>([]);
 
-  async function reloadStateText(){
-    try {
-      requestLocationPermission();
-    } catch (e) {
-      console.log(e);
-    }
-    setState(await BLEmanager.state());
-    setDevices([]);
-    BLEmanager.startDeviceScan(null, null, (error, device) => {
-      if (error) {
-        // Handle error (scanning will be stopped automatically)
-        console.log(error);
-      }
-      else if(device!=null){
-        devices.push(device);
-        console.log(device.name)
-      }
-    })
-    console.log(devices);
-  }
-
-  const HeaderMoreButton = () => {
-    reloadStateText();
+  const scanDevices = () => {
+    BleManager.scan([], 5, true).then(() => {
+      console.log('Scan started');
+    }).catch((error) => {
+      console.log('Scan error:', error);
+    });
   };
+  
+  useEffect(() => {
+    // Initialise la librairie BLE Manager
+    BleManager.start({ showAlert: false }).then(() => {
+      // Success code
+      console.log("Module initialized");
+    });
 
-  const Item = ({item}) => (
-    <View style={styles.item}>
-      <Text>{item.name}</Text>
-    </View>
-  );
-  const renderItem = ({item}) => (
-    <Item
-      item = {item}
-    />
-  );
+    // Scanner les périphériques BLE à proximité
+    const scanSubscription = from(
+      BleManager.scan([], 5, true)
+    ).subscribe({
+      next: (device) => {
+        console.log('Device found:', device);
+        setDevices((prevDevices) => [...prevDevices, device]);
+      },
+      error: (error) => {
+        console.log('Scan error:', error);
+      },
+    });
+
+    // Déconnexion des périphériques lors de la fermeture de l'application
+    return () => {
+      scanSubscription?.unsubscribe();
+      devices.forEach((device) => BleManager.disconnect(device.id));
+    };
+  }, []);
 
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
-        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold'}}>
+        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold', color: 'white'}}>
           Rover Screen
         </Text>
-        <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
+        <Pressable style={styles.TabButton} onPress={scanDevices}>
           <Text style={{color: 'white', fontSize: 25}}>+</Text>
         </Pressable>
       </View>
@@ -73,11 +69,19 @@ const RoverScreen = () => {
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
       <View>
-        <Text>{state}</Text>
-        <FlatList
-          data={devices}
-          renderItem={renderItem}
-        />
+        <Text style={{color: 'white'}}>Périphériques BLE à proximité :</Text>
+        {devices.map((device) => {
+          if (!device) {
+            return null;
+          }
+
+          return (
+            <View key={device.id} style={styles.deviceContainer}>
+              <Text style={styles.deviceName}>{device.name}</Text>
+              <Text style={styles.deviceId}>{device.id}</Text>
+            </View>
+          );
+        })}
       </View>
     </SafeAreaView>
   );
@@ -108,7 +112,18 @@ const styles = StyleSheet.create({
       borderBottomWidth: 1,
       height: 50,
       alignItems: 'center'
-    }
+    },
+    deviceContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: 5,
+    },
+    deviceName: {
+      marginRight: 10,
+    },
+    deviceId: {
+      color: 'gray',
+    },
   });
 
 export default RoverScreen;

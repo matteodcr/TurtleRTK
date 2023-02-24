@@ -36,6 +36,7 @@
     "react-native-tcp-socket": "^6.0.6",
     "react-native-vector-icons": "^9.2.0",
     "react-navigation": "^4.4.4",
+    "rxjs": "^7.8.0",
     "wait-for-event-promise": "^1.1.0"
   },
   "devDependencies": {

@@ -85,9 +85,36 @@ export async function requestLocationPermission()
   }
 }
 
+async function requestBluetoothScanPermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+      {
+        title: 'Bluetooth Scan Permission',
+        message: 'This app needs access to Bluetooth Scan in order to scan nearby Bluetooth devices.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Bluetooth Scan permission granted');
+    } else {
+      console.log('Bluetooth Scan permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
 export default function App() {
   try {
     requestLocationPermission();
+  } catch (e) {
+    console.log(e);
+  }
+  try {
+    requestBluetoothScanPermission();
   } catch (e) {
     console.log(e);
   }
