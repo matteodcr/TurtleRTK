@@ -23,6 +23,8 @@
     "geolib": "^3.3.3",
     "jtest": "^0.0.1",
     "link": "^1.5.1",
+    "mobx": "^6.8.0",
+    "mobx-react-lite": "^3.4.0",
     "react": "18.2.0",
     "react-native": "^0.71.3",
     "react-native-country-flag": "^1.1.9",

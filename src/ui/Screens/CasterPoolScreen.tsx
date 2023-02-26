@@ -10,15 +10,14 @@ import {
   View,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
+import {CasterPool, CasterPoolEntry, useStoreContext} from './Store';
 
 import Modal from 'react-native-modal';
-import CasterPool, {CasterPoolEntry} from '../../fc/Caster/CasterPool';
 import SourceTable from '../../fc/Caster/SourceTable';
+import {observer} from 'mobx-react-lite';
 
-const CasterPoolScreen = () => {
-  const [casterPool, setCasterPool] = useState<CasterPool>(
-    new CasterPool([], []),
-  );
+export default observer(function CasterPoolScreen() {
+  const store = useStoreContext();
   const [isModalVisible, setModalVisible] = useState(false);
   const [address, setAddress] = useState('');
   const [port, setPort] = useState('');
@@ -44,9 +43,8 @@ const CasterPoolScreen = () => {
   const handleFormSubmit = () => {
     // Handle form submission logic here
     toggleModal();
-    casterPool.addCaster(new SourceTable(address), username, password);
-    setCasterPool(casterPool);
-    console.log(casterPool);
+    store.casterPool.addCaster(new SourceTable(address), username, password);
+    console.log(store.casterPool);
     console.log(
       `Address: ${address}, Port: ${port}, Username: ${username}, Password: ${password}`,
     );
@@ -56,45 +54,29 @@ const CasterPoolScreen = () => {
     setModalVisible(!isModalVisible);
   };
 
-  useEffect(() => {
-    try {
-      setCasterPool(casterPool);
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
-
-  function formatData() {
-    return [
-      {
-        title: 'Active casters',
-        data: casterPool.subscribed,
-      },
-      {
-        title: 'Saved casters',
-        data: casterPool.unsubscribed,
-      },
-    ];
-  }
+  const formatData = [
+    {
+      title: 'Active casters',
+      data: store.casterPool.subscribed,
+    },
+    {
+      title: 'Saved casters',
+      data: store.casterPool.unsubscribed,
+    },
+  ];
 
   function showCasterInfo(item) {
     return Alert.alert('TODO');
   }
 
   function upArrow(item: CasterPoolEntry) {
-    console.log(casterPool);
-    casterPool.subscribe(item.sourceTable);
-    setCasterPool(
-      new CasterPool(casterPool.subscribed, casterPool.unsubscribed),
-    );
+    console.log(store.casterPool);
+    store.casterPool.subscribe(item.sourceTable);
   }
 
   function downArrow(item: CasterPoolEntry) {
-    console.log(casterPool);
-    casterPool.unsubscribe(item.sourceTable);
-    setCasterPool(
-      new CasterPool(casterPool.subscribed, casterPool.unsubscribed),
-    );
+    console.log(store.casterPool);
+    store.casterPool.unsubscribe(item.sourceTable);
   }
 
   const HeaderMoreButton = () => {
@@ -173,15 +155,15 @@ const CasterPoolScreen = () => {
       </Modal>
 
       <SectionList
-        sections={formatData()}
+        sections={store.casterPool.formatData}
         keyExtractor={(item, index) => item.sourceTable.adress + index}
         renderItem={({item}) => (
           <View style={styles.item}>
             <Text style={styles.title}>{item.sourceTable.adress}</Text>
             <View style={{marginRight: 10, flexDirection: 'row'}}>
-              {CasterPool.findCaster(
+              {store.casterPool.findCaster(
                 item.sourceTable,
-                casterPool.unsubscribed,
+                store.casterPool.unsubscribed,
               ) !== -1 ? (
                 <Pressable
                   style={{padding: 3}}
@@ -223,7 +205,7 @@ const CasterPoolScreen = () => {
       />
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -289,5 +271,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-export default CasterPoolScreen;

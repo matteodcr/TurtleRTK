@@ -1,5 +1,4 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
 import 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
@@ -10,6 +9,7 @@ import {createMaterialBottomTabNavigator} from '@react-navigation/material-botto
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
+import {useStoreContext} from './src/ui/Screens/Store';
 
 function createIcon(iconName: string) {
   return ({color}: {color: string}) => (
@@ -120,9 +120,3 @@ export default function App() {
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

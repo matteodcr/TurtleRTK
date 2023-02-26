@@ -1,4 +1,6 @@
-import SourceTable from './SourceTable';
+import {createContext, useContext} from 'react';
+import {makeAutoObservable, observable} from 'mobx';
+import SourceTable from '../../fc/Caster/SourceTable';
 
 export interface CasterPoolEntry {
   sourceTable: SourceTable;
@@ -7,7 +9,7 @@ export interface CasterPoolEntry {
   password: string;
 }
 
-class CasterPool {
+export class CasterPool {
   subscribed: Array<CasterPoolEntry>; // casters dont les bases sont affichées
   unsubscribed: Array<CasterPoolEntry>; // casters enregistrés mais dont les bases sont pas affichées
 
@@ -16,12 +18,13 @@ class CasterPool {
     // sinon
     this.subscribed = subscribed;
     this.unsubscribed = unsubscribed;
+    makeAutoObservable(this, {
+      subscribed: observable.shallow,
+      unsubscribed: observable.shallow,
+    });
   }
 
-  static findCaster(
-    sourceTable: SourceTable,
-    list: Array<CasterPoolEntry>,
-  ): number {
+  findCaster(sourceTable: SourceTable, list: Array<CasterPoolEntry>): number {
     for (const [index, value] of list.entries()) {
       if (value.sourceTable.adress === sourceTable.adress) {
         return index;
@@ -32,8 +35,8 @@ class CasterPool {
 
   addCaster(sourceTable: SourceTable, username: string, password: string) {
     if (
-      CasterPool.findCaster(sourceTable, this.subscribed) === -1 &&
-      CasterPool.findCaster(sourceTable, this.unsubscribed) === -1
+      this.findCaster(sourceTable, this.subscribed) === -1 &&
+      this.findCaster(sourceTable, this.unsubscribed) === -1
     ) {
       this.subscribed.push({
         sourceTable,
@@ -45,11 +48,11 @@ class CasterPool {
     throw new Error('Caster déja dans la liste.');
   }
   removeCaster(sourceTable: SourceTable) {
-    let index = CasterPool.findCaster(sourceTable, this.subscribed);
+    let index = this.findCaster(sourceTable, this.subscribed);
     if (index !== -1) {
       this.subscribed.splice(index);
     }
-    index = CasterPool.findCaster(sourceTable, this.unsubscribed);
+    index = this.findCaster(sourceTable, this.unsubscribed);
     if (index !== -1) {
       this.unsubscribed.splice(index, 1);
     }
@@ -77,6 +80,32 @@ class CasterPool {
     }
     throw new Error('Caster pas subscribed');
   }
+
+  get formatData() {
+    return [
+      {
+        title: 'Active casters',
+        data: this.subscribed.slice(),
+      },
+      {
+        title: 'Saved casters',
+        data: this.unsubscribed.slice(),
+      },
+    ];
+  }
 }
 
-export default CasterPool;
+export class AppStore {
+  casterPool: CasterPool;
+
+  constructor(casterPool: CasterPool) {
+    this.casterPool = casterPool;
+    makeAutoObservable(this);
+  }
+}
+
+const StoreContext = createContext<AppStore>(
+  new AppStore(new CasterPool([], [])),
+);
+
+export const useStoreContext = () => useContext(StoreContext);
