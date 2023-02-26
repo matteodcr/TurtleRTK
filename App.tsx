@@ -1,141 +1,123 @@
-import 'react-native-gesture-handler';
-
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import {StyleSheet} from 'react-native';
+import 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Provider, MD3DarkTheme} from 'react-native-paper';
+import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+function createIcon(iconName: string) {
+  return ({color}: {color: string}) => (
+    <MaterialCommunityIcons name={iconName} color={color} size={26} />
+  );
+}
 
-function SettingsStack() {
+const SettingsStack = createStackNavigator();
+function SettingsRoute() {
   return (
-    <Stack.Navigator initialRouteName="Settings">
-      <Stack.Screen
+    <SettingsStack.Navigator initialRouteName="Settings">
+      <SettingsStack.Screen
         name="SettingsScr"
         component={SettingsScreen}
         options={{headerShown: false}}
       />
-    </Stack.Navigator>
+    </SettingsStack.Navigator>
   );
 }
 
-function RecordingStack() {
+const RecordingStack = createStackNavigator();
+function RecordingRoute() {
   return (
-    <Stack.Navigator initialRouteName="Recording">
-      <Stack.Screen
+    <RecordingStack.Navigator initialRouteName="Recording">
+      <RecordingStack.Screen
         name="RecordingScr"
         component={RecordingScreen}
         options={{headerShown: false}}
       />
-    </Stack.Navigator>
+    </RecordingStack.Navigator>
   );
 }
 
-function CasterStack() {
+const CasterStack = createStackNavigator();
+function CasterRoute() {
   return (
-    <Stack.Navigator initialRouteName="Caster">
-      <Stack.Screen
+    <CasterStack.Navigator initialRouteName="Caster">
+      <CasterStack.Screen
         name="CasterScr"
         getComponent={() => require('./src/ui/Screens/CasterScreen').default}
         options={{headerShown: false}}
       />
-      <Stack.Screen
+      <CasterStack.Screen
         name="CasterPoolScreen"
         getComponent={() =>
           require('./src/ui/Screens/CasterPoolScreen').default
         }
         options={{headerShown: false}}
       />
-    </Stack.Navigator>
+    </CasterStack.Navigator>
   );
 }
 
-function RoverStack() {
+const RoverStack = createStackNavigator();
+function RoverRoute() {
   return (
-    <Stack.Navigator initialRouteName="Rover">
-      <Stack.Screen
+    <RoverStack.Navigator initialRouteName="Rover">
+      <RoverStack.Screen
         name="RoverScr"
         component={RoverScreen}
         options={{headerShown: false}}
       />
-    </Stack.Navigator>
+    </RoverStack.Navigator>
   );
 }
 
+const Tab = createMaterialBottomTabNavigator();
+
 export default function App() {
   return (
-    <View style={styles.container}>
+    <Provider theme={MD3DarkTheme}>
       <NavigationContainer>
-        <Tab.Navigator
-          initialRouteName="Rover"
-          screenOptions={{
-            tabBarStyle: {
-              backgroundColor: '#151515',
-            },
-          }}>
+        <Tab.Navigator initialRouteName="Caster">
           <Tab.Screen
             name="Caster"
-            component={CasterStack}
+            component={CasterRoute}
             options={{
-              headerShown: false,
-              tabBarIcon: ({color, size}) => (
-                <MaterialCommunityIcons
-                  name="server-network"
-                  color={color}
-                  size={size}
-                />
-              ),
+              tabBarLabel: 'Caster',
+              tabBarIcon: createIcon('server-network'),
             }}
           />
           <Tab.Screen
             name="Rover"
-            component={RoverStack}
+            component={RoverRoute}
             options={{
-              headerShown: false,
-              tabBarIcon: ({color, size}) => (
-                <MaterialCommunityIcons
-                  name="antenna"
-                  color={color}
-                  size={size}
-                />
-              ),
+              tabBarLabel: 'Rover',
+              tabBarIcon: createIcon('antenna'),
             }}
           />
           <Tab.Screen
-            name="Recording"
-            component={RecordingStack}
+            name="Recordings"
+            component={RecordingRoute}
             options={{
-              headerShown: false,
-              tabBarIcon: ({color, size}) => (
-                <MaterialCommunityIcons
-                  name="content-save"
-                  color={color}
-                  size={size}
-                />
-              ),
+              tabBarLabel: 'Recordings',
+              tabBarIcon: createIcon('crosshairs-gps'),
             }}
           />
           <Tab.Screen
             name="Settings"
-            component={SettingsStack}
+            component={SettingsRoute}
             options={{
-              headerShown: false,
-              tabBarIcon: ({color, size}) => (
-                <AntDesign name="setting" color={color} size={size} />
-              ),
+              tabBarLabel: 'Settings',
+              tabBarIcon: createIcon('cog'),
             }}
           />
         </Tab.Navigator>
       </NavigationContainer>
-    </View>
+    </Provider>
   );
 }
 

@@ -4,22 +4,23 @@ import {
   View,
   Text,
   TextInput,
-  FlatList,
   StyleSheet,
   Pressable,
   RefreshControl,
   Alert,
 } from 'react-native';
-import SourceTable from '../../fc/Caster/SourceTable';
+import {Dropdown} from 'react-native-element-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {FlashList} from '@shopify/flash-list';
 import CountryFlag from 'react-native-country-flag';
-import {Dropdown} from 'react-native-element-dropdown';
+
 import {getDistance} from 'geolib';
 import Geolocation from '@react-native-community/geolocation';
+
 import Base from '../../fc/Caster/Base';
+import SourceTable from '../../fc/Caster/SourceTable';
 import centipedeSourceTable from '../../fc/Caster/cache';
-global.Buffer = global.Buffer || require('buffer').Buffer;
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
@@ -36,7 +37,7 @@ Geolocation.getCurrentPosition(
   {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
 );
 
-const DEBUG = true;
+const DEBUG = false;
 
 const limitCityName = (name: string) => {
   if (name.length < 20) {
@@ -404,10 +405,11 @@ const CasterScreen = ({navigation}) => {
       {renderFilterView()}
 
       {/*Filtered list display*/}
-      <FlatList
+      <FlashList
         data={sortedBaseList}
         renderItem={renderItem}
         keyExtractor={item => item.key}
+        estimatedItemSize={100}
         refreshControl={
           <RefreshControl
             refreshing={refreshList}

@@ -7,9 +7,10 @@ import {
   SectionList,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
+import {TextInput} from 'react-native-paper';
+
 import Modal from 'react-native-modal';
 import CasterPool, {CasterPoolEntry} from '../../fc/Caster/CasterPool';
 import SourceTable from '../../fc/Caster/SourceTable';
@@ -133,31 +134,31 @@ const CasterPoolScreen = () => {
         <View style={styles.container}>
           <Text style={styles.header}>Ajouter un caster</Text>
           <TextInput
+            mode="outlined"
             style={styles.textinput}
-            placeholder="Address"
-            placeholderTextColor="white"
+            label="Address"
             value={address}
             onChangeText={handleAddressChange}
           />
           <TextInput
+            mode="outlined"
             style={styles.textinput}
-            placeholder="Port"
-            placeholderTextColor="white"
+            label="Port"
             value={port}
             onChangeText={handlePortChange}
             keyboardType="numeric"
           />
           <TextInput
+            mode="outlined"
             style={styles.textinput}
-            placeholder="Username"
-            placeholderTextColor="white"
+            label="Username"
             value={username}
             onChangeText={handleUsernameChange}
           />
           <TextInput
+            mode="outlined"
             style={styles.textinput}
-            placeholder="Password"
-            placeholderTextColor="white"
+            label="Password"
             value={password}
             onChangeText={handlePasswordChange}
             secureTextEntry
@@ -271,13 +272,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   textinput: {
-    height: 50,
-    borderColor: '#919191',
-    borderWidth: 1,
     margin: 10,
-    paddingLeft: 15,
-    borderRadius: 10,
-    color: 'white',
   },
   TabButton: {
     alignItems: 'center',
