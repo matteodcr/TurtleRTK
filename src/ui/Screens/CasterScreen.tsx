@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   View,
   Text,
-  TextInput,
   StyleSheet,
   Pressable,
   RefreshControl,
@@ -21,6 +20,7 @@ import Geolocation from '@react-native-community/geolocation';
 import Base from '../../fc/Caster/Base';
 import SourceTable from '../../fc/Caster/SourceTable';
 import centipedeSourceTable from '../../fc/Caster/cache';
+import { Searchbar } from 'react-native-paper';
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
@@ -305,11 +305,12 @@ const CasterScreen = ({navigation}) => {
     return (
       <View>
         {/*Research bar*/}
-        <TextInput
+        <Searchbar
           style={styles.textinput}
           onChangeText={newText => onChangeSearch(newText)}
           placeholder="Caster identifier ..."
           placeholderTextColor={'white'}
+          value={searchText}
         />
 
         <View style={{marginBottom: 15, flexDirection: 'row'}}>
