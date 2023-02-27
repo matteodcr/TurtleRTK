@@ -40,7 +40,7 @@ export default class SourceTable {
     port?: number,
     username?: string,
     password?: string,
-  ): Promise<SourceTableEntries> {
+  ) {
     let rawSourceTable = '';
     if (adress == null) {
       adress = this.adress;
@@ -88,10 +88,7 @@ export default class SourceTable {
       });
 
       client._connect();
-      const entries: SourceTableEntries = this.parseSourceTable(
-        await rawSourceTablePromise,
-      );
-      return entries;
+      this.entries = this.parseSourceTable(await rawSourceTablePromise);
     } catch (error) {
       console.error(error);
       throw new Error('Impossible to get the Source Table');

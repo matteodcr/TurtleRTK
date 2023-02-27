@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   Alert,
@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
-import {CasterPool, CasterPoolEntry, useStoreContext} from './Store';
+import {CasterPoolEntry, useStoreContext} from './Store';
 
 import Modal from 'react-native-modal';
 import SourceTable from '../../fc/Caster/SourceTable';
@@ -41,29 +41,16 @@ export default observer(function CasterPoolScreen() {
   };
 
   const handleFormSubmit = () => {
-    // Handle form submission logic here
     toggleModal();
-    store.casterPool.addCaster(new SourceTable(address), username, password);
+    var sourceTable: SourceTable = new SourceTable(address);
+    store.casterPool.addCaster(sourceTable, +port, username, password);
+    console.log(store.casterPool.subscribed);
     console.log(store.casterPool);
-    console.log(
-      `Address: ${address}, Port: ${port}, Username: ${username}, Password: ${password}`,
-    );
   };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-
-  const formatData = [
-    {
-      title: 'Active casters',
-      data: store.casterPool.subscribed,
-    },
-    {
-      title: 'Saved casters',
-      data: store.casterPool.unsubscribed,
-    },
-  ];
 
   function showCasterInfo(item) {
     return Alert.alert('TODO');

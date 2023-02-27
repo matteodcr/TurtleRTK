@@ -1,9 +1,11 @@
 import {createContext, useContext} from 'react';
-import {makeAutoObservable, observable} from 'mobx';
+import {makeAutoObservable, observable, runInAction} from 'mobx';
 import SourceTable from '../../fc/Caster/SourceTable';
+import Base from '../../fc/Caster/Base';
 
 export interface CasterPoolEntry {
   sourceTable: SourceTable;
+  port: number;
   // name: string; // get with the sourcetable and to be print on UI
   username: string;
   password: string;
@@ -33,16 +35,28 @@ export class CasterPool {
     return -1;
   }
 
-  addCaster(sourceTable: SourceTable, username: string, password: string) {
+  async addCaster(
+    sourceTable: SourceTable,
+    port: number,
+    username: string,
+    password: string,
+  ) {
     if (
       this.findCaster(sourceTable, this.subscribed) === -1 &&
       this.findCaster(sourceTable, this.unsubscribed) === -1
     ) {
-      this.subscribed.push({
-        sourceTable,
-        username,
-        password,
-      });
+      sourceTable
+        .getSourceTable(sourceTable.adress, port, username, password)
+        .then(() =>
+          runInAction(() =>
+            this.subscribed.push({
+              sourceTable,
+              port,
+              username,
+              password,
+            }),
+          ),
+        );
       return;
     }
     throw new Error('Caster déja dans la liste.');
@@ -95,17 +109,39 @@ export class CasterPool {
   }
 }
 
+export class BasePool {
+  baseList: Base[];
+  favoriteList: string[];
+
+  constructor() {
+    this.baseList = [];
+    this.favoriteList = [];
+    makeAutoObservable(this, {
+      baseList: observable.shallow,
+      favoriteList: observable.shallow,
+    });
+  }
+
+  async generate(casterPool: CasterPool) {
+    for (var i = 0; i < casterPool.subscribed.length; i++) {
+      var caster = casterPool.subscribed[i];
+      this.baseList.concat(caster.sourceTable.entries.baseList);
+    }
+  }
+}
+
 export class AppStore {
   casterPool: CasterPool;
+  basePool: BasePool;
 
-  constructor(casterPool: CasterPool) {
+  constructor(casterPool: CasterPool, basePool: BasePool) {
     this.casterPool = casterPool;
-    makeAutoObservable(this);
+    this.basePool = basePool;
   }
 }
 
 const StoreContext = createContext<AppStore>(
-  new AppStore(new CasterPool([], [])),
+  new AppStore(new CasterPool([], []), new BasePool()),
 );
 
 export const useStoreContext = () => useContext(StoreContext);

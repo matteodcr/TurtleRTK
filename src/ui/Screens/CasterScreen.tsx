@@ -17,10 +17,9 @@ import CountryFlag from 'react-native-country-flag';
 import {getDistance} from 'geolib';
 import Geolocation from '@react-native-community/geolocation';
 
-import Base from '../../fc/Caster/Base';
-import SourceTable from '../../fc/Caster/SourceTable';
-import centipedeSourceTable from '../../fc/Caster/cache';
-import { Searchbar } from 'react-native-paper';
+import {Searchbar} from 'react-native-paper';
+import {useStoreContext} from './Store';
+import {observer} from 'mobx-react-lite';
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
@@ -36,8 +35,6 @@ Geolocation.getCurrentPosition(
   },
   {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
 );
-
-const DEBUG = false;
 
 const limitCityName = (name: string) => {
   if (name.length < 20) {
@@ -90,7 +87,11 @@ const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
   </View>
 );
 
-const CasterScreen = ({navigation}) => {
+interface Props {
+  navigation: any
+}
+
+export default observer(function CasterScreen({navigation}:Props) {
   // our hooks and enums
   enum SorterKey {
     city = 'city',
@@ -102,7 +103,7 @@ const CasterScreen = ({navigation}) => {
     alphabetical,
     distance,
   }
-  const [DATA, setDATA] = useState<Base[]>([]); //data from sourcetable
+  const store = useStoreContext();
   const [searchText, onChangeSearch] = useState('');
   const [favs, setFavsFilter] = useState(true); //show favorites
   const [sorting, setsortingFilter] = useState(SorterTypes.distance); //sorter type selected
@@ -117,36 +118,6 @@ const CasterScreen = ({navigation}) => {
     {label: 'Country', value: SorterKey.country},
     {label: 'Mountpoint', value: SorterKey.mountpoint},
   ];
-
-  // refreshing datas
-  useEffect(() => {
-    try {
-      getCasterData();
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
-
-  //Allows caster screen to refresh its datas
-  async function getCasterData() {
-    let st: SourceTable = new SourceTable('caster.centipede.fr');
-    if (DEBUG) {
-      var entries = st.parseSourceTable(centipedeSourceTable);
-      setDATA(entries.baseList);
-    } else {
-      try {
-        st.entries = await st.getSourceTable(
-          'caster.centipede.fr',
-          2101,
-          'centipede',
-          'centipede',
-        );
-      } catch (e) {
-        console.log(e);
-      }
-      setDATA(st.entries.baseList);
-    }
-  }
 
   //filter for bases
   const filter = item => {
@@ -164,7 +135,7 @@ const CasterScreen = ({navigation}) => {
     }
   };
 
-  const filteredBaseList = DATA.filter(filter);
+  const filteredBaseList = store.basePool.baseList.filter(filter);
 
   const sorter = (Base1, Base2) => {
     switch (selectedSorterType) {
@@ -414,8 +385,8 @@ const CasterScreen = ({navigation}) => {
         refreshControl={
           <RefreshControl
             refreshing={refreshList}
-            onRefresh={() => {
-              getCasterData;
+            onRefresh={async () => {
+              await store.basePool.generate(store.casterPool);
               Geolocation.getCurrentPosition(
                 position => {
                   myLatitude = position.coords.latitude;
@@ -433,7 +404,7 @@ const CasterScreen = ({navigation}) => {
       />
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -491,5 +462,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-export default CasterScreen;
