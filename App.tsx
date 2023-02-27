@@ -113,11 +113,11 @@ export default function App() {
   } catch (e) {
     console.log(e);
   }
-  try {
+  /*try {
     requestBluetoothScanPermission();
   } catch (e) {
     console.log(e);
-  }
+  }*/
   return (
     <View style={styles.container}>
       <NavigationContainer>

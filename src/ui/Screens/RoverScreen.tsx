@@ -6,42 +6,136 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  LogBox,
   FlatList,
+  NativeEventEmitter,
+  NativeModules,
+  PermissionsAndroid
 } from 'react-native';
-import { Observable, from } from 'rxjs';
 
-LogBox.ignoreLogs(['new NativeEventEmitter']);
-LogBox.ignoreAllLogs();
+const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
 const RoverScreen = () => {
-  const [devices, setDevices] = useState<Array<PeripheralInfo>>([]);
+  const [peripherals, setPeripherals] = useState(new Map<string, PeripheralInfo>());
+  const [isScanning, setIsScanning] = useState<boolean>(false);
+
+  const updatePeripherals = (key, value) => {
+    setPeripherals(new Map(peripherals.set(key, value)));
+  };
 
   const scanDevices = () => {
-    from(
-      BleManager.scan([], 5, true)
-    ).subscribe({
-      next: (device) => {
-        console.log('Device found:', device);
-        if(device!=null){
-          setDevices((prevDevices) => prevDevices.concat(device));
-        }
-        console.log(devices);
-      },
-      error: (error) => {
-        console.log('Scan error:', error);
-      },
-    });
+    console.log("peripherals : "+Array.from(peripherals.values()));
+    if (!isScanning) {
+      try {
+        console.log('Scanning...');
+        setIsScanning(true);
+        BleManager.scan([], 5, false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const handleStopScan = () => {
+    setIsScanning(false);
+    console.log('Scan is stopped');
+    console.log('Got ble peripheral', peripherals);
+  };
+
+  const handleDisconnectedPeripheral = data => {
+    let peripheral = peripherals.get(data.peripheral);
+    if (peripheral) {
+      peripheral.connected = false;
+      updatePeripherals(peripheral.id, peripheral);
+    }
+    console.log('Disconnected from ' + data.peripheral);
+  };
+
+  const handleUpdateValueForCharacteristic = data => {
+    console.log(
+      'Received data from ' +
+        data.peripheral +
+        ' characteristic ' +
+        data.characteristic,
+      data.value,
+    );
+  };
+
+  const handleDiscoverPeripheral = peripheral => {
+    if (!peripheral.name) {
+      peripheral.name = 'NO NAME';
+    }
+    updatePeripherals(peripheral.id, peripheral);
+  };
+
+  const togglePeripheralConnection = async peripheral => {
+    if (peripheral && peripheral.connected) {
+      BleManager.disconnect(peripheral.id);
+    } else {
+      connectPeripheral(peripheral);
+    }
+  };
+
+  const connectPeripheral = async peripheral => {
+    try {
+      if (peripheral) {
+        markPeripheral({connecting: true});
+        await BleManager.connect(peripheral.id);
+        markPeripheral({connecting: false, connected: true});
+      }
+    } catch (error) {
+      console.log('Connection error', error);
+    }
+    function markPeripheral(props) {
+      updatePeripherals(peripheral.id, {...peripheral, ...props});
+    }
+  };
+
+
+  const handleAndroidPermissionCheck = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+        {
+          title: 'Bluetooth Scan Permission',
+          message: 'This app needs access to Bluetooth Scan in order to scan nearby Bluetooth devices.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Bluetooth Scan permission granted');
+      } else {
+        console.log('Bluetooth Scan permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   };
   
   useEffect(() => {
+    
     // Initialise la librairie BLE Manager
     BleManager.start({ showAlert: false }).then(() => {
       // Success code
       console.log("Module initialized");
     });
 
-    scanDevices();
+    const listeners = [
+      bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral),
+      bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan),
+      bleManagerEmitter.addListener('BleManagerDisconnectPeripheral', handleDisconnectedPeripheral),
+      bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic),
+    ];
+
+    handleAndroidPermissionCheck();
+
+    return () => {
+      console.log('unmount');
+      for (const listener of listeners) {
+        listener.remove();
+      }
+    };
 
   }, []);
 
@@ -58,17 +152,19 @@ const RoverScreen = () => {
     );
   };
 
-  const Item = ({device}) => (
+  const Item = ({ device }: { device: PeripheralInfo }) => (
     <View key={device.id} style={styles.deviceContainer}>
-      <Text style={styles.deviceName}>{device.name}</Text>
-      <Text style={styles.deviceId}>{device.id}</Text>
+      <Text style={styles.deviceName}>nom : {device.name}</Text>
+      <Text style={styles.deviceId}>localname : {device.advertising.localName}</Text>
     </View>
   );
-  const renderItem = ({item}) => (
-    <Item
-      device={item}
-    />
-  );
+  
+  const peripheralsArray = Array.from(peripherals.values()).map((item, index) => {
+    return {
+      ...item,
+      key: index.toString() // définir une propriété "key" unique en utilisant l'index de l'élément
+    };
+  });
 
   
   return (
@@ -77,9 +173,9 @@ const RoverScreen = () => {
       <View>
         <Text style={{color: 'white'}}>Périphériques BLE à proximité :</Text>
         <FlatList
-          data={devices}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
+          data={peripheralsArray}
+          renderItem={({item}) => (<Item device={item}/>)}
+          keyExtractor={item => item.key}
         />
       </View>
     </SafeAreaView>
