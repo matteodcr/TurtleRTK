@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
+  Alert,
   Pressable,
   RefreshControl,
-  Alert,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,7 +18,7 @@ import {getDistance} from 'geolib';
 import Geolocation from '@react-native-community/geolocation';
 
 import {Searchbar} from 'react-native-paper';
-import {useStoreContext} from './Store';
+import {useStoreContext} from '../../fc/Caster/Store';
 import {observer} from 'mobx-react-lite';
 
 let myLatitude = 45.184434;
@@ -110,7 +110,6 @@ export default observer(function CasterScreen({navigation}: Props) {
   const [selectedSorterType, setselectedSorterType] = useState(
     SorterKey.mountpoint,
   ); //sorter key selected
-  const [isFocus, setIsFocus] = useState(false);
   const [refreshList, setRefreshList] = useState(false);
 
   const sorterTypeData = [
@@ -120,12 +119,10 @@ export default observer(function CasterScreen({navigation}: Props) {
   ];
 
   React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
       store.basePool.generate(store.casterPool);
     });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
   }, [navigation, store.basePool, store.casterPool]);
 
   //filter for bases

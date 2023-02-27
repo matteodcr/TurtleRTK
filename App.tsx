@@ -9,7 +9,6 @@ import {createMaterialBottomTabNavigator} from '@react-navigation/material-botto
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
-import {useStoreContext} from './src/ui/Screens/Store';
 
 function createIcon(iconName: string) {
   return ({color}: {color: string}) => (

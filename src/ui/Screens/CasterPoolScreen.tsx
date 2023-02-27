@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
-import {CasterPoolEntry, useStoreContext} from './Store';
+import {CasterPoolEntry, useStoreContext} from '../../fc/Caster/Store';
 
 import Modal from 'react-native-modal';
 import SourceTable from '../../fc/Caster/SourceTable';
@@ -42,7 +42,7 @@ export default observer(function CasterPoolScreen() {
 
   const handleFormSubmit = () => {
     toggleModal();
-    var sourceTable: SourceTable = new SourceTable(address);
+    const sourceTable: SourceTable = new SourceTable(address);
     store.casterPool.addCaster(sourceTable, +port, username, password);
     store.basePool.generate(store.casterPool);
   };
