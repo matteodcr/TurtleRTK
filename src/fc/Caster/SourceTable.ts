@@ -3,7 +3,7 @@ import Network from './Network';
 import Caster from './Caster';
 import {NtripClient} from 'react-native-ntrip-client';
 import waitForEvent from 'wait-for-event-promise';
-import centipedeSourceTable from "./cache";
+import centipedeSourceTable from './cache';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 export const FAKE_MOUNTPOINT = 'TEST'; // TODO: find a universal fake mountpoint name
@@ -40,7 +40,7 @@ export default class SourceTable {
     port?: number,
     username?: string,
     password?: string,
-  ): Promise<SourceTableEntries> {
+  ) {
     let rawSourceTable = '';
     if (adress == null) {
       adress = this.adress;
@@ -88,10 +88,7 @@ export default class SourceTable {
       });
 
       client._connect();
-      const entries: SourceTableEntries = this.parseSourceTable(
-        await rawSourceTablePromise,
-      );
-      return entries;
+      this.entries = this.parseSourceTable(await rawSourceTablePromise);
     } catch (error) {
       console.error(error);
       throw new Error('Impossible to get the Source Table');

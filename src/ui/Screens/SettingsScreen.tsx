@@ -5,7 +5,6 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  StatusBar,
   Alert,
 } from 'react-native';
 

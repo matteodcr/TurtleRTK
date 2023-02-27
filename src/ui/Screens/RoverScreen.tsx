@@ -6,7 +6,6 @@ import {
   Pressable,
   StyleSheet,
   Alert,
-  StatusBar,
 } from 'react-native';
 
 const RoverScreen = () => {
@@ -38,24 +37,24 @@ const RoverScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#222',
-      },
-    TabButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 32,
-    },
-    headerTab: {
-      backgroundColor: '#111111',
-      justifyContent: 'space-between',
-      flexDirection: 'row',
-      borderBottomColor: '#151515',
-      borderBottomWidth: 1,
-      height: 50,
-      alignItems: 'center'
-    }
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#222',
+  },
+  TabButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  headerTab: {
+    backgroundColor: '#111111',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderBottomColor: '#151515',
+    borderBottomWidth: 1,
+    height: 50,
+    alignItems: 'center',
+  },
+});
 
 export default RoverScreen;
