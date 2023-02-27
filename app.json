@@ -1,6 +1,6 @@
 {
   "name": "OpenNtrip",
-  "displayName": "openntrip",
+  "displayName": "openNtrip",
     "packagerOpts": {
       "sourceExts": [
         "js",
