@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import BleManager from 'react-native-ble-manager';
+import BleManager, {PeripheralInfo} from 'react-native-ble-manager';
 import {
   SafeAreaView,
   View,
@@ -7,6 +7,7 @@ import {
   Pressable,
   StyleSheet,
   LogBox,
+  FlatList,
 } from 'react-native';
 import { Observable, from } from 'rxjs';
 
@@ -14,13 +15,22 @@ LogBox.ignoreLogs(['new NativeEventEmitter']);
 LogBox.ignoreAllLogs();
 
 const RoverScreen = () => {
-  const [devices, setDevices] = useState<Array<any>>([]);
+  const [devices, setDevices] = useState<Array<PeripheralInfo>>([]);
 
   const scanDevices = () => {
-    BleManager.scan([], 5, true).then(() => {
-      console.log('Scan started');
-    }).catch((error) => {
-      console.log('Scan error:', error);
+    from(
+      BleManager.scan([], 5, true)
+    ).subscribe({
+      next: (device) => {
+        console.log('Device found:', device);
+        if(device!=null){
+          setDevices((prevDevices) => prevDevices.concat(device));
+        }
+        console.log(devices);
+      },
+      error: (error) => {
+        console.log('Scan error:', error);
+      },
     });
   };
   
@@ -31,24 +41,8 @@ const RoverScreen = () => {
       console.log("Module initialized");
     });
 
-    // Scanner les périphériques BLE à proximité
-    const scanSubscription = from(
-      BleManager.scan([], 5, true)
-    ).subscribe({
-      next: (device) => {
-        console.log('Device found:', device);
-        setDevices((prevDevices) => [...prevDevices, device]);
-      },
-      error: (error) => {
-        console.log('Scan error:', error);
-      },
-    });
+    scanDevices();
 
-    // Déconnexion des périphériques lors de la fermeture de l'application
-    return () => {
-      scanSubscription?.unsubscribe();
-      devices.forEach((device) => BleManager.disconnect(device.id));
-    };
   }, []);
 
   const renderHeaderTab = () => {
@@ -64,24 +58,29 @@ const RoverScreen = () => {
     );
   };
 
+  const Item = ({device}) => (
+    <View key={device.id} style={styles.deviceContainer}>
+      <Text style={styles.deviceName}>{device.name}</Text>
+      <Text style={styles.deviceId}>{device.id}</Text>
+    </View>
+  );
+  const renderItem = ({item}) => (
+    <Item
+      device={item}
+    />
+  );
+
   
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
       <View>
         <Text style={{color: 'white'}}>Périphériques BLE à proximité :</Text>
-        {devices.map((device) => {
-          if (!device) {
-            return null;
-          }
-
-          return (
-            <View key={device.id} style={styles.deviceContainer}>
-              <Text style={styles.deviceName}>{device.name}</Text>
-              <Text style={styles.deviceId}>{device.id}</Text>
-            </View>
-          );
-        })}
+        <FlatList
+          data={devices}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
       </View>
     </SafeAreaView>
   );
