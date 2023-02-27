@@ -44,8 +44,7 @@ export default observer(function CasterPoolScreen() {
     toggleModal();
     var sourceTable: SourceTable = new SourceTable(address);
     store.casterPool.addCaster(sourceTable, +port, username, password);
-    console.log(store.casterPool.subscribed);
-    console.log(store.casterPool);
+    store.basePool.generate(store.casterPool);
   };
 
   const toggleModal = () => {
@@ -57,12 +56,10 @@ export default observer(function CasterPoolScreen() {
   }
 
   function upArrow(item: CasterPoolEntry) {
-    console.log(store.casterPool);
     store.casterPool.subscribe(item.sourceTable);
   }
 
   function downArrow(item: CasterPoolEntry) {
-    console.log(store.casterPool);
     store.casterPool.unsubscribe(item.sourceTable);
   }
 

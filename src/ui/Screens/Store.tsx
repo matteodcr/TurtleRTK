@@ -35,7 +35,7 @@ export class CasterPool {
     return -1;
   }
 
-  async addCaster(
+  addCaster(
     sourceTable: SourceTable,
     port: number,
     username: string,
@@ -122,10 +122,11 @@ export class BasePool {
     });
   }
 
-  async generate(casterPool: CasterPool) {
+  generate(casterPool: CasterPool) {
+    this.baseList = [];
     for (var i = 0; i < casterPool.subscribed.length; i++) {
       var caster = casterPool.subscribed[i];
-      this.baseList.concat(caster.sourceTable.entries.baseList);
+      this.baseList.push(...caster.sourceTable.entries.baseList);
     }
   }
 }

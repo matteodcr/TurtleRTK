@@ -88,10 +88,10 @@ const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
 );
 
 interface Props {
-  navigation: any
+  navigation: any;
 }
 
-export default observer(function CasterScreen({navigation}:Props) {
+export default observer(function CasterScreen({navigation}: Props) {
   // our hooks and enums
   enum SorterKey {
     city = 'city',
@@ -118,6 +118,15 @@ export default observer(function CasterScreen({navigation}:Props) {
     {label: 'Country', value: SorterKey.country},
     {label: 'Mountpoint', value: SorterKey.mountpoint},
   ];
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      store.basePool.generate(store.casterPool);
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, store.basePool, store.casterPool]);
 
   //filter for bases
   const filter = item => {
@@ -386,7 +395,7 @@ export default observer(function CasterScreen({navigation}:Props) {
           <RefreshControl
             refreshing={refreshList}
             onRefresh={async () => {
-              await store.basePool.generate(store.casterPool);
+              store.basePool.generate(store.casterPool);
               Geolocation.getCurrentPosition(
                 position => {
                   myLatitude = position.coords.latitude;
