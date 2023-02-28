@@ -3,23 +3,23 @@ import {
   SafeAreaView,
   View,
   Text,
-  TextInput,
-  FlatList,
   StyleSheet,
   Pressable,
   RefreshControl,
   Alert,
 } from 'react-native';
-import SourceTable from '../../fc/Caster/SourceTable';
+import {Dropdown} from 'react-native-element-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {FlashList} from '@shopify/flash-list';
 import CountryFlag from 'react-native-country-flag';
-import {Dropdown} from 'react-native-element-dropdown';
+
 import {getDistance} from 'geolib';
 import Geolocation from '@react-native-community/geolocation';
-import Base from '../../fc/Caster/Base';
-import centipedeSourceTable from '../../fc/Caster/cache';
-global.Buffer = global.Buffer || require('buffer').Buffer;
+
+import {Searchbar} from 'react-native-paper';
+import {useStoreContext} from './Store';
+import {observer} from 'mobx-react-lite';
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
@@ -36,9 +36,62 @@ Geolocation.getCurrentPosition(
   {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
 );
 
-const DEBUG = true;
+const limitCityName = (name: string) => {
+  if (name.length < 20) {
+    return name;
+  }
+  return name.substring(0, 20) + '...';
+};
 
-const CasterScreen = ({navigation}) => {
+const itemOnPress = () => {
+  Alert.alert('TODO');
+};
+
+const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
+  <View style={styles.item}>
+    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{flexDirection: 'column'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          {country == null ? (
+            <MaterialCommunityIcons
+              name="map-marker-question-outline"
+              color={'white'}
+              size={30}
+            />
+          ) : (
+            <CountryFlag isoCode={country} size={21} />
+          )}
+          <Text style={styles.title}>{'  ' + mountpoint}</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
+            {limitCityName(identifier)}
+          </Text>
+          <Text
+            style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
+            {' '}
+            {Math.floor(
+              getDistance(
+                {latitude: latitude, longitude: longitude},
+                {latitude: myLatitude, longitude: MyLongitude},
+              ) / 1000,
+            )}{' '}
+            km
+          </Text>
+        </View>
+      </View>
+      <Pressable onPress={itemOnPress}>
+        <Text style={{color: 'white', fontSize: 25}}>...</Text>
+      </Pressable>
+    </View>
+  </View>
+);
+
+interface Props {
+  navigation: any;
+}
+
+export default observer(function CasterScreen({navigation}: Props) {
   // our hooks and enums
   enum SorterKey {
     city = 'city',
@@ -50,7 +103,7 @@ const CasterScreen = ({navigation}) => {
     alphabetical,
     distance,
   }
-  const [DATA, setDATA] = useState<Base[]>([]); //data from sourcetable
+  const store = useStoreContext();
   const [searchText, onChangeSearch] = useState('');
   const [favs, setFavsFilter] = useState(true); //show favorites
   const [sorting, setsortingFilter] = useState(SorterTypes.distance); //sorter type selected
@@ -66,35 +119,14 @@ const CasterScreen = ({navigation}) => {
     {label: 'Mountpoint', value: SorterKey.mountpoint},
   ];
 
-  // refreshing datas
-  useEffect(() => {
-    try {
-      getCasterData();
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      store.basePool.generate(store.casterPool);
+    });
 
-  //Allows caster screen to refresh its datas
-  async function getCasterData() {
-    let st: SourceTable = new SourceTable('caster.centipede.fr');
-    if (DEBUG) {
-      var entries = st.parseSourceTable(centipedeSourceTable);
-      setDATA(entries.baseList);
-    } else {
-      try {
-        st.entries = await st.getSourceTable(
-          'caster.centipede.fr',
-          2101,
-          'centipede',
-          'centipede',
-        );
-      } catch (e) {
-        console.log(e);
-      }
-      setDATA(st.entries.baseList);
-    }
-  }
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, store.basePool, store.casterPool]);
 
   //filter for bases
   const filter = item => {
@@ -112,7 +144,7 @@ const CasterScreen = ({navigation}) => {
     }
   };
 
-  const filteredBaseList = DATA.filter(filter);
+  const filteredBaseList = store.basePool.baseList.filter(filter);
 
   const sorter = (Base1, Base2) => {
     switch (selectedSorterType) {
@@ -140,6 +172,7 @@ const CasterScreen = ({navigation}) => {
               ? 1
               : -1;
         }
+        break;
       case SorterKey.country:
         switch (sorting) {
           case SorterTypes.alphabetical:
@@ -180,6 +213,7 @@ const CasterScreen = ({navigation}) => {
               ? 1
               : -1;
         }
+        break;
       case SorterKey.mountpoint:
         switch (sorting) {
           case SorterTypes.alphabetical:
@@ -209,56 +243,8 @@ const CasterScreen = ({navigation}) => {
 
   const sortedBaseList = filteredBaseList.sort(sorter);
 
-  const limitCityName = (name: string) => {
-    if (name.length < 20) {
-      return name;
-    }
-    return name.substring(0, 20) + '...';
-  };
-
-  const itemOnPress = () => {
-    Alert.alert('TODO');
-  };
-
   //how is the item shown in list
-  const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
-    <View style={styles.item}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <View style={{flexDirection: 'column'}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            {country == null ? (
-              <MaterialCommunityIcons
-                name="map-marker-question-outline"
-                color={'white'}
-                size={30}
-              />
-            ) : (
-              <CountryFlag isoCode={country} size={21} />
-            )}
-            <Text style={styles.title}>{'  ' + mountpoint}</Text>
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text
-              style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
-              {limitCityName(identifier)}
-            </Text>
-            <Text
-              style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
-              {' '}
-              {getDistance(
-                {latitude: latitude, longitude: longitude},
-                {latitude: myLatitude, longitude: MyLongitude},
-              ) / 1000}{' '}
-              km
-            </Text>
-          </View>
-        </View>
-        <Pressable onPress={itemOnPress}>
-          <Text style={{color: 'white', fontSize: 25}}>...</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
+
   const renderItem = ({item}) => (
     <Item
       mountpoint={item.mountpoint}
@@ -299,11 +285,12 @@ const CasterScreen = ({navigation}) => {
     return (
       <View>
         {/*Research bar*/}
-        <TextInput
+        <Searchbar
           style={styles.textinput}
           onChangeText={newText => onChangeSearch(newText)}
           placeholder="Caster identifier ..."
           placeholderTextColor={'white'}
+          value={searchText}
         />
 
         <View style={{marginBottom: 15, flexDirection: 'row'}}>
@@ -399,15 +386,16 @@ const CasterScreen = ({navigation}) => {
       {renderFilterView()}
 
       {/*Filtered list display*/}
-      <FlatList
+      <FlashList
         data={sortedBaseList}
         renderItem={renderItem}
         keyExtractor={item => item.key}
+        estimatedItemSize={100}
         refreshControl={
           <RefreshControl
             refreshing={refreshList}
-            onRefresh={() => {
-              getCasterData;
+            onRefresh={async () => {
+              store.basePool.generate(store.casterPool);
               Geolocation.getCurrentPosition(
                 position => {
                   myLatitude = position.coords.latitude;
@@ -425,7 +413,7 @@ const CasterScreen = ({navigation}) => {
       />
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -483,5 +471,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-export default CasterScreen;
