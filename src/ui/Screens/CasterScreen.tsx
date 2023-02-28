@@ -51,13 +51,15 @@ const CasterScreen = () => {
   }
   const [DATA, setDATA] = useState<Base[]>([]); //data from sourcetable
   const [searchText, onChangeSearch] = useState('');
-  const [favs, setFavsFilter] = useState(true); //show favorites
+  const [favs, setFavsFilter] = useState(false); //show favorites
   const [sorting, setsortingFilter] = useState(SorterTypes.distance); //sorter type selected
   const [selectedSorterType, setselectedSorterType] = useState(
     SorterKey.mountpoint,
   ); //sorter key selected
   const [isFocus, setIsFocus] = useState(false);
   const [refreshList, setRefreshList] = useState(false);
+  const [favoris, setIdentifiers] = useState<string[]>([]);
+
 
   const sorterTypeData = [
     {label: 'City', value: SorterKey.city},
@@ -97,17 +99,36 @@ const CasterScreen = () => {
 
   //filter for bases
   const filter = item => {
-    switch (selectedSorterType) {
-      case SorterKey.city:
-        return item.identifier.toLowerCase().includes(searchText.toLowerCase());
-      case SorterKey.country:
-        if (item.country != null) {
-          return item.country.toLowerCase().includes(searchText.toLowerCase());
-        } else {
-          return false;
+    if (favs == true) {
+      if(favoris.includes(item.identifier)){
+        switch (selectedSorterType) {
+          case SorterKey.city:
+            return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+          case SorterKey.country:
+            if (item.country != null) {
+              return item.country.toLowerCase().includes(searchText.toLowerCase());
+            } else {
+             return false;
+            }
+          case SorterKey.mountpoint:
+            return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
         }
-      case SorterKey.mountpoint:
-        return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+      }else{
+        return false;
+      }
+    }else {
+      switch (selectedSorterType) {
+        case SorterKey.city:
+          return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+        case SorterKey.country:
+          if (item.country != null) {
+            return item.country.toLowerCase().includes(searchText.toLowerCase());
+          } else {
+           return false;
+          }
+        case SorterKey.mountpoint:
+         return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+      }
     }
   };
 
@@ -219,52 +240,101 @@ const CasterScreen = () => {
     Alert.alert('TODO');
   };
 
+ 
+  const addFavAlert = (identifierToAdd) => {
+    Alert.alert(
+      'ajouter aux favoris',
+      'Voulez vous ajouter cette base aux favoris ?',
+      [
+        {
+          text: 'Annuler',
+          style : 'cancel'
+        },
+        {
+          text: 'Ajouter',
+          onPress: () => {
+            console.log('ajouté aux favoris');
+            setIdentifiers([...favoris, identifierToAdd]);
+          },
+        },
+      ]
+    );
+  };
+
+  const suppFavAlert = (identifierToSupp) => {
+    Alert.alert(
+      'supprimer un favoris',
+      'Voulez vous supprimer cette base des favoris ?',
+      [
+        {
+          text: 'Annuler',
+          style : 'cancel'
+        },
+        {
+          text: 'Supprimer',
+          onPress: () => {
+            console.log('supprimé des favoris');
+            setIdentifiers(prevIdentifiers =>
+              prevIdentifiers.filter(identifier => identifier !== identifierToSupp));
+          },
+        },
+      ]
+    );
+  };
+
   //how is the item shown in list
-  const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
+  const Item = ({base}) => (
     <View style={styles.item}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'column'}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            {country == null ? (
+            {base.country == null ? (
               <Icon
                 name="map-marker-question-outline"
                 color={'white'}
                 size={30}
               />
             ) : (
-              <CountryFlag isoCode={country} size={21} />
+              <CountryFlag isoCode={base.country} size={21} />
             )}
-            <Text style={styles.title}>{'  ' + mountpoint}</Text>
+            <Text style={styles.title}>{'  ' + base.mountpoint}</Text>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text
               style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
-              {limitCityName(identifier)}
+              {limitCityName(base.identifier)}
             </Text>
             <Text
               style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
               {' '}
               {getDistance(
-                {latitude: latitude, longitude: longitude},
+                {latitude: base.latitude, longitude: base.longitude},
                 {latitude: myLatitude, longitude: MyLongitude},
               ) / 1000}{' '}
               km
             </Text>
           </View>
         </View>
-        <Pressable onPress={itemOnPress}>
-          <Text style={{color: 'white', fontSize: 25}}>...</Text>
-        </Pressable>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+          {favoris.includes(base.identifier) ?
+            <Pressable onPress={() => suppFavAlert(base.identifier)} style={{ marginTop: 10 }}>
+            <Icon name="star" color={'yellow'} size={30} />
+            </Pressable>
+          :
+            <Pressable onPress={() => addFavAlert(base.identifier)} style={{ marginTop: 10 }}>
+            <Icon name="star-outline" color={'darkgrey'} size={30} />
+            </Pressable>
+          }
+          <Pressable onPress={itemOnPress} style={{ marginLeft: 10 }}>
+            <Text style={{color: 'white', fontSize: 25}}>...</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
   const renderItem = ({item}) => (
     <Item
-      mountpoint={item.mountpoint}
-      country={item.country}
-      identifier={item.identifier}
-      latitude={item.latitude}
-      longitude={item.longitude}
+      base = {item}
     />
   );
 
