@@ -74,12 +74,12 @@ function RoverRoute() {
         getComponent={() => require('./src/ui/Screens/RoverScreen').default}
         options={{headerShown: false}}
       />
-      <Stack.Screen
+      <RoverStack.Screen
         name="DetailsBLE"
         getComponent={() => require('./src/ui/Screens/DetailsBLE').default}
         options={{headerShown: false}}
       />
-    </Stack.Navigator>
+    </RoverStack.Navigator>
   );
 }
 
