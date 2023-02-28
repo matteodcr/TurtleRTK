@@ -14,7 +14,7 @@ import {
 
 const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
-const RoverScreen = () => {
+const RoverScreen = ({navigation}) => {
   const [peripherals, setPeripherals] = useState(new Map<string, PeripheralInfo>());
   const [isScanning, setIsScanning] = useState<boolean>(false);
 
@@ -23,8 +23,9 @@ const RoverScreen = () => {
   };
 
   const scanDevices = () => {
-    console.log("peripherals : "+Array.from(peripherals.values()));
+    setPeripherals(new Map<string, PeripheralInfo>());
     if (!isScanning) {
+      
       try {
         console.log('Scanning...');
         setIsScanning(true);
@@ -38,14 +39,13 @@ const RoverScreen = () => {
   const handleStopScan = () => {
     setIsScanning(false);
     console.log('Scan is stopped');
-    console.log('Got ble peripheral', peripherals);
   };
 
   const handleDisconnectedPeripheral = data => {
-    let peripheral = peripherals.get(data.peripheral);
+    let peripheral: PeripheralInfo|undefined = peripherals.get(data.peripheral);
     if (peripheral) {
-      peripheral.connected = false;
-      updatePeripherals(peripheral.id, peripheral);
+      //peripheral.connected = false;
+      updatePeripherals(peripheral.advertising.manufacturerData?.data, peripheral);
     }
     console.log('Disconnected from ' + data.peripheral);
   };
@@ -60,11 +60,13 @@ const RoverScreen = () => {
     );
   };
 
-  const handleDiscoverPeripheral = peripheral => {
-    if (!peripheral.name) {
-      peripheral.name = 'NO NAME';
-    }
-    updatePeripherals(peripheral.id, peripheral);
+  const handleDiscoverPeripheral = (peripheral) => {
+    
+      if(!peripheral.name){
+        peripheral.name = 'NO NAME';
+      }
+      updatePeripherals(peripheral.advertising.localName, peripheral);
+    
   };
 
   const togglePeripheralConnection = async peripheral => {
@@ -152,10 +154,21 @@ const RoverScreen = () => {
     );
   };
 
+  function showBleDeviceDetails(device: PeripheralInfo){
+    navigation.navigate('DetailsBLE', { device: device })
+  }
+
   const Item = ({ device }: { device: PeripheralInfo }) => (
-    <View key={device.id} style={styles.deviceContainer}>
-      <Text style={styles.deviceName}>nom : {device.name}</Text>
-      <Text style={styles.deviceId}>localname : {device.advertising.localName}</Text>
+    <View key={device.id} style={styles.item}>
+       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{flexDirection: 'column'}}>
+          <Text style={styles.deviceName}>nom : {device.name}</Text>
+          <Text style={styles.deviceId}>localname : {device.advertising.localName}</Text>
+        </View>
+        <Pressable onPress={() => {showBleDeviceDetails(device)}}>
+          <Text style={{color: 'white', fontSize: 25}}>...</Text>
+        </Pressable>
+      </View>
     </View>
   );
   
@@ -171,7 +184,7 @@ const RoverScreen = () => {
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
       <View>
-        <Text style={{color: 'white'}}>Périphériques BLE à proximité :</Text>
+        <Text style={{color: 'white', fontSize: 20}}>Périphériques BLE à proximité :</Text>
         <FlatList
           data={peripheralsArray}
           renderItem={({item}) => (<Item device={item}/>)}

@@ -63,7 +63,12 @@ function RoverStack() {
     <Stack.Navigator initialRouteName="Rover">
       <Stack.Screen
         name="RoverScr"
-        component={RoverScreen}
+        getComponent={() => require('./src/ui/Screens/RoverScreen').default}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="DetailsBLE"
+        getComponent={() => require('./src/ui/Screens/DetailsBLE').default}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
