@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 import {
   Alert,
   Pressable,
@@ -10,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
-import {CasterPoolEntry, useStoreContext} from '../../fc/Caster/Store';
+import {useStoreContext} from '../../fc/Caster/Store';
 
 import Modal from 'react-native-modal';
 import SourceTable from '../../fc/Caster/SourceTable';
@@ -19,10 +20,10 @@ import {observer} from 'mobx-react-lite';
 export default observer(function CasterPoolScreen() {
   const store = useStoreContext();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [address, setAddress] = useState('');
-  const [port, setPort] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [address, setAddress] = useState('caster.centipede.fr');
+  const [port, setPort] = useState('2101');
+  const [username, setUsername] = useState('centipede');
+  const [password, setPassword] = useState('centipede');
 
   const handleAddressChange = text => {
     setAddress(text);
@@ -42,8 +43,13 @@ export default observer(function CasterPoolScreen() {
 
   const handleFormSubmit = () => {
     toggleModal();
-    const sourceTable: SourceTable = new SourceTable(address);
-    store.casterPool.addCaster(sourceTable, +port, username, password);
+    const sourceTable: SourceTable = new SourceTable(
+      address,
+      +port,
+      username,
+      password,
+    );
+    store.casterPool.addCaster(sourceTable);
     store.basePool.generate(store.casterPool);
   };
 
@@ -55,12 +61,12 @@ export default observer(function CasterPoolScreen() {
     return Alert.alert('TODO');
   }
 
-  function upArrow(item: CasterPoolEntry) {
-    store.casterPool.subscribe(item.sourceTable);
+  function upArrow(item: SourceTable) {
+    store.casterPool.subscribe(item);
   }
 
-  function downArrow(item: CasterPoolEntry) {
-    store.casterPool.unsubscribe(item.sourceTable);
+  function downArrow(item: SourceTable) {
+    store.casterPool.unsubscribe(item);
   }
 
   const HeaderMoreButton = () => {
@@ -86,9 +92,8 @@ export default observer(function CasterPoolScreen() {
     );
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {renderHeaderTab()}
+  const renderModal = () => {
+    return (
       <Modal
         style={styles.modal}
         isVisible={isModalVisible}
@@ -137,52 +142,56 @@ export default observer(function CasterPoolScreen() {
           </Pressable>
         </View>
       </Modal>
+    );
+  };
+
+  const renderItem = ({item}) => (
+    <View style={styles.item}>
+      <Text style={styles.title}>{item.adress}</Text>
+      <View
+        style={{marginRight: 10, flexDirection: 'row', alignItems: 'flex-end'}}>
+        {store.casterPool.findCaster(
+          item.sourceTable,
+          store.casterPool.unsubscribed,
+        ) !== -1 ? (
+          <Pressable
+            style={{padding: 3}}
+            onPress={() => {
+              upArrow(item);
+            }}>
+            <MaterialIcons name="arrow-upward" color={'#5bcf70'} size={25} />
+          </Pressable>
+        ) : (
+          <Pressable
+            style={{padding: 3}}
+            onPress={() => {
+              downArrow(item);
+            }}>
+            <MaterialIcons name="arrow-downward" color={'#d43f35'} size={25} />
+          </Pressable>
+        )}
+        <View>
+          <Pressable
+            style={{padding: 3}}
+            onPress={() => {
+              showCasterInfo(item);
+            }}>
+            <MaterialIcons name="info" color={'white'} size={25} />
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {renderHeaderTab()}
+      {renderModal()}
 
       <SectionList
         sections={store.casterPool.formatData}
-        keyExtractor={(item, index) => item.sourceTable.adress + index}
-        renderItem={({item}) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item.sourceTable.adress}</Text>
-            <View style={{marginRight: 10, flexDirection: 'row'}}>
-              {store.casterPool.findCaster(
-                item.sourceTable,
-                store.casterPool.unsubscribed,
-              ) !== -1 ? (
-                <Pressable
-                  style={{padding: 3}}
-                  onPress={() => {
-                    upArrow(item);
-                  }}>
-                  <MaterialIcons
-                    name="arrow-upward"
-                    color={'#5bcf70'}
-                    size={25}
-                  />
-                </Pressable>
-              ) : (
-                <Pressable
-                  style={{padding: 3}}
-                  onPress={() => {
-                    downArrow(item);
-                  }}>
-                  <MaterialIcons
-                    name="arrow-downward"
-                    color={'#d43f35'}
-                    size={25}
-                  />
-                </Pressable>
-              )}
-              <Pressable
-                style={{padding: 3}}
-                onPress={() => {
-                  showCasterInfo(item);
-                }}>
-                <MaterialIcons name="info" color={'white'} size={25} />
-              </Pressable>
-            </View>
-          </View>
-        )}
+        keyExtractor={(item, index) => item.adress + index}
+        renderItem={renderItem}
         renderSectionHeader={({section: {title}}) => (
           <Text style={styles.header}>{title}</Text>
         )}

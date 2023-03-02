@@ -20,7 +20,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {Searchbar} from 'react-native-paper';
 import {observer} from 'mobx-react-lite';
 import Base from '../../fc/Caster/Base';
-import { useStoreContext } from '../../fc/Caster/Store';
+import {useStoreContext} from '../../fc/Caster/Store';
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
@@ -40,27 +40,11 @@ interface Props {
   navigation: any;
 }
 
-Geolocation.getCurrentPosition(
-  position => {
-    myLatitude = position.coords.latitude;
-    MyLongitude = position.coords.longitude;
-    console.log(myLatitude, MyLongitude);
-  },
-  error => {
-    console.log(error.code, error.message);
-  },
-  {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
-);
-
 const limitCityName = (name: string) => {
   if (name.length < 20) {
     return name;
   }
   return name.substring(0, 20) + '...';
-};
-
-const itemOnPress = () => {
-  Alert.alert('TODO');
 };
 
 const sorter =
@@ -210,46 +194,6 @@ const sorterTypeData = [
   {label: 'Mountpoint', value: SorterKey.mountpoint},
 ];
 
-const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
-  <View style={styles.item}>
-    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-      <View style={{flexDirection: 'column'}}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {country == null ? (
-            <MaterialCommunityIcons
-              name="map-marker-question-outline"
-              color={'white'}
-              size={30}
-            />
-          ) : (
-            <CountryFlag isoCode={country} size={21} />
-          )}
-          <Text style={styles.title}>{'  ' + mountpoint}</Text>
-        </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
-            {limitCityName(identifier)}
-          </Text>
-          <Text
-            style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
-            {' '}
-            {Math.floor(
-              getDistance(
-                {latitude: latitude, longitude: longitude},
-                {latitude: myLatitude, longitude: MyLongitude},
-              ) / 1000,
-            )}{' '}
-            km
-          </Text>
-        </View>
-      </View>
-      <Pressable onPress={itemOnPress}>
-        <Text style={{color: 'white', fontSize: 25}}>...</Text>
-      </Pressable>
-    </View>
-  </View>
-);
-
 export default observer(function CasterScreen({navigation}: Props) {
   // our hooks and enums
   const store = useStoreContext();
@@ -265,6 +209,17 @@ export default observer(function CasterScreen({navigation}: Props) {
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       store.basePool.generate(store.casterPool);
+      Geolocation.getCurrentPosition(
+        position => {
+          myLatitude = position.coords.latitude;
+          MyLongitude = position.coords.longitude;
+          console.log(myLatitude, MyLongitude);
+        },
+        error => {
+          console.log(error.code, error.message);
+        },
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      );
     });
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -279,17 +234,73 @@ export default observer(function CasterScreen({navigation}: Props) {
     sorter(selectedSorterType, sorting),
   );
 
-  //how is the item shown in list
+  const itemOnPress = () => {
+    Alert.alert('TODO');
+  };
 
-  const renderItem = ({item}) => (
-    <Item
-      mountpoint={item.mountpoint}
-      country={item.country}
-      identifier={item.identifier}
-      latitude={item.latitude}
-      longitude={item.longitude}
-    />
+  const itemOnConnect = (item: Base) => () => {
+    store.casterConnection.configureConnection(
+      item.parentSourceTable.adress,
+      item.parentSourceTable.port,
+      item.mountpoint,
+      item.parentSourceTable.username,
+      item.parentSourceTable.password,
+    );
+    console.log(store.casterConnection.options);
+  };
+
+  //how is the item shown in list
+  const Item = ({item}) => (
+    <View style={styles.item}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{flexDirection: 'column'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              {item.country == null ? (
+                <MaterialCommunityIcons
+                  name="map-marker-question-outline"
+                  color={'white'}
+                  size={30}
+                />
+              ) : (
+                <CountryFlag isoCode={item.country} size={21} />
+              )}
+              <Text style={styles.title}>{'  ' + item.mountpoint}</Text>
+            </View>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text
+                style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
+                {limitCityName(item.identifier)}
+              </Text>
+              <Text
+                style={{
+                  fontStyle: 'italic',
+                  fontSize: 15,
+                  color: 'darksalmon',
+                }}>
+                {' '}
+                {Math.floor(
+                  getDistance(
+                    {latitude: item.latitude, longitude: item.longitude},
+                    {latitude: myLatitude, longitude: MyLongitude},
+                  ) / 1000,
+                )}{' '}
+                km
+              </Text>
+            </View>
+          </View>
+        </View>
+        <Pressable onPress={itemOnPress}>
+          <MaterialIcons name="more-horiz" color={'white'} size={25} />
+        </Pressable>
+        <Pressable onPress={itemOnConnect(item)}>
+          <MaterialCommunityIcons name="connection" color="green" size={30} />
+        </Pressable>
+      </View>
+    </View>
   );
+
+  const renderItem = ({item}) => <Item item={item} />;
 
   //rendering header
   const renderFilterView = () => {
@@ -436,6 +447,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginVertical: 2,
     marginHorizontal: 10,
+    flexDirection: 'row',
     borderRadius: 20,
   },
   title: {

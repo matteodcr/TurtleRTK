@@ -1,28 +1,24 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  StatusBar,
-  Alert,
-} from 'react-native';
+import {observer} from 'mobx-react-lite';
+import React, {useState} from 'react';
+import {Button} from 'react-native-paper';
+import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {useStoreContext} from '../../fc/Caster/Store';
 
-const RecordingScreen = () => {
-  const HeaderMoreButton = () => {
-    Alert.alert('TODO Screen');
-  };
+export default observer(function RecordingScreen() {
+  const store = useStoreContext();
 
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
-        <Text style={{marginLeft: 15, fontSize: 18, fontWeight: 'bold'}}>
+        <Text
+          style={{
+            marginLeft: 15,
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: 'white',
+          }}>
           Recording Screen
         </Text>
-        <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
-          <Text style={{color: 'white', fontSize: 25}}>+</Text>
-        </Pressable>
       </View>
     );
   };
@@ -31,31 +27,92 @@ const RecordingScreen = () => {
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
       <View>
-        <Text>Recording</Text>
+        <Button
+          mode="contained"
+          onPress={() => {
+            store.casterConnection.getNTRIPData();
+          }}>
+          Debug connection caster {store.casterConnection.inputData.length}
+        </Button>
+        <Text
+          style={{
+            fontStyle: 'italic',
+            fontSize: 15,
+            color: 'white',
+            padding: 15,
+          }}>
+          {
+            store.casterConnection.inputData[
+              store.casterConnection.inputData.length - 1
+            ]
+          }
+        </Text>
       </View>
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#222',
-      },
-    TabButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 32,
-    },
-    headerTab: {
-      backgroundColor: '#111111',
-      justifyContent: 'space-between',
-      flexDirection: 'row',
-      borderBottomColor: '#151515',
-      borderBottomWidth: 1,
-      height: 50,
-      alignItems: 'center'
-    }
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#222',
+  },
+  modal: {
+    margin: 0, // This is the important style you need to set
+  },
+  item: {
+    backgroundColor: '#3F4141',
+    padding: 12,
+    marginVertical: 2,
+    marginHorizontal: 10,
+    borderRadius: 20,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  header: {
+    fontSize: 25,
+    color: 'white',
+    marginLeft: 15,
+    paddingTop: 20,
+    paddingBottom: 5,
+  },
 
-export default RecordingScreen;
+  title: {
+    marginHorizontal: 10,
+    fontSize: 20,
+    color: 'white',
+  },
+  sortButton: {
+    flex: 1,
+    backgroundColor: '#151515',
+    padding: 10,
+    marginHorizontal: 10,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  textinput: {
+    margin: 10,
+  },
+  TabButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  headerTab: {
+    backgroundColor: '#111111',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderBottomColor: '#151515',
+    borderBottomWidth: 1,
+    height: 50,
+    alignItems: 'center',
+  },
+});

@@ -1,23 +1,15 @@
 import {createContext, useContext} from 'react';
 import {makeAutoObservable, observable, runInAction} from 'mobx';
+import {NtripClient} from 'react-native-ntrip-client';
 import SourceTable from './SourceTable';
 import Base from './Base';
-
-export interface CasterPoolEntry {
-  sourceTable: SourceTable;
-  port: number;
-  // name: string; // get with the sourcetable and to be print on UI
-  username: string;
-  password: string;
-}
+import {Console} from 'console';
 
 export class CasterPool {
-  subscribed: Array<CasterPoolEntry>; // casters dont les bases sont affichées
-  unsubscribed: Array<CasterPoolEntry>; // casters enregistrés mais dont les bases sont pas affichées
+  subscribed: Array<SourceTable>; // casters dont les bases sont affichées
+  unsubscribed: Array<SourceTable>; // casters enregistrés mais dont les bases sont pas affichées
 
-  constructor(subscribed, unsubscribed) {
-    // TODO : Récupérer du cache
-    // sinon
+  constructor(subscribed: SourceTable[], unsubscribed: SourceTable[]) {
     this.subscribed = subscribed;
     this.unsubscribed = unsubscribed;
     makeAutoObservable(this, {
@@ -26,37 +18,28 @@ export class CasterPool {
     });
   }
 
-  findCaster(sourceTable: SourceTable, list: Array<CasterPoolEntry>): number {
+  findCaster(sourceTable: SourceTable, list: SourceTable[]): number {
     for (const [index, value] of list.entries()) {
-      if (value.sourceTable.adress === sourceTable.adress) {
+      if (value.adress === sourceTable.adress) {
         return index;
       }
     }
     return -1;
   }
 
-  addCaster(
-    sourceTable: SourceTable,
-    port: number,
-    username: string,
-    password: string,
-  ) {
+  addCaster(sourceTable: SourceTable) {
     if (
       this.findCaster(sourceTable, this.subscribed) === -1 &&
       this.findCaster(sourceTable, this.unsubscribed) === -1
     ) {
       sourceTable
-        .getSourceTable(sourceTable.adress, port, username, password)
-        .then(() =>
-          runInAction(() =>
-            this.subscribed.push({
-              sourceTable,
-              port,
-              username,
-              password,
-            }),
-          ),
-        );
+        .getSourceTable(
+          sourceTable.adress,
+          sourceTable.port,
+          sourceTable.username,
+          sourceTable.password,
+        )
+        .then(() => runInAction(() => this.subscribed.push(sourceTable)));
       return;
     }
     throw new Error('Caster déja dans la liste.');
@@ -73,9 +56,7 @@ export class CasterPool {
   }
 
   subscribe(sourceTable: SourceTable) {
-    const index = this.unsubscribed.findIndex(
-      entry => entry.sourceTable === sourceTable,
-    );
+    const index = this.unsubscribed.findIndex(entry => entry === sourceTable);
     if (index !== -1) {
       const [entry] = this.unsubscribed.splice(index, 1);
       this.subscribed.push(entry);
@@ -84,9 +65,7 @@ export class CasterPool {
     throw new Error('Caster pas unsubscribed');
   }
   unsubscribe(sourceTable: SourceTable) {
-    const index = this.subscribed.findIndex(
-      entry => entry.sourceTable === sourceTable,
-    );
+    const index = this.subscribed.findIndex(entry => entry === sourceTable);
     if (index !== -1) {
       const [entry] = this.subscribed.splice(index, 1);
       this.unsubscribed.push(entry);
@@ -125,24 +104,85 @@ export class BasePool {
   generate(casterPool: CasterPool) {
     this.baseList = [];
     for (var i = 0; i < casterPool.subscribed.length; i++) {
-      var caster = casterPool.subscribed[i];
-      this.baseList.push(...caster.sourceTable.entries.baseList);
+      var sourceTable = casterPool.subscribed[i];
+      this.baseList.push(...sourceTable.entries.baseList);
     }
+  }
+}
+
+export class CasterConnection {
+  inputData: string[];
+  casterReceiver: NtripClient;
+  options;
+
+  constructor() {
+    this.inputData = [];
+    makeAutoObservable(this, {
+      inputData: observable.shallow,
+      casterReceiver: observable.shallow,
+      options: observable.shallow,
+    });
+  }
+
+  configureConnection(
+    caster: string,
+    port: number,
+    mountpoint: string,
+    username: string,
+    password: string,
+  ) {
+    this.options = {
+      host: caster,
+      port: port,
+      mountpoint: mountpoint,
+      username: username,
+      password: password,
+      userAgent: 'NTRIP',
+      xyz: [-1983430.2365, -4937492.4088, 3505683.7925],
+      interval: 2000,
+    };
+  }
+
+  getNTRIPData() {
+    this.casterReceiver = new NtripClient(this.options);
+
+    this.casterReceiver.on('data', data => {
+      runInAction(() => {
+        this.inputData.push(data);
+      });
+    });
+
+    this.casterReceiver.on('close', () => {
+      console.log('client close');
+    });
+
+    this.casterReceiver.on('error', err => {
+      console.log(err);
+    });
+
+    console.log('RUN');
+    this.casterReceiver.run();
   }
 }
 
 export class AppStore {
   casterPool: CasterPool;
   basePool: BasePool;
+  casterConnection: CasterConnection;
 
-  constructor(casterPool: CasterPool, basePool: BasePool) {
+  constructor(
+    casterPool: CasterPool,
+    basePool: BasePool,
+    casterConnection: CasterConnection,
+  ) {
     this.casterPool = casterPool;
     this.basePool = basePool;
+    this.casterConnection = casterConnection;
   }
 }
 
 const StoreContext = createContext<AppStore>(
-  new AppStore(new CasterPool([], []), new BasePool()),
+  new AppStore(new CasterPool([], []), new BasePool(), new CasterConnection()),
 );
 
 export const useStoreContext = () => useContext(StoreContext);
