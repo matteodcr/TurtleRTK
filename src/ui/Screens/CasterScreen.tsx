@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -18,23 +18,27 @@ import {getDistance} from 'geolib';
 import Geolocation from '@react-native-community/geolocation';
 
 import {Searchbar} from 'react-native-paper';
-import {useStoreContext} from './Store';
 import {observer} from 'mobx-react-lite';
+import Base from '../../fc/Caster/Base';
+import {useStoreContext} from '../../fc/Caster/Store';
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
 
-Geolocation.getCurrentPosition(
-  position => {
-    myLatitude = position.coords.latitude;
-    MyLongitude = position.coords.longitude;
-    console.log(myLatitude, MyLongitude);
-  },
-  error => {
-    console.log(error.code, error.message);
-  },
-  {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
-);
+enum SorterKey {
+  city = 'city',
+  country = 'country',
+  mountpoint = 'mountpoint',
+}
+enum SorterTypes {
+  anti_alphabetical,
+  alphabetical,
+  distance,
+}
+
+interface Props {
+  navigation: any;
+}
 
 const limitCityName = (name: string) => {
   if (name.length < 20) {
@@ -43,110 +47,9 @@ const limitCityName = (name: string) => {
   return name.substring(0, 20) + '...';
 };
 
-const itemOnPress = () => {
-  Alert.alert('TODO');
-};
-
-const Item = ({mountpoint, country, identifier, latitude, longitude}) => (
-  <View style={styles.item}>
-    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-      <View style={{flexDirection: 'column'}}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {country == null ? (
-            <MaterialCommunityIcons
-              name="map-marker-question-outline"
-              color={'white'}
-              size={30}
-            />
-          ) : (
-            <CountryFlag isoCode={country} size={21} />
-          )}
-          <Text style={styles.title}>{'  ' + mountpoint}</Text>
-        </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
-            {limitCityName(identifier)}
-          </Text>
-          <Text
-            style={{fontStyle: 'italic', fontSize: 15, color: 'darksalmon'}}>
-            {' '}
-            {Math.floor(
-              getDistance(
-                {latitude: latitude, longitude: longitude},
-                {latitude: myLatitude, longitude: MyLongitude},
-              ) / 1000,
-            )}{' '}
-            km
-          </Text>
-        </View>
-      </View>
-      <Pressable onPress={itemOnPress}>
-        <Text style={{color: 'white', fontSize: 25}}>...</Text>
-      </Pressable>
-    </View>
-  </View>
-);
-
-interface Props {
-  navigation: any;
-}
-
-export default observer(function CasterScreen({navigation}: Props) {
-  // our hooks and enums
-  enum SorterKey {
-    city = 'city',
-    country = 'country',
-    mountpoint = 'mountpoint',
-  }
-  enum SorterTypes {
-    anti_alphabetical,
-    alphabetical,
-    distance,
-  }
-  const store = useStoreContext();
-  const [searchText, onChangeSearch] = useState('');
-  const [favs, setFavsFilter] = useState(true); //show favorites
-  const [sorting, setsortingFilter] = useState(SorterTypes.distance); //sorter type selected
-  const [selectedSorterType, setselectedSorterType] = useState(
-    SorterKey.mountpoint,
-  ); //sorter key selected
-  const [isFocus, setIsFocus] = useState(false);
-  const [refreshList, setRefreshList] = useState(false);
-
-  const sorterTypeData = [
-    {label: 'City', value: SorterKey.city},
-    {label: 'Country', value: SorterKey.country},
-    {label: 'Mountpoint', value: SorterKey.mountpoint},
-  ];
-
-  React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      store.basePool.generate(store.casterPool);
-    });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, [navigation, store.basePool, store.casterPool]);
-
-  //filter for bases
-  const filter = item => {
-    switch (selectedSorterType) {
-      case SorterKey.city:
-        return item.identifier.toLowerCase().includes(searchText.toLowerCase());
-      case SorterKey.country:
-        if (item.country != null) {
-          return item.country.toLowerCase().includes(searchText.toLowerCase());
-        } else {
-          return false;
-        }
-      case SorterKey.mountpoint:
-        return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
-    }
-  };
-
-  const filteredBaseList = store.basePool.baseList.filter(filter);
-
-  const sorter = (Base1, Base2) => {
+const sorter =
+  (selectedSorterType: SorterKey, sorting: SorterTypes) =>
+  (Base1: Base, Base2) => {
     switch (selectedSorterType) {
       case SorterKey.city:
         switch (sorting) {
@@ -241,44 +144,163 @@ export default observer(function CasterScreen({navigation}: Props) {
     }
   };
 
-  const sortedBaseList = filteredBaseList.sort(sorter);
+//filter for bases
+const filter = (selectedSorterType: SorterKey, searchText: string) => item => {
+  switch (selectedSorterType) {
+    case SorterKey.city:
+      return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+    case SorterKey.country:
+      if (item.country != null) {
+        return item.country.toLowerCase().includes(searchText.toLowerCase());
+      } else {
+        return false;
+      }
+    case SorterKey.mountpoint:
+      return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+  }
+};
 
-  //how is the item shown in list
+const sortertypesIcon = (sorting: SorterTypes) => {
+  switch (sorting) {
+    case SorterTypes.alphabetical:
+      return 'sort-alphabetical-ascending';
+    case SorterTypes.anti_alphabetical:
+      return 'sort-alphabetical-descending';
+    case SorterTypes.distance:
+      return 'map-marker-distance';
+  }
+};
 
-  const renderItem = ({item}) => (
-    <Item
-      mountpoint={item.mountpoint}
-      country={item.country}
-      identifier={item.identifier}
-      latitude={item.latitude}
-      longitude={item.longitude}
-    />
+const cycleSortertypes = (
+  type: SorterTypes,
+  setsortingFilter: React.Dispatch<React.SetStateAction<SorterTypes>>,
+) => {
+  switch (type) {
+    case SorterTypes.alphabetical:
+      setsortingFilter(SorterTypes.anti_alphabetical);
+      break;
+    case SorterTypes.anti_alphabetical:
+      setsortingFilter(SorterTypes.distance);
+      break;
+    case SorterTypes.distance:
+      setsortingFilter(SorterTypes.alphabetical);
+      break;
+  }
+};
+
+const sorterTypeData = [
+  {label: 'City', value: SorterKey.city},
+  {label: 'Country', value: SorterKey.country},
+  {label: 'Mountpoint', value: SorterKey.mountpoint},
+];
+
+export default observer(function CasterScreen({navigation}: Props) {
+  // our hooks and enums
+  const store = useStoreContext();
+  const [searchText, onChangeSearch] = useState('');
+  const [favs, setFavsFilter] = useState(true); //show favorites
+  const [sorting, setsortingFilter] = useState(SorterTypes.distance); //sorter type selected
+  const [selectedSorterType, setselectedSorterType] = useState(
+    SorterKey.mountpoint,
+  ); //sorter key selected
+  // const [refreshList, setRefreshList] = useState(false);
+  var refreshList = false;
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      store.basePool.generate(store.casterPool);
+      Geolocation.getCurrentPosition(
+        position => {
+          myLatitude = position.coords.latitude;
+          MyLongitude = position.coords.longitude;
+          console.log(myLatitude, MyLongitude);
+        },
+        error => {
+          console.log(error.code, error.message);
+        },
+        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      );
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, store.basePool, store.casterPool]);
+
+  const filteredBaseList = store.basePool.baseList.filter(
+    filter(selectedSorterType, searchText),
   );
 
-  const sortertypesIcon = () => {
-    switch (sorting) {
-      case SorterTypes.alphabetical:
-        return 'sort-alphabetical-ascending';
-      case SorterTypes.anti_alphabetical:
-        return 'sort-alphabetical-descending';
-      case SorterTypes.distance:
-        return 'map-marker-distance';
-    }
+  const sortedBaseList = filteredBaseList.sort(
+    sorter(selectedSorterType, sorting),
+  );
+
+  const itemOnPress = () => {
+    Alert.alert('TODO');
   };
 
-  const cycleSortertypes = (type: SorterTypes) => {
-    switch (type) {
-      case SorterTypes.alphabetical:
-        setsortingFilter(SorterTypes.anti_alphabetical);
-        break;
-      case SorterTypes.anti_alphabetical:
-        setsortingFilter(SorterTypes.distance);
-        break;
-      case SorterTypes.distance:
-        setsortingFilter(SorterTypes.alphabetical);
-        break;
-    }
+  const itemOnConnect = (item: Base) => () => {
+    store.casterConnection.configureConnection(
+      item.parentSourceTable.adress,
+      item.parentSourceTable.port,
+      item.mountpoint,
+      item.parentSourceTable.username,
+      item.parentSourceTable.password,
+    );
+    console.log(store.casterConnection.options);
   };
+
+  //how is the item shown in list
+  const Item = ({item}) => (
+    <View style={styles.item}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{flexDirection: 'column'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              {item.country == null ? (
+                <MaterialCommunityIcons
+                  name="map-marker-question-outline"
+                  color={'white'}
+                  size={30}
+                />
+              ) : (
+                <CountryFlag isoCode={item.country} size={21} />
+              )}
+              <Text style={styles.title}>{'  ' + item.mountpoint}</Text>
+            </View>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text
+                style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
+                {limitCityName(item.identifier)}
+              </Text>
+              <Text
+                style={{
+                  fontStyle: 'italic',
+                  fontSize: 15,
+                  color: 'darksalmon',
+                }}>
+                {' '}
+                {Math.floor(
+                  getDistance(
+                    {latitude: item.latitude, longitude: item.longitude},
+                    {latitude: myLatitude, longitude: MyLongitude},
+                  ) / 1000,
+                )}{' '}
+                km
+              </Text>
+            </View>
+          </View>
+        </View>
+        <Pressable onPress={itemOnPress}>
+          <MaterialIcons name="more-horiz" color={'white'} size={25} />
+        </Pressable>
+        <Pressable onPress={itemOnConnect(item)}>
+          <MaterialCommunityIcons name="connection" color="green" size={30} />
+        </Pressable>
+      </View>
+    </View>
+  );
+
+  const renderItem = ({item}) => <Item item={item} />;
 
   //rendering header
   const renderFilterView = () => {
@@ -297,10 +319,10 @@ export default observer(function CasterScreen({navigation}: Props) {
           <Pressable
             style={styles.sortButton}
             onPress={() => {
-              cycleSortertypes(sorting);
+              cycleSortertypes(sorting, setsortingFilter);
             }}>
             <MaterialCommunityIcons
-              name={sortertypesIcon()}
+              name={sortertypesIcon(sorting)}
               color="white"
               size={30}
             />
@@ -425,6 +447,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginVertical: 2,
     marginHorizontal: 10,
+    flexDirection: 'row',
     borderRadius: 20,
   },
   title: {

@@ -30,9 +30,20 @@ export default class SourceTable {
 
   private _entries: SourceTableEntries;
   adress: string;
+  port: number;
+  username: string;
+  password: string;
 
-  constructor(adress: string) {
+  constructor(
+    adress: string,
+    port: number,
+    username: string,
+    password: string,
+  ) {
     this.adress = adress;
+    this.port = port;
+    this.username = username;
+    this.password = password;
   }
 
   async getSourceTable(
@@ -157,10 +168,28 @@ export default class SourceTable {
       this.isStreamEntry(line)
     );
   }
+
+  getMockSourceTable() {
+    this.entries = {
+      baseList: [],
+      casterList: [],
+      networkList: [],
+    };
+    for (var i = 0; i < 5; i++) {
+      this.entries.networkList.push(new Network(this, []));
+      this.entries.baseList.push(new Base(this, []));
+      this.entries.casterList.push(new Caster(this, []));
+    }
+  }
 }
 
-async function main(adress: string) {
-  let st: SourceTable = new SourceTable(adress);
+async function main() {
+  let st: SourceTable = new SourceTable(
+    'caster.centipede.fr',
+    2101,
+    'centipede',
+    'centipede',
+  );
   var entries;
   if (true) {
     entries = st.parseSourceTable(centipedeSourceTable);
@@ -175,4 +204,4 @@ async function main(adress: string) {
   }
 }
 
-// main('caster.centipede.fr');
+// main();

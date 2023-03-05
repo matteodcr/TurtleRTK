@@ -45,6 +45,26 @@ export default class Base {
       this.bitrate = +line[17];
       this.misc = line[18].trim();
       this.key = this.identifier + ':' + this.mountpoint;
+    } else {
+      this.mountpoint = 'TestMountpoint';
+      this.identifier = 'TestIdentifier';
+      this.format = 'TestFormat';
+      this.formatDetails = 'TestFormatDetails';
+      this.carrier = 100;
+      this.navSystem = 'TestNavSystem';
+      this.network = 'TestNetwork';
+      this.country = 'TestCountry';
+      this.latitude = 0;
+      this.longitude = 0;
+      this.nmea = true;
+      this.solution = true;
+      this.generator = 'TestGenerator';
+      this.compression = 'TestCompression';
+      this.authentification = 'TestAuthentification';
+      this.fee = true;
+      this.bitrate = 20000;
+      this.misc = 'TestMisc';
+      this.key = this.identifier + ':' + this.mountpoint;
     }
   }
 }

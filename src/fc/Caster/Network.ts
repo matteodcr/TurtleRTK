@@ -22,6 +22,16 @@ export default class Network {
       this.webStr = line[6].trim();
       this.webReg = line[7].trim();
       this.misc = line[8].trim();
+    } else {
+      this.parentSourceTable = sourceTable;
+      this.identifier = 'TestIdentifier';
+      this.operator = 'TestOperator';
+      this.authentification = 'TestAuthentification';
+      this.fee = false;
+      this.webNet = 'TestWebNet';
+      this.webStr = 'TestWebStr';
+      this.webReg = 'TestWebReg';
+      this.misc = 'TestWebMisc';
     }
   }
 }
