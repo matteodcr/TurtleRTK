@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {
-  Alert,
   Pressable,
   SafeAreaView,
+  ScrollView,
   SectionList,
   StyleSheet,
   Text,
@@ -18,12 +18,17 @@ import SourceTable from '../../fc/Caster/SourceTable';
 import {observer} from 'mobx-react-lite';
 
 export default observer(function CasterPoolScreen() {
+  const mockSourceTable = new SourceTable('None', 2101, 'None', 'None');
+  mockSourceTable.getMockSourceTable();
   const store = useStoreContext();
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [isInfoVisible, setInfoVisible] = useState(false);
   const [address, setAddress] = useState('caster.centipede.fr');
   const [port, setPort] = useState('2101');
   const [username, setUsername] = useState('centipede');
   const [password, setPassword] = useState('centipede');
+  const [selectedSourceTable, setSelectedSourceTable] =
+    useState(mockSourceTable);
 
   const handleAddressChange = text => {
     setAddress(text);
@@ -42,23 +47,29 @@ export default observer(function CasterPoolScreen() {
   };
 
   const handleFormSubmit = () => {
-    toggleModal();
+    toogleForm();
     const sourceTable: SourceTable = new SourceTable(
       address,
       +port,
       username,
       password,
     );
+    console.log(sourceTable);
     store.casterPool.addCaster(sourceTable);
     store.basePool.generate(store.casterPool);
   };
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+  const toogleForm = () => {
+    setFormVisible(!isFormVisible);
+  };
+
+  const toogleInfo = () => {
+    setInfoVisible(!isInfoVisible);
   };
 
   function showCasterInfo(item) {
-    return Alert.alert('TODO');
+    setSelectedSourceTable(item);
+    toogleInfo();
   }
 
   function upArrow(item: SourceTable) {
@@ -70,7 +81,7 @@ export default observer(function CasterPoolScreen() {
   }
 
   const HeaderMoreButton = () => {
-    toggleModal();
+    toogleForm();
   };
 
   const renderHeaderTab = () => {
@@ -92,13 +103,39 @@ export default observer(function CasterPoolScreen() {
     );
   };
 
-  const renderModal = () => {
+  const renderCasterModal = () => {
     return (
       <Modal
         style={styles.modal}
-        isVisible={isModalVisible}
-        onBackButtonPress={toggleModal}
-        onSwipeComplete={toggleModal}
+        isVisible={isInfoVisible}
+        onBackButtonPress={toogleInfo}
+        onSwipeComplete={toogleInfo}
+        animationIn="slideInUp"
+        animationOut="slideOutDown">
+        <View style={styles.container}>
+          <ScrollView>
+            <Text style={styles.header}>
+              {selectedSourceTable.entries.casterList[0].host}
+            </Text>
+            <Text style={styles.header}>
+              {selectedSourceTable.entries.casterList[0].country}
+            </Text>
+            <Text style={styles.header}>
+              {selectedSourceTable.entries.networkList[0].operator}
+            </Text>
+          </ScrollView>
+        </View>
+      </Modal>
+    );
+  };
+
+  const renderFormModal = () => {
+    return (
+      <Modal
+        style={styles.modal}
+        isVisible={isFormVisible}
+        onBackButtonPress={toogleForm}
+        onSwipeComplete={toogleForm}
         swipeDirection={['down']}
         animationIn="slideInUp"
         animationOut="slideOutDown">
@@ -150,10 +187,8 @@ export default observer(function CasterPoolScreen() {
       <Text style={styles.title}>{item.adress}</Text>
       <View
         style={{marginRight: 10, flexDirection: 'row', alignItems: 'flex-end'}}>
-        {store.casterPool.findCaster(
-          item.sourceTable,
-          store.casterPool.unsubscribed,
-        ) !== -1 ? (
+        {store.casterPool.findCaster(item, store.casterPool.unsubscribed) !==
+        -1 ? (
           <Pressable
             style={{padding: 3}}
             onPress={() => {
@@ -186,7 +221,8 @@ export default observer(function CasterPoolScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
-      {renderModal()}
+      {renderFormModal()}
+      {renderCasterModal()}
 
       <SectionList
         sections={store.casterPool.formatData}

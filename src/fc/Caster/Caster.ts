@@ -29,6 +29,19 @@ export default class Caster {
       this.fallbackHost = line[9].trim();
       this.fallbackIP = +line[10];
       this.misc = line[11];
+    } else {
+      this.parentSourceTable = sourceTable;
+      this.host = 'TestHost';
+      this.port = 2101;
+      this.identifier = 'TestIdentifier';
+      this.operator = 'TestOperator';
+      this.nmea = true;
+      this.country = 'TestCountry';
+      this.latitude = 0;
+      this.longitude = 0;
+      this.fallbackHost = 'TestFallbackHost';
+      this.fallbackIP = 255;
+      this.misc = 'TestMisc';
     }
   }
 }

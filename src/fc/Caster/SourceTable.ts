@@ -168,6 +168,19 @@ export default class SourceTable {
       this.isStreamEntry(line)
     );
   }
+
+  getMockSourceTable() {
+    this.entries = {
+      baseList: [],
+      casterList: [],
+      networkList: [],
+    };
+    for (var i = 0; i < 5; i++) {
+      this.entries.networkList.push(new Network(this, []));
+      this.entries.baseList.push(new Base(this, []));
+      this.entries.casterList.push(new Caster(this, []));
+    }
+  }
 }
 
 async function main() {

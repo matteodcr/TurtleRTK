@@ -3,7 +3,6 @@ import {makeAutoObservable, observable, runInAction} from 'mobx';
 import {NtripClient} from 'react-native-ntrip-client';
 import SourceTable from './SourceTable';
 import Base from './Base';
-import {Console} from 'console';
 
 export class CasterPool {
   subscribed: Array<SourceTable>; // casters dont les bases sont affichées
