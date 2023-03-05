@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import {
-  Alert,
   Pressable,
   RefreshControl,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
@@ -17,10 +18,12 @@ import CountryFlag from 'react-native-country-flag';
 import {getDistance} from 'geolib';
 import Geolocation from '@react-native-community/geolocation';
 
-import {Searchbar} from 'react-native-paper';
+import {Chip, Paragraph, Searchbar} from 'react-native-paper';
 import {observer} from 'mobx-react-lite';
 import Base from '../../fc/Caster/Base';
 import {useStoreContext} from '../../fc/Store';
+import Modal from 'react-native-modal';
+import SourceTable from '../../fc/Caster/SourceTable';
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
@@ -196,6 +199,7 @@ const sorterTypeData = [
 
 export default observer(function CasterScreen({navigation}: Props) {
   // our hooks and enums
+  const mockBase = new Base(new SourceTable('none', 2101, 'none', 'none'), []);
   const store = useStoreContext();
   const [searchText, onChangeSearch] = useState('');
   const [favs, setFavsFilter] = useState(true); //show favorites
@@ -203,7 +207,9 @@ export default observer(function CasterScreen({navigation}: Props) {
   const [selectedSorterType, setselectedSorterType] = useState(
     SorterKey.mountpoint,
   ); //sorter key selected
-  // const [refreshList, setRefreshList] = useState(false);
+  const [isInfoVisible, setInfoVisible] = useState(false);
+  const [selectedBase, setSelectedBase] = useState(mockBase);
+  const [isPressed, setIsPressed] = useState(false);
   var refreshList = false;
 
   React.useEffect(() => {
@@ -232,9 +238,10 @@ export default observer(function CasterScreen({navigation}: Props) {
     sorter(selectedSorterType, sorting),
   );
 
-  const itemOnPress = () => {
-    Alert.alert('TODO');
-  };
+  function showBaseInfo(item) {
+    setSelectedBase(item);
+    toogleInfo();
+  }
 
   const itemOnConnect = (item: Base) => () => {
     store.casterConnection.configureConnection(
@@ -247,61 +254,167 @@ export default observer(function CasterScreen({navigation}: Props) {
     console.log(store.casterConnection.options);
   };
 
-  //how is the item shown in list
-  const Item = ({item}) => (
-    <View style={styles.item}>
-      <View style={{flexDirection: 'column'}}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {item.country == null ? (
-            <MaterialCommunityIcons
-              name="map-marker-question-outline"
-              color={'white'}
-              size={30}
-            />
-          ) : (
-            <CountryFlag isoCode={item.country} size={21} />
-          )}
-          <Text style={styles.title}>{'  ' + item.mountpoint}</Text>
-        </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
-            {limitCityName(item.identifier)}
-          </Text>
+  const toogleInfo = () => {
+    setInfoVisible(!isInfoVisible);
+  };
+  const renderBaseModal = () => {
+    const base = selectedBase;
+    return (
+      <Modal
+        style={styles.modal}
+        isVisible={isInfoVisible}
+        onBackButtonPress={toogleInfo}
+        onSwipeComplete={toogleInfo}
+        animationIn="slideInUp"
+        animationOut="slideOutDown">
+        <View style={styles.headerTab}>
           <Text
             style={{
-              fontStyle: 'italic',
-              fontSize: 15,
-              color: 'darksalmon',
+              marginLeft: 15,
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: 'white',
             }}>
-            {' '}
-            {Math.floor(
-              getDistance(
-                {latitude: item.latitude, longitude: item.longitude},
-                {latitude: myLatitude, longitude: MyLongitude},
-              ) / 1000,
-            )}{' '}
-            km
+            {base.mountpoint}
           </Text>
         </View>
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        <View>
-          <Pressable onPress={itemOnPress}>
-            <MaterialIcons name="more-horiz" color={'white'} size={40} />
-          </Pressable>
+        <View style={styles.container}>
+          <ScrollView>
+            <View
+              style={{
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+              }}
+            />
+            <View style={styles.container}>
+              <View style={styles.chipsContainer}>
+                <Chip style={styles.chip} icon="dns">
+                  Identifier : {base.identifier}
+                </Chip>
+                <Chip style={styles.chip} icon="account-key">
+                  Authentification : {base.authentification}
+                </Chip>
+                <Chip style={styles.chip} icon="arrow-u-left-top-bold">
+                  VRS : {String(String(base.nmea))}
+                </Chip>
+                <Chip style={styles.chip} icon="earth">
+                  Country : {base.country}
+                </Chip>
+                <Chip style={styles.chip} icon="wallet">
+                  Fee : {String(base.fee)}
+                </Chip>
+                <Chip style={styles.chip} icon="vector-triangle">
+                  Network of base : {String(base.solution)}
+                </Chip>
+                <Chip style={styles.chip} icon="human-queue">
+                  Network : {base.network}
+                </Chip>
+              </View>
+              <View style={styles.baseText}>
+                <Paragraph style={styles.baseText}>
+                  Position : {base.latitude}, {base.longitude}
+                </Paragraph>
+                <Paragraph style={styles.baseText}>
+                  Bitrate : {base.bitrate} bits per second
+                </Paragraph>
+                <Paragraph style={styles.baseText}>
+                  Network : {base.network}
+                </Paragraph>
+                <Paragraph style={styles.baseText}>
+                  Format : {base.format + ' (' + base.formatDetails + ')'}
+                </Paragraph>
+                <Paragraph style={styles.baseText}>
+                  Carrier : {base.carrier}
+                </Paragraph>
+                <Paragraph style={styles.baseText}>
+                  NavSystem : {base.navSystem}
+                </Paragraph>
+                <Paragraph style={styles.baseText}>
+                  Compression : {base.compression}
+                </Paragraph>
+                <Paragraph style={styles.baseText}>
+                  Misc : {base.misc}
+                </Paragraph>
+              </View>
+            </View>
+          </ScrollView>
         </View>
-        <View style={{marginLeft: 10}}>
-          <Pressable onPress={itemOnConnect(item)}>
-            <MaterialCommunityIcons name="connection" color="green" size={40} />
-          </Pressable>
+      </Modal>
+    );
+  };
+
+  const handleLongPress = () => {
+    setIsPressed(true);
+    toogleInfo();
+  };
+
+  //how is the item shown in list
+  const Item = ({item}) => (
+    <TouchableWithoutFeedback
+      delayLongPress={300}
+      onLongPress={handleLongPress}>
+      <View style={styles.item}>
+        <View style={{flexDirection: 'column'}}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            {item.country == null ? (
+              <MaterialCommunityIcons
+                name="map-marker-question-outline"
+                color={'white'}
+                size={30}
+              />
+            ) : (
+              <CountryFlag isoCode={item.country} size={21} />
+            )}
+            <Text style={styles.title}>{'  ' + item.mountpoint}</Text>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text
+              style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
+              {limitCityName(item.identifier)}
+            </Text>
+            <Text
+              style={{
+                fontStyle: 'italic',
+                fontSize: 15,
+                color: 'darksalmon',
+              }}>
+              {' '}
+              {Math.floor(
+                getDistance(
+                  {latitude: item.latitude, longitude: item.longitude},
+                  {latitude: myLatitude, longitude: MyLongitude},
+                ) / 1000,
+              )}{' '}
+              km
+            </Text>
+          </View>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <View>
+            <Pressable
+              onPress={() => {
+                showBaseInfo(item);
+              }}>
+              <MaterialIcons name="more-horiz" color={'white'} size={40} />
+            </Pressable>
+          </View>
+          <View style={{marginLeft: 10}}>
+            <Pressable onPress={itemOnConnect(item)}>
+              <MaterialCommunityIcons
+                name="connection"
+                color="green"
+                size={40}
+              />
+            </Pressable>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 
   const renderItem = ({item}) => <Item item={item} />;
@@ -408,8 +521,8 @@ export default observer(function CasterScreen({navigation}: Props) {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
-
       {renderFilterView()}
+      {renderBaseModal()}
 
       {/*Filtered list display*/}
       <FlashList
@@ -459,6 +572,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
   },
+  baseText: {
+    fontSize: 20,
+    color: 'white',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  modal: {
+    margin: 0, // This is the important style you need to set
+  },
   sortButton: {
     flex: 1,
     backgroundColor: '#151515',
@@ -497,5 +619,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     height: 50,
     alignItems: 'center',
+  },
+  chipsContainer: {
+    paddingTop: 10,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 4,
+  },
+  header: {
+    fontSize: 25,
+    color: 'white',
+    marginLeft: 15,
+    paddingTop: 20,
+    paddingBottom: 5,
   },
 });

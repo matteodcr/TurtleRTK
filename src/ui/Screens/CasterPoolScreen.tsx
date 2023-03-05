@@ -10,13 +10,12 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Card, Chip, Paragraph, TextInput, Title} from 'react-native-paper';
+import {Button, Chip, Paragraph, TextInput} from 'react-native-paper';
 import {useStoreContext} from '../../fc/Store';
 
 import Modal from 'react-native-modal';
 import SourceTable from '../../fc/Caster/SourceTable';
 import {observer} from 'mobx-react-lite';
-import CountryFlag from 'react-native-country-flag';
 
 export default observer(function CasterPoolScreen() {
   const mockSourceTable = new SourceTable('None', 2101, 'None', 'None');
@@ -199,12 +198,13 @@ export default observer(function CasterPoolScreen() {
               onChangeText={handlePasswordChange}
               secureTextEntry
             />
-            <Pressable style={styles.TabButton} onPress={handleFormSubmit}>
-              <View style={styles.item}>
-                <Text style={styles.title}>Ajouter Caster</Text>
-                <MaterialIcons name="add" color={'white'} size={25} />
-              </View>
-            </Pressable>
+            <Button
+              style={{marginHorizontal: 100, marginTop: 20}}
+              mode="contained"
+              onPress={handleFormSubmit}
+              loading={true}>
+              Add this caster
+            </Button>
           </ScrollView>
         </View>
       </Modal>
