@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
+  Alert,
   Pressable,
   RefreshControl,
-  Alert,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,7 +20,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {Searchbar} from 'react-native-paper';
 import {observer} from 'mobx-react-lite';
 import Base from '../../fc/Caster/Base';
-import {useStoreContext} from '../../fc/Caster/Store';
+import {useStoreContext} from '../../fc/Store';
 
 let myLatitude = 45.184434;
 let MyLongitude = 5.75397;
@@ -207,7 +207,8 @@ export default observer(function CasterScreen({navigation}: Props) {
   var refreshList = false;
 
   React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
       store.basePool.generate(store.casterPool);
       Geolocation.getCurrentPosition(
         position => {
@@ -221,9 +222,6 @@ export default observer(function CasterScreen({navigation}: Props) {
         {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
       );
     });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
   }, [navigation, store.basePool, store.casterPool]);
 
   const filteredBaseList = store.basePool.baseList.filter(
@@ -252,50 +250,56 @@ export default observer(function CasterScreen({navigation}: Props) {
   //how is the item shown in list
   const Item = ({item}) => (
     <View style={styles.item}>
-      <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <View style={{flexDirection: 'column'}}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              {item.country == null ? (
-                <MaterialCommunityIcons
-                  name="map-marker-question-outline"
-                  color={'white'}
-                  size={30}
-                />
-              ) : (
-                <CountryFlag isoCode={item.country} size={21} />
-              )}
-              <Text style={styles.title}>{'  ' + item.mountpoint}</Text>
-            </View>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text
-                style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
-                {limitCityName(item.identifier)}
-              </Text>
-              <Text
-                style={{
-                  fontStyle: 'italic',
-                  fontSize: 15,
-                  color: 'darksalmon',
-                }}>
-                {' '}
-                {Math.floor(
-                  getDistance(
-                    {latitude: item.latitude, longitude: item.longitude},
-                    {latitude: myLatitude, longitude: MyLongitude},
-                  ) / 1000,
-                )}{' '}
-                km
-              </Text>
-            </View>
-          </View>
+      <View style={{flexDirection: 'column'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          {item.country == null ? (
+            <MaterialCommunityIcons
+              name="map-marker-question-outline"
+              color={'white'}
+              size={30}
+            />
+          ) : (
+            <CountryFlag isoCode={item.country} size={21} />
+          )}
+          <Text style={styles.title}>{'  ' + item.mountpoint}</Text>
         </View>
-        <Pressable onPress={itemOnPress}>
-          <MaterialIcons name="more-horiz" color={'white'} size={25} />
-        </Pressable>
-        <Pressable onPress={itemOnConnect(item)}>
-          <MaterialCommunityIcons name="connection" color="green" size={30} />
-        </Pressable>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
+            {limitCityName(item.identifier)}
+          </Text>
+          <Text
+            style={{
+              fontStyle: 'italic',
+              fontSize: 15,
+              color: 'darksalmon',
+            }}>
+            {' '}
+            {Math.floor(
+              getDistance(
+                {latitude: item.latitude, longitude: item.longitude},
+                {latitude: myLatitude, longitude: MyLongitude},
+              ) / 1000,
+            )}{' '}
+            km
+          </Text>
+        </View>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <View>
+          <Pressable onPress={itemOnPress}>
+            <MaterialIcons name="more-horiz" color={'white'} size={40} />
+          </Pressable>
+        </View>
+        <View style={{marginLeft: 10}}>
+          <Pressable onPress={itemOnConnect(item)}>
+            <MaterialCommunityIcons name="connection" color="green" size={40} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -448,6 +452,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
     marginHorizontal: 10,
     flexDirection: 'row',
+    justifyContent: 'space-between',
     borderRadius: 20,
   },
   title: {

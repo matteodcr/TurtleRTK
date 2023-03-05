@@ -10,12 +10,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import {TextInput} from 'react-native-paper';
-import {useStoreContext} from '../../fc/Caster/Store';
+import {Card, Chip, Paragraph, TextInput, Title} from 'react-native-paper';
+import {useStoreContext} from '../../fc/Store';
 
 import Modal from 'react-native-modal';
 import SourceTable from '../../fc/Caster/SourceTable';
 import {observer} from 'mobx-react-lite';
+import CountryFlag from 'react-native-country-flag';
 
 export default observer(function CasterPoolScreen() {
   const mockSourceTable = new SourceTable('None', 2101, 'None', 'None');
@@ -104,6 +105,7 @@ export default observer(function CasterPoolScreen() {
   };
 
   const renderCasterModal = () => {
+    const caster = selectedSourceTable.entries.casterList[0];
     return (
       <Modal
         style={styles.modal}
@@ -114,15 +116,40 @@ export default observer(function CasterPoolScreen() {
         animationOut="slideOutDown">
         <View style={styles.container}>
           <ScrollView>
-            <Text style={styles.header}>
-              {selectedSourceTable.entries.casterList[0].host}
-            </Text>
-            <Text style={styles.header}>
-              {selectedSourceTable.entries.casterList[0].country}
-            </Text>
-            <Text style={styles.header}>
-              {selectedSourceTable.entries.networkList[0].operator}
-            </Text>
+            <View
+              style={{
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+              }}
+            />
+            <Text style={styles.header}>{caster.host}</Text>
+            <View style={styles.container}>
+              <View style={styles.chipsContainer}>
+                <Chip style={styles.chip} icon="dns">
+                  Identifier : {caster.identifier}
+                </Chip>
+                <Chip style={styles.chip} icon="router">
+                  Port : {caster.port}
+                </Chip>
+                <Chip style={styles.chip}>
+                  Operator : {String(caster.operator)}
+                </Chip>
+                <Chip style={styles.chip}>Country : {caster.country}</Chip>
+                <Chip style={styles.chip}>VRS : {String(caster.nmea)}</Chip>
+              </View>
+              <View style={styles.header}>
+                <Paragraph style={styles.title}>
+                  Position : {caster.latitude}, {caster.longitude}
+                </Paragraph>
+                <Paragraph style={styles.title}>
+                  Fallback IP : {caster.fallbackHost}
+                </Paragraph>
+                <Paragraph style={styles.title}>
+                  Fallback host : {caster.fallbackHost}
+                </Paragraph>
+                <Paragraph style={styles.title}>Misc : {caster.misc}</Paragraph>
+              </View>
+            </View>
           </ScrollView>
         </View>
       </Modal>
@@ -140,43 +167,45 @@ export default observer(function CasterPoolScreen() {
         animationIn="slideInUp"
         animationOut="slideOutDown">
         <View style={styles.container}>
-          <Text style={styles.header}>Ajouter un caster</Text>
-          <TextInput
-            mode="outlined"
-            style={styles.textinput}
-            label="Address"
-            value={address}
-            onChangeText={handleAddressChange}
-          />
-          <TextInput
-            mode="outlined"
-            style={styles.textinput}
-            label="Port"
-            value={port}
-            onChangeText={handlePortChange}
-            keyboardType="numeric"
-          />
-          <TextInput
-            mode="outlined"
-            style={styles.textinput}
-            label="Username"
-            value={username}
-            onChangeText={handleUsernameChange}
-          />
-          <TextInput
-            mode="outlined"
-            style={styles.textinput}
-            label="Password"
-            value={password}
-            onChangeText={handlePasswordChange}
-            secureTextEntry
-          />
-          <Pressable style={styles.TabButton} onPress={handleFormSubmit}>
-            <View style={styles.item}>
-              <Text style={styles.title}>Ajouter Caster</Text>
-              <MaterialIcons name="add" color={'white'} size={25} />
-            </View>
-          </Pressable>
+          <ScrollView>
+            <Text style={styles.header}>New caster</Text>
+            <TextInput
+              mode="outlined"
+              style={styles.textinput}
+              label="Address"
+              value={address}
+              onChangeText={handleAddressChange}
+            />
+            <TextInput
+              mode="outlined"
+              style={styles.textinput}
+              label="Port"
+              value={port}
+              onChangeText={handlePortChange}
+              keyboardType="numeric"
+            />
+            <TextInput
+              mode="outlined"
+              style={styles.textinput}
+              label="Username"
+              value={username}
+              onChangeText={handleUsernameChange}
+            />
+            <TextInput
+              mode="outlined"
+              style={styles.textinput}
+              label="Password"
+              value={password}
+              onChangeText={handlePasswordChange}
+              secureTextEntry
+            />
+            <Pressable style={styles.TabButton} onPress={handleFormSubmit}>
+              <View style={styles.item}>
+                <Text style={styles.title}>Ajouter Caster</Text>
+                <MaterialIcons name="add" color={'white'} size={25} />
+              </View>
+            </Pressable>
+          </ScrollView>
         </View>
       </Modal>
     );
@@ -263,6 +292,7 @@ const styles = StyleSheet.create({
 
   title: {
     marginHorizontal: 10,
+    marginVertical: 5,
     fontSize: 20,
     color: 'white',
   },
@@ -298,5 +328,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     height: 50,
     alignItems: 'center',
+  },
+  chipsContainer: {
+    paddingLeft: 15,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 4,
   },
 });

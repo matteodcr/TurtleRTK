@@ -1,8 +1,8 @@
 import {createContext, useContext} from 'react';
 import {makeAutoObservable, observable, runInAction} from 'mobx';
 import {NtripClient} from 'react-native-ntrip-client';
-import SourceTable from './SourceTable';
-import Base from './Base';
+import SourceTable from './Caster/SourceTable';
+import Base from './Caster/Base';
 
 export class CasterPool {
   subscribed: Array<SourceTable>; // casters dont les bases sont affichées

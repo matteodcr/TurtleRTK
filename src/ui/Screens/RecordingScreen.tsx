@@ -2,7 +2,7 @@ import {observer} from 'mobx-react-lite';
 import React, {useState} from 'react';
 import {Button} from 'react-native-paper';
 import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
-import {useStoreContext} from '../../fc/Caster/Store';
+import {useStoreContext} from '../../fc/Store';
 
 export default observer(function RecordingScreen() {
   const store = useStoreContext();
