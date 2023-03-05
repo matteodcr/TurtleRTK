@@ -1,5 +1,7 @@
 import React from 'react';
 import 'react-native-gesture-handler';
+import {StyleSheet, View, PermissionsAndroid, Alert} from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -68,7 +70,12 @@ function RoverRoute() {
     <RoverStack.Navigator initialRouteName="Rover">
       <RoverStack.Screen
         name="RoverScr"
-        component={RoverScreen}
+        getComponent={() => require('./src/ui/Screens/RoverScreen').default}
+        options={{headerShown: false}}
+      />
+      <RoverStack.Screen
+        name="DetailsBLE"
+        getComponent={() => require('./src/ui/Screens/DetailsBLE').default}
         options={{headerShown: false}}
       />
     </RoverStack.Navigator>
@@ -77,7 +84,31 @@ function RoverRoute() {
 
 const Tab = createMaterialBottomTabNavigator();
 
+export async function requestLocationPermission()
+{
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    )
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    } else {
+      Alert.alert("You won't be able to use location and Bluetooth");
+    }
+  } catch (err) {
+    console.warn(err)
+  }
+}
 export default function App() {
+  try {
+    requestLocationPermission();
+  } catch (e) {
+    console.log(e);
+  }
+  /*try {
+    requestBluetoothScanPermission();
+  } catch (e) {
+    console.log(e);
+  }*/
   return (
     <Provider theme={MD3DarkTheme}>
       <NavigationContainer>

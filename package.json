@@ -27,6 +27,8 @@
     "mobx-react-lite": "^3.4.0",
     "react": "18.2.0",
     "react-native": "^0.71.3",
+    "react-native-ble-manager": "^8.8.0",
+    "react-native-ble-plx": "^2.0.3",
     "react-native-country-flag": "^1.1.9",
     "react-native-element-dropdown": "^2.6.0",
     "react-native-flags": "^1.0.0",
@@ -44,6 +46,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-navigation": "^4.4.4",
     "recyclerlistview": "^4.2.0",
+    "rxjs": "^7.8.0",
     "wait-for-event-promise": "^1.1.0"
   },
   "devDependencies": {
