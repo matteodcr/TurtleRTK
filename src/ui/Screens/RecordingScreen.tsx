@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react-lite';
 import React, {useState} from 'react';
 import {Button} from 'react-native-paper';
-import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet, ScrollView} from 'react-native';
 import {useStoreContext} from '../../fc/Store';
 
 export default observer(function RecordingScreen() {
@@ -27,27 +27,36 @@ export default observer(function RecordingScreen() {
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
       <View>
-        <Button
-          mode="contained"
-          onPress={() => {
-            store.casterConnection.getNTRIPData();
-          }}>
-          Debug connection caster - Counter{' '}
-          {store.casterConnection.inputData.length}
-        </Button>
-        <Text
-          style={{
-            fontStyle: 'italic',
-            fontSize: 15,
-            color: 'white',
-            padding: 15,
-          }}>
-          {
-            store.casterConnection.inputData[
-              store.casterConnection.inputData.length - 1
-            ]
-          }
-        </Text>
+        <View style={{marginHorizontal: 20}}>
+          <Button
+            style={{marginVertical: 10}}
+            mode="contained"
+            onPress={() => {
+              store.casterConnection.getNTRIPData();
+            }}>
+            Debug connection caster - Counter{' '}
+            {store.casterConnection.inputData.length}
+          </Button>
+          <Button
+            style={{marginVertical: 10}}
+            mode="contained"
+            onPress={() => {
+              store.casterConnection.closeConnection();
+            }}>
+            Stop
+          </Button>
+        </View>
+        <ScrollView>
+          <Text
+            style={{
+              fontStyle: 'italic',
+              fontSize: 15,
+              color: 'white',
+              padding: 15,
+            }}>
+            {store.casterConnection.inputData}
+          </Text>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

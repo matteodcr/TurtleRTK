@@ -123,6 +123,10 @@ export class CasterConnection {
     });
   }
 
+  closeConnection() {
+    this.casterReceiver.close();
+  }
+
   configureConnection(
     caster: string,
     port: number,
