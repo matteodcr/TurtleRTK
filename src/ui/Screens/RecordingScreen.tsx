@@ -32,7 +32,8 @@ export default observer(function RecordingScreen() {
           onPress={() => {
             store.casterConnection.getNTRIPData();
           }}>
-          Debug connection caster {store.casterConnection.inputData.length}
+          Debug connection caster - Counter{' '}
+          {store.casterConnection.inputData.length}
         </Button>
         <Text
           style={{
