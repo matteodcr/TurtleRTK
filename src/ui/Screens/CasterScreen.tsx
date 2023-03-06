@@ -8,6 +8,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  Alert,
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -148,18 +149,37 @@ const sorter =
   };
 
 //filter for bases
-const filter = (selectedSorterType: SorterKey, searchText: string) => item => {
-  switch (selectedSorterType) {
-    case SorterKey.city:
-      return item.identifier.toLowerCase().includes(searchText.toLowerCase());
-    case SorterKey.country:
-      if (item.country != null) {
-        return item.country.toLowerCase().includes(searchText.toLowerCase());
-      } else {
-        return false;
+const filter = (selectedSorterType: SorterKey, searchText: string, favs: boolean, favoris: string[]) => item => {
+  if (favs == true) {
+    if (favoris.includes(item.identifier)) {
+      switch (selectedSorterType) {
+        case SorterKey.city:
+          return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+        case SorterKey.country:
+          if (item.country != null) {
+            return item.country.toLowerCase().includes(searchText.toLowerCase());
+          } else {
+            return false;
+          }
+        case SorterKey.mountpoint:
+          return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
       }
-    case SorterKey.mountpoint:
-      return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+    }else {
+      return false;
+    }
+  }else {
+    switch (selectedSorterType) {
+      case SorterKey.city:
+        return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+      case SorterKey.country:
+        if (item.country != null) {
+          return item.country.toLowerCase().includes(searchText.toLowerCase());
+        } else {
+          return false;
+        }
+      case SorterKey.mountpoint:
+        return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+    }
   }
 };
 
@@ -202,7 +222,7 @@ export default observer(function CasterScreen({navigation}: Props) {
   const mockBase = new Base(new SourceTable('none', 2101, 'none', 'none'), []);
   const store = useStoreContext();
   const [searchText, onChangeSearch] = useState('');
-  const [favs, setFavsFilter] = useState(true); //show favorites
+  const [favs, setFavsFilter] = useState(false); //show favorites
   const [sorting, setsortingFilter] = useState(SorterTypes.distance); //sorter type selected
   const [selectedSorterType, setselectedSorterType] = useState(
     SorterKey.mountpoint,
@@ -210,6 +230,7 @@ export default observer(function CasterScreen({navigation}: Props) {
   const [isInfoVisible, setInfoVisible] = useState(false);
   const [selectedBase, setSelectedBase] = useState(mockBase);
   const [isPressed, setIsPressed] = useState(false);
+  const [favoris, setIdentifiers] = useState<string[]>([]);
   var refreshList = false;
 
   React.useEffect(() => {
@@ -231,7 +252,7 @@ export default observer(function CasterScreen({navigation}: Props) {
   }, [navigation, store.basePool, store.casterPool]);
 
   const filteredBaseList = store.basePool.baseList.filter(
-    filter(selectedSorterType, searchText),
+    filter(selectedSorterType, searchText, favs, favoris),
   );
 
   const sortedBaseList = filteredBaseList.sort(
@@ -348,6 +369,48 @@ export default observer(function CasterScreen({navigation}: Props) {
     toogleInfo();
   };
 
+  const suppFavAlert = (identifierToSupp) => {
+    Alert.alert(
+      'supprimer un favoris',
+      'Voulez vous supprimer cette base des favoris ?',
+      [
+        {
+          text: 'Annuler',
+          style : 'cancel'
+        },
+        {
+          text: 'Supprimer',
+          onPress: () => {
+            console.log('supprimé des favoris');
+            setIdentifiers(prevIdentifiers =>
+              prevIdentifiers.filter(identifier => identifier !== identifierToSupp));
+          },
+        },
+      ]
+    );
+  };
+
+  const addFavAlert = (identifierToAdd) => {
+    Alert.alert(
+      'ajouter aux favoris',
+      'Voulez vous ajouter cette base aux favoris ?',
+      [
+        {
+          text: 'Annuler',
+          style : 'cancel'
+        },
+        {
+          text: 'Ajouter',
+          onPress: () => {
+            console.log('ajouté aux favoris');
+            setIdentifiers([...favoris, identifierToAdd]);
+          },
+        },
+      ]
+    );
+  };
+
+
   //how is the item shown in list
   const Item = ({item}) => (
     <TouchableWithoutFeedback
@@ -395,6 +458,25 @@ export default observer(function CasterScreen({navigation}: Props) {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
+          <View>
+            {favoris.includes(item.identifier) ?
+              <Pressable onPress={() => suppFavAlert(item.identifier)} >
+                <MaterialCommunityIcons
+                  name="star"
+                  color={'yellow'}
+                  size={30}
+                />
+              </Pressable>
+              :
+              <Pressable onPress={() => addFavAlert(item.identifier)} >
+                <MaterialCommunityIcons
+                  name="star-outline"
+                  color={'darkgrey'}
+                  size={30}
+                />
+              </Pressable>
+            }
+          </View>  
           <View>
             <Pressable
               onPress={() => {
