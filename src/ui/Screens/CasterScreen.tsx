@@ -343,16 +343,12 @@ export default observer(function CasterScreen({navigation}: Props) {
     );
   };
 
-  const handleLongPress = () => {
-    setIsPressed(true);
-    toogleInfo();
-  };
-
   //how is the item shown in list
   const Item = ({item}) => (
     <TouchableWithoutFeedback
       delayLongPress={300}
-      onLongPress={handleLongPress}>
+      onLongPress={() => showBaseInfo(item)}
+      onPress={itemOnConnect(item)}>
       <View style={styles.item}>
         <View style={{flexDirection: 'column'}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
