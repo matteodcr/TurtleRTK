@@ -109,20 +109,25 @@ export class BasePool {
   }
 }
 
+interface CasterConnectionOptions {
+  host: string;
+  port: number;
+  mountpoint: string;
+  username: string;
+  password: string;
+  userAgent: string;
+  xyz;
+  interval: number;
+}
+
 export class CasterConnection {
-  inputData: string[];
-  casterReceiver: NtripClient;
-  connectedBase: Base;
-  options;
+  inputData: string[] = [];
+  casterReceiver: NtripClient = null;
+  connectedBase: Base | null = null;
+  options: CasterConnectionOptions | null = null;
 
   constructor() {
-    this.inputData = [];
-    makeAutoObservable(this, {
-      inputData: observable.shallow,
-      casterReceiver: observable.shallow,
-      connectedBase: observable.shallow,
-      options: observable.shallow,
-    });
+    makeAutoObservable(this);
   }
 
   closeConnection() {
@@ -141,6 +146,11 @@ export class CasterConnection {
       interval: 2000,
     };
     this.connectedBase = base;
+  }
+
+  resetConnection() {
+    this.options = null;
+    this.connectedBase = null;
   }
 
   getNTRIPData() {

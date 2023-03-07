@@ -29,13 +29,13 @@ export default observer(function BaseListItem({
   longitude,
 }: ItemProp) {
   const store = useStoreContext();
-  const itemOnConnect = (item: Base) => () => {
-    store.casterConnection.configureConnection(item);
-    console.log(store.casterConnection.options);
+  const itemOnConnect = (itemConnect: Base) => () => {
+    store.casterConnection.configureConnection(itemConnect);
+    console.log(store.casterConnection.connectedBase);
   };
 
   return (
-    <TouchableWithoutFeedback
+    <Pressable
       delayLongPress={300}
       onLongPress={() => showBaseInfo(item)}
       onPress={itemOnConnect(item)}>
@@ -91,6 +91,6 @@ export default observer(function BaseListItem({
           </View>
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 });

@@ -16,6 +16,7 @@ import ResearchBase, {
 import Header from '../Utils/Header';
 import BaseList from './BaseList';
 import BaseModal from './BaseModal';
+import ConnectedBase from './ConnectedBase';
 
 let latitude = 45.184434;
 let longitude = 5.75397;
@@ -99,6 +100,11 @@ export default observer(function CasterScreen({navigation}: Props) {
         toogleInfo={toogleInfo}
       />
       <Header navigation={navigation} />
+      <ConnectedBase
+        showBaseInfo={showBaseInfo}
+        latitude={latitude}
+        longitude={longitude}
+      />
       <ResearchBase
         search={searchText}
         modifySearch={modifySearch}
@@ -129,6 +135,7 @@ export const styles = StyleSheet.create({
     padding: 12,
     marginVertical: 2,
     marginHorizontal: 10,
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderRadius: 20,
@@ -136,10 +143,11 @@ export const styles = StyleSheet.create({
   itemConnected: {
     backgroundColor: 'green',
     padding: 12,
-    marginVertical: 2,
+    marginTop: 10,
     marginHorizontal: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     borderRadius: 20,
   },
   title: {
