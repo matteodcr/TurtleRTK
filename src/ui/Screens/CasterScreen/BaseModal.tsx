@@ -2,17 +2,20 @@ import Modal from 'react-native-modal';
 import {ScrollView, Text, View} from 'react-native';
 import {Chip, Paragraph} from 'react-native-paper';
 import React from 'react';
+import {styles} from './CasterScreen';
+import Base from '../../../fc/Caster/Base';
 
-const toogleInfo = () => {
-  setInfoVisible(!isInfoVisible);
-};
-
-function showBaseInfo(item) {
-  setSelectedBase(item);
-  toogleInfo();
+interface BaseModalProps {
+  selectedBase: Base;
+  isInfoVisible: boolean;
+  toogleInfo;
 }
 
-const renderBaseModal = () => {
+export default function BaseModal({
+  selectedBase,
+  isInfoVisible,
+  toogleInfo,
+}: BaseModalProps) {
   const base = selectedBase;
   return (
     <Modal
@@ -94,4 +97,4 @@ const renderBaseModal = () => {
       </View>
     </Modal>
   );
-};
+}

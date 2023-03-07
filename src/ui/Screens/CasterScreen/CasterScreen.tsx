@@ -13,10 +13,9 @@ import ResearchBase, {
   SorterKey,
   SorterTypes,
 } from './ResearchBase';
-
-interface Props {
-  navigation: any;
-}
+import Header from '../Utils/Header';
+import BaseList from './BaseList';
+import BaseModal from './BaseModal';
 
 let latitude = 45.184434;
 let longitude = 5.75397;
@@ -36,6 +35,10 @@ Geolocation.getCurrentPosition(
     distanceFilter: 500,
   },
 );
+
+interface Props {
+  navigation: any;
+}
 
 export default observer(function CasterScreen({navigation}: Props) {
   const store = useStoreContext();
@@ -65,21 +68,37 @@ export default observer(function CasterScreen({navigation}: Props) {
     setFav(newFav);
   };
 
+  const toogleInfo = () => {
+    setInfoVisible(!isInfoVisible);
+  };
+
+  function showBaseInfo(item) {
+    setSelectedBase(item);
+    toogleInfo();
+  }
+
+  const filteredBaseList: Base[] = store.basePool.baseList.filter(
+    filter(selectedSorter, searchText),
+  );
+
+  const sortedBaseList: Base[] = filteredBaseList.sort(
+    sorter(selectedSorter, sorterFilter, latitude, longitude),
+  );
+
   React.useEffect(() => {
     return navigation.addListener('focus', () => {
       store.basePool.generate(store.casterPool);
     });
   }, [navigation, store.basePool, store.casterPool]);
 
-  const filteredBaseList = store.basePool.baseList.filter(
-    filter(selectedSorter, searchText),
-  );
-
-  const sortedBaseList = filteredBaseList.sort(
-    sorter(selectedSorter, sorterFilter, latitude, longitude),
-  );
   return (
     <SafeAreaView style={styles.container}>
+      <BaseModal
+        selectedBase={selectedBase}
+        isInfoVisible={isInfoVisible}
+        toogleInfo={toogleInfo}
+      />
+      <Header navigation={navigation} />
       <ResearchBase
         search={searchText}
         modifySearch={modifySearch}
@@ -89,6 +108,12 @@ export default observer(function CasterScreen({navigation}: Props) {
         modifySelectedSorter={modifySelectedSorter}
         fav={fav}
         modifyFav={modifyFav}
+      />
+      <BaseList
+        sortedBaseList={sortedBaseList}
+        showBaseInfo={showBaseInfo}
+        latitude={latitude}
+        longitude={longitude}
       />
     </SafeAreaView>
   );

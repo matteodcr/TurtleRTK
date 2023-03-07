@@ -5,7 +5,6 @@ import {Pressable, View} from 'react-native';
 import {Searchbar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Dropdown} from 'react-native-element-dropdown';
-import {observer} from 'mobx-react-lite';
 import {styles} from './CasterScreen';
 
 export enum SorterKey {
@@ -175,7 +174,7 @@ export interface ResearchBaseProps {
   modifyFav: (boolean) => void;
 }
 
-export default observer(function ResearchBase({
+export default function ResearchBase({
   search,
   modifySearch,
   sorterFilter,
@@ -257,7 +256,7 @@ export default observer(function ResearchBase({
       </View>
     </View>
   );
-});
+}
 
 const sorterTypeData = [
   {label: 'City', value: SorterKey.city},
