@@ -112,6 +112,7 @@ export class BasePool {
 export class CasterConnection {
   inputData: string[];
   casterReceiver: NtripClient;
+  connectedBase: Base;
   options;
 
   constructor() {
@@ -119,6 +120,7 @@ export class CasterConnection {
     makeAutoObservable(this, {
       inputData: observable.shallow,
       casterReceiver: observable.shallow,
+      connectedBase: observable.shallow,
       options: observable.shallow,
     });
   }
@@ -127,23 +129,18 @@ export class CasterConnection {
     this.casterReceiver.close();
   }
 
-  configureConnection(
-    caster: string,
-    port: number,
-    mountpoint: string,
-    username: string,
-    password: string,
-  ) {
+  configureConnection(base: Base) {
     this.options = {
-      host: caster,
-      port: port,
-      mountpoint: mountpoint,
-      username: username,
-      password: password,
+      host: base.parentSourceTable.adress,
+      port: base.parentSourceTable.port,
+      mountpoint: base.mountpoint,
+      username: base.parentSourceTable.username,
+      password: base.parentSourceTable.password,
       userAgent: 'NTRIP',
       xyz: [-1983430.2365, -4937492.4088, 3505683.7925],
       interval: 2000,
     };
+    this.connectedBase = base;
   }
 
   getNTRIPData() {
