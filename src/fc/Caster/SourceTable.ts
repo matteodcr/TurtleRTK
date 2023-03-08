@@ -3,7 +3,6 @@ import Network from './Network';
 import Caster from './Caster';
 import {NtripClient} from 'react-native-ntrip-client';
 import waitForEvent from 'wait-for-event-promise';
-import centipedeSourceTable from './cache';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 export const FAKE_MOUNTPOINT = 'TEST'; // TODO: find a universal fake mountpoint name
@@ -182,26 +181,3 @@ export default class SourceTable {
     }
   }
 }
-
-async function main() {
-  let st: SourceTable = new SourceTable(
-    'caster.centipede.fr',
-    2101,
-    'centipede',
-    'centipede',
-  );
-  var entries;
-  if (true) {
-    entries = st.parseSourceTable(centipedeSourceTable);
-  } else {
-    let st: SourceTable = new SourceTable(adress);
-    entries = await st.getSourceTable(
-      st.adress,
-      2101,
-      'centipede',
-      'centipede',
-    );
-  }
-}
-
-// main();

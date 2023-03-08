@@ -31,7 +31,6 @@ export default observer(function BaseListItem({
   const store = useStoreContext();
   const itemOnConnect = (itemConnect: Base) => () => {
     store.casterConnection.configureConnection(itemConnect);
-    console.log(store.casterConnection.connectedBase);
   };
 
   return (
