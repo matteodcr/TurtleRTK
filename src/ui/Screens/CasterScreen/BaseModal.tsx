@@ -20,6 +20,7 @@ export default function BaseModal({
   return (
     <Modal
       style={styles.modal}
+      useNativeDriver={true}
       isVisible={isInfoVisible}
       onBackButtonPress={toogleInfo}
       onSwipeComplete={toogleInfo}

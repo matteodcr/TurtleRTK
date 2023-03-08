@@ -109,6 +109,7 @@ export default observer(function CasterPoolScreen() {
       <Modal
         style={styles.modal}
         isVisible={isInfoVisible}
+        useNativeDriver={true}
         onBackButtonPress={toogleInfo}
         onSwipeComplete={toogleInfo}
         animationIn="slideInUp"
@@ -170,6 +171,7 @@ export default observer(function CasterPoolScreen() {
       <Modal
         style={styles.modal}
         isVisible={isFormVisible}
+        useNativeDriver={true}
         onBackButtonPress={toogleForm}
         onSwipeComplete={toogleForm}
         swipeDirection={['down']}
