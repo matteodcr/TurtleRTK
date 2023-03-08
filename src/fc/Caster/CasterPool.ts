@@ -2,8 +2,9 @@ import SourceTable from './SourceTable';
 import {makeAutoObservable, observable, runInAction} from 'mobx';
 
 export class CasterPool {
-  subscribed: Array<SourceTable>; // casters dont les bases sont affichées
-  unsubscribed: Array<SourceTable>; // casters enregistrés mais dont les bases sont pas affichées
+  subscribed: Array<SourceTable> = []; // casters dont les bases sont affichées
+  unsubscribed: Array<SourceTable> = []; // casters enregistrés mais dont les bases sont pas affichées
+  isLoading: boolean = false;
 
   constructor(subscribed: SourceTable[], unsubscribed: SourceTable[]) {
     this.subscribed = subscribed;
@@ -12,6 +13,10 @@ export class CasterPool {
       subscribed: observable.shallow,
       unsubscribed: observable.shallow,
     });
+  }
+
+  setLoading(loading: boolean) {
+    this.isLoading = loading;
   }
 
   findCaster(sourceTable: SourceTable, list: SourceTable[]): number {
@@ -28,6 +33,7 @@ export class CasterPool {
       this.findCaster(sourceTable, this.subscribed) === -1 &&
       this.findCaster(sourceTable, this.unsubscribed) === -1
     ) {
+      this.setLoading(true);
       sourceTable
         .getSourceTable(
           sourceTable.adress,
@@ -36,6 +42,7 @@ export class CasterPool {
           sourceTable.password,
         )
         .then(() => runInAction(() => this.subscribed.push(sourceTable)));
+      this.setLoading(false);
       return;
     }
     throw new Error('Caster déja dans la liste.');

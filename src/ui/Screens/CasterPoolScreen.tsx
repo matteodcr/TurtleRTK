@@ -148,6 +148,16 @@ export default observer(function CasterPoolScreen() {
                 </Paragraph>
                 <Paragraph style={styles.title}>Misc : {caster.misc}</Paragraph>
               </View>
+              <Button
+                style={{marginHorizontal: 100, marginTop: 20}}
+                mode="contained"
+                onPress={() => {
+                  store.casterPool.removeCaster(selectedSourceTable);
+                  toogleInfo();
+                }}
+                loading={store.casterPool.isLoading}>
+                Remove
+              </Button>
             </View>
           </ScrollView>
         </View>
@@ -202,7 +212,7 @@ export default observer(function CasterPoolScreen() {
               style={{marginHorizontal: 100, marginTop: 20}}
               mode="contained"
               onPress={handleFormSubmit}
-              loading={true}>
+              loading={store.casterPool.isLoading}>
               Add this caster
             </Button>
           </ScrollView>
