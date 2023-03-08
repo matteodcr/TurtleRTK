@@ -2,7 +2,7 @@ import {NtripClient} from 'react-native-ntrip-client';
 import Base from './Base';
 import {makeAutoObservable, runInAction} from 'mobx';
 
-interface CasterConnectionOptions {
+interface CasterConnectionOptionsNTRIPv1 {
   host: string;
   port: number;
   mountpoint: string;
@@ -15,20 +15,25 @@ interface CasterConnectionOptions {
 
 export class CasterConnection {
   inputData: string[] = [];
-  casterReceiver: NtripClient = null;
+  casterClientNTRIPv1: NtripClient = null;
+  optionsV1: CasterConnectionOptionsNTRIPv1 | null = null;
+
+  // TODO: Implement NTRIPv2
+  // casterClientNTRIPv2: NtripClient = null;
+  // optionsV2: CasterConnectionOptionsNTRIPv1 | null = null;
+
   connectedBase: Base | null = null;
-  options: CasterConnectionOptions | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
 
   closeConnection() {
-    this.casterReceiver.close();
+    this.casterClientNTRIPv1.close();
   }
 
   configureConnection(base: Base) {
-    this.options = {
+    this.optionsV1 = {
       host: base.parentSourceTable.adress,
       port: base.parentSourceTable.port,
       mountpoint: base.mountpoint,
@@ -42,27 +47,27 @@ export class CasterConnection {
   }
 
   resetConnection() {
-    this.options = null;
+    this.optionsV1 = null;
     this.connectedBase = null;
   }
 
   getNTRIPData() {
-    this.casterReceiver = new NtripClient(this.options);
+    this.casterClientNTRIPv1 = new NtripClient(this.optionsV1);
 
-    this.casterReceiver.on('data', data => {
+    this.casterClientNTRIPv1.on('data', data => {
       runInAction(() => {
         this.inputData.push(data);
       });
     });
 
-    this.casterReceiver.on('close', () => {
+    this.casterClientNTRIPv1.on('close', () => {
       console.log('client close');
     });
 
-    this.casterReceiver.on('error', err => {
+    this.casterClientNTRIPv1.on('error', err => {
       console.log(err);
     });
 
-    this.casterReceiver.run();
+    this.casterClientNTRIPv1.run();
   }
 }
