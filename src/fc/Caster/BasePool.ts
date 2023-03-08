@@ -3,12 +3,10 @@ import {makeAutoObservable, observable} from 'mobx';
 import {CasterPool} from './CasterPool';
 
 export class BasePool {
-  baseList: Base[];
-  favoriteList: string[];
+  baseList: Base[] = [];
+  favoriteList: string[] = [];
 
   constructor() {
-    this.baseList = [];
-    this.favoriteList = [];
     makeAutoObservable(this, {
       baseList: observable.shallow,
       favoriteList: observable.shallow,

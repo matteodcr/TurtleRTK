@@ -58,7 +58,7 @@ function CasterRoute() {
       <CasterStack.Screen
         name="CasterPoolScreen"
         getComponent={() =>
-          require('./src/ui/Screens/CasterPoolScreen').default
+          require('./src/ui/Screens/CasterPoolScreen/CasterPoolScreen').default
         }
         options={{headerShown: false}}
       />

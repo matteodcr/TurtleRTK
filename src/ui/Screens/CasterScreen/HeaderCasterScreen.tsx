@@ -1,13 +1,13 @@
 import {Pressable, Text, View} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import React from 'react';
-import {styles} from '../CasterScreen/CasterScreen';
+import {styles} from './CasterScreen';
 
 interface HeaderProps {
   navigation;
 }
 
-export default function Header({navigation}: HeaderProps) {
+export default function HeaderCasterScreen({navigation}: HeaderProps) {
   const HeaderButton = () => {
     navigation.navigate('CasterPoolScreen');
   };

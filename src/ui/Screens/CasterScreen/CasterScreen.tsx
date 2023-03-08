@@ -13,7 +13,7 @@ import ResearchBase, {
   SorterKey,
   SorterTypes,
 } from './ResearchBase';
-import Header from '../Utils/Header';
+import HeaderCasterScreen from './HeaderCasterScreen';
 import BaseList from './BaseList';
 import BaseModal from './BaseModal';
 import ConnectedBase from './ConnectedBase';
@@ -99,7 +99,7 @@ export default observer(function CasterScreen({navigation}: Props) {
         isInfoVisible={isInfoVisible}
         toogleInfo={toogleInfo}
       />
-      <Header navigation={navigation} />
+      <HeaderCasterScreen navigation={navigation} />
       <ConnectedBase
         showBaseInfo={showBaseInfo}
         latitude={latitude}

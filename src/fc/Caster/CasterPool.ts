@@ -45,7 +45,7 @@ export class CasterPool {
       this.setLoading(false);
       return;
     }
-    throw new Error('Caster déja dans la liste.');
+    throw new Error('This caster is already added.');
   }
   removeCaster(sourceTable: SourceTable) {
     let index = this.findCaster(sourceTable, this.subscribed);

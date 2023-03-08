@@ -35,7 +35,7 @@
     "react-native-fontawesome": "^7.0.0",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-modal": "^13.0.1",
-    "react-native-ntrip-client": "^1.0.5",
+    "react-native-ntrip-client": "^1.0.6",
     "react-native-paper": "^5.2.0",
     "react-native-reanimated": "^2.14.4",
     "react-native-rename": "^3.2.12",
