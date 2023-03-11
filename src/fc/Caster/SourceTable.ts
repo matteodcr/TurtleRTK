@@ -95,7 +95,6 @@ export default class SourceTable {
       client.on('error', err => {
         console.log(err);
         client.close();
-        throw new Error(err);
       });
 
       client._connect();

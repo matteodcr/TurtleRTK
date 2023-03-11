@@ -5,25 +5,39 @@ import SourceTable from '../../../fc/Caster/SourceTable';
 import {useStoreContext} from '../../../fc/Store';
 import {styles} from './CasterPoolScreen';
 import {observer} from 'mobx-react-lite';
-import Caster from '../../../fc/Caster/Caster';
 
 interface CasterListItem {
   item: SourceTable;
   showCasterInfo(Caster): void;
+  toogleSnackBar;
+  modifySnackBarError;
 }
 
 export default observer(function CasterListItem({
   item,
   showCasterInfo,
+  toogleSnackBar,
+  modifySnackBarError,
 }: CasterListItem) {
   const store = useStoreContext();
 
-  function upArrow(item: SourceTable) {
+  function upArrow() {
     store.casterPool.subscribe(item);
   }
 
-  function downArrow(item: SourceTable) {
+  function downArrow() {
     store.casterPool.unsubscribe(item);
+  }
+
+  function handleShowCasterInfo() {
+    if (item.entries.casterList.length === 0) {
+      modifySnackBarError(
+        item.adress + " doesn't provide any informations about the caster.",
+      );
+      toogleSnackBar();
+      return;
+    }
+    showCasterInfo(item);
   }
   return (
     <View style={styles.item}>
@@ -35,7 +49,7 @@ export default observer(function CasterListItem({
           <Pressable
             style={{padding: 3}}
             onPress={() => {
-              upArrow(item);
+              upArrow();
             }}>
             <MaterialIcons name="arrow-upward" color={'#5bcf70'} size={25} />
           </Pressable>
@@ -43,7 +57,7 @@ export default observer(function CasterListItem({
           <Pressable
             style={{padding: 3}}
             onPress={() => {
-              downArrow(item);
+              downArrow();
             }}>
             <MaterialIcons name="arrow-downward" color={'#d43f35'} size={25} />
           </Pressable>
@@ -52,7 +66,7 @@ export default observer(function CasterListItem({
           <Pressable
             style={{padding: 3}}
             onPress={() => {
-              showCasterInfo(item);
+              handleShowCasterInfo();
             }}>
             <MaterialIcons name="info" color={'white'} size={25} />
           </Pressable>

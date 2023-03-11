@@ -7,11 +7,22 @@ import CasterListItem from './CasterListItem';
 
 interface CasterListProps {
   showCasterInfo(Caster): void;
+  toogleSnackBar;
+  modifySnackBarError;
 }
-export default observer(function CasterList({showCasterInfo}: CasterListProps) {
+export default observer(function CasterList({
+  showCasterInfo,
+  toogleSnackBar,
+  modifySnackBarError,
+}: CasterListProps) {
   const store = useStoreContext();
   const renderCasterListItem = ({item}) => (
-    <CasterListItem item={item} showCasterInfo={showCasterInfo} />
+    <CasterListItem
+      item={item}
+      showCasterInfo={showCasterInfo}
+      toogleSnackBar={toogleSnackBar}
+      modifySnackBarError={modifySnackBarError}
+    />
   );
   return (
     <SectionList

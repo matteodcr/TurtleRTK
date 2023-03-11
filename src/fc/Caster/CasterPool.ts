@@ -41,8 +41,8 @@ export class CasterPool {
           sourceTable.username,
           sourceTable.password,
         )
-        .then(() => runInAction(() => this.subscribed.push(sourceTable)));
-      this.setLoading(false);
+        .then(() => runInAction(() => this.subscribed.push(sourceTable)))
+        .then(() => this.setLoading(false));
       return;
     }
     throw new Error('This caster is already added.');

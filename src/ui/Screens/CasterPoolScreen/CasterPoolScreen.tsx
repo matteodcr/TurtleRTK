@@ -53,7 +53,7 @@ export default observer(function CasterPoolScreen() {
   };
 
   const handleFormSubmit = () => {
-    toogleForm();
+    console.log('FORM SUBMITTED');
     const sourceTable: SourceTable = new SourceTable(
       address,
       +port,
@@ -63,8 +63,9 @@ export default observer(function CasterPoolScreen() {
     try {
       store.casterPool.addCaster(sourceTable);
     } catch (error) {
-      console.log(error);
-      modifySnackBarError(error);
+      toogleForm();
+      modifySnackBarError(String(error));
+      toogleSnackBar();
     }
   };
 
@@ -88,9 +89,6 @@ export default observer(function CasterPoolScreen() {
         selectedSourceTable={selectedSourceTable}
         isInfoVisible={isInfoVisible}
         toogleInfo={toogleInfo}
-        isSnackBarVisible={isSnackBarVisible}
-        toogleSnackBar={toogleSnackBar}
-        snackBarError={snackBarError}
       />
       <FormModal
         isFormVisible={isFormVisible}
@@ -105,7 +103,11 @@ export default observer(function CasterPoolScreen() {
         handlePasswordChange={handlePasswordChange}
         handleFormSubmit={handleFormSubmit}
       />
-      <CasterList showCasterInfo={showCasterInfo} />
+      <CasterList
+        showCasterInfo={showCasterInfo}
+        toogleSnackBar={toogleSnackBar}
+        modifySnackBarError={modifySnackBarError}
+      />
       <Snackbar
         visible={isSnackBarVisible}
         onDismiss={toogleSnackBar}

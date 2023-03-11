@@ -1,6 +1,6 @@
 import Modal from 'react-native-modal';
 import {ScrollView, Text, View} from 'react-native';
-import {Button, Chip, Paragraph, Snackbar} from 'react-native-paper';
+import {Button, Chip, Paragraph} from 'react-native-paper';
 import React from 'react';
 import {styles} from './CasterPoolScreen';
 import {observer} from 'mobx-react-lite';
@@ -11,9 +11,6 @@ interface CasterModalProps {
   selectedSourceTable: SourceTable;
   isInfoVisible: boolean;
   toogleInfo(): void;
-  isSnackBarVisible;
-  toogleSnackBar;
-  snackBarError;
 }
 export default observer(function CasterModal({
   selectedSourceTable,
