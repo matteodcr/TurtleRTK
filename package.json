@@ -9,7 +9,7 @@
     "start": "react-native start",
     "test": "jest",
     "sourcetable": "ts-node-esm src/fc/Caster/SourceTable.ts",
-    "connection": "ts-node-esm src/fc/Caster/CasterConnection.ts"
+    "connection": "ts-node src/fc/Caster/NTRIP/test.ts"
   },
   "dependencies": {
     "@react-native-community/geolocation": "^3.0.5",

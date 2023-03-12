@@ -1,4 +1,4 @@
-import {NtripClient} from 'react-native-ntrip-client';
+import {NtripClientV1} from './NTRIP/v1/clientV1';
 import Base from './Base';
 import {makeAutoObservable, runInAction} from 'mobx';
 
@@ -15,7 +15,7 @@ interface CasterConnectionOptionsNTRIPv1 {
 
 export class CasterConnection {
   inputData: string[] = [];
-  casterClientNTRIPv1: NtripClient = null;
+  casterClientNTRIPv1;
   optionsV1: CasterConnectionOptionsNTRIPv1 | null = null;
 
   // TODO: Implement NTRIPv2
@@ -52,7 +52,7 @@ export class CasterConnection {
   }
 
   getNTRIPData() {
-    this.casterClientNTRIPv1 = new NtripClient(this.optionsV1);
+    this.casterClientNTRIPv1 = new NtripClientV1(this.optionsV1);
 
     this.casterClientNTRIPv1.on('data', data => {
       runInAction(() => {
