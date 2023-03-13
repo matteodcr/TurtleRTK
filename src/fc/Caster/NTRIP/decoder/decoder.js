@@ -1,7 +1,7 @@
-const { EventEmitter } = require('events');
+const {EventEmitter} = require('events');
 const config = require('./config');
-const { checkRtcmCrc24 } = require('./crc24');
-global.Buffer = global.Buffer || require('buffer').Buffer
+const {checkRtcmCrc24} = require('./crc24');
+global.Buffer = global.Buffer || require('buffer').Buffer;
 
 class NtripDecoder extends EventEmitter {
   /**
@@ -124,7 +124,10 @@ class NtripDecoder extends EventEmitter {
     ) {
       this.dataType = config.SOURCE_DATA;
     }
-    if (headerStr.startsWith(config.SOURCETABLE_PREFIX)) {
+    if (
+      headerStr.startsWith(config.RESOURCETABLE_PREFIX) ||
+      headerStr.includes('STR')
+    ) {
       this.dataType = config.SOURCETABLE_DATA;
     }
 
@@ -226,7 +229,7 @@ class NtripDecoder extends EventEmitter {
     this._decodeData();
   }
 
-  _decodeSourcetableData(){
+  _decodeSourcetableData() {
     // find the index of \r\n
     const idx = this.buffer.indexOf(config.LINE_SEPARATOR_BUFF);
     if (idx < 0) {
@@ -244,5 +247,5 @@ class NtripDecoder extends EventEmitter {
 }
 
 module.exports = {
-  NtripDecoder
+  NtripDecoder,
 };

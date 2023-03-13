@@ -1,4 +1,4 @@
-global.Buffer = global.Buffer || require('buffer').Buffer
+global.Buffer = global.Buffer || require('buffer').Buffer;
 
 // header data separator
 const HEADER_SEPARATOR_BUFF = Buffer.from('\r\n\r\n');
@@ -21,7 +21,8 @@ const RELAY_PREFIX = 'ICY';
 // the prefix of jpl ntripcaster response
 const JPL_PREFIX = 'HTTP/1.1 200 OK';
 // the prefix of source table response
-const SOURCETABLE_PREFIX = 'SOURCETABLE 200 OK'
+const RELAY_SOURCETABLE_PREFIX = 'SOURCETABLE 200 OK';
+const JPL_SOURCETABLE_PREFIX = 'HTTP/1.1 200 OK';
 
 // define the sign for rover data
 const ROVER_DATA = 'ROVER';
@@ -57,11 +58,11 @@ module.exports = {
   SOURCE_PREFIX,
   RELAY_PREFIX,
   JPL_PREFIX,
-  SOURCETABLE_PREFIX,
+  RELAY_SOURCETABLE_PREFIX,
   ROVER_DATA,
   SOURCE_DATA,
   SOURCETABLE_DATA,
   PREAMB,
   RTCM_MIN_LENGTH,
-  RTCM_ADD_LENGTH
+  RTCM_ADD_LENGTH,
 };

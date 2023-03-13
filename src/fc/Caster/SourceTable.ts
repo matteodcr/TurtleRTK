@@ -1,7 +1,7 @@
 import Base from './Base';
 import Network from './Network';
 import Caster from './Caster';
-import {NtripClientV2} from './NTRIP/v2/clientV2';
+import {NtripClientV1} from './NTRIP/v1/clientV1';
 import waitForEvent from 'wait-for-event-promise';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
@@ -76,7 +76,7 @@ export default class SourceTable {
         interval: 2000,
       };
 
-      const client = new NtripClientV2(connectionOptions);
+      const client = new NtripClientV1(connectionOptions);
       const rawSourceTablePromise = waitForEvent(client, 'response'); // used to convert an event into a promise
 
       client.on('data', data => {
