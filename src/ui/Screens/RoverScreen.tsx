@@ -69,8 +69,12 @@ const RoverScreen = ({navigation}) => {
   };
 
   const togglePeripheralConnection = async peripheral => {
+    function markPeripheral(props) {
+      updatePeripherals(peripheral.id, {...peripheral, ...props});
+    }
     if (peripheral && peripheral.connected) {
       BleManager.disconnect(peripheral.id);
+      markPeripheral({connecting: false, connected: false});
     } else {
       connectPeripheral(peripheral);
     }
@@ -158,7 +162,7 @@ const RoverScreen = ({navigation}) => {
   }
 
   const Item = ({ device }: { device: PeripheralInfo }) => (
-    <View key={device.id} style={styles.item}>
+    <View key={device.id} style={[styles.item, device.connecting && {backgroundColor:'orange'}, device.connected && !device.connecting && {backgroundColor: 'lightblue'}]}>
        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.deviceName}>Name : {device.advertising.localName}</Text>
@@ -184,8 +188,12 @@ const RoverScreen = ({navigation}) => {
     };
   });
 
+  const filter = () => item => {
+    return displayNoNameDevices || item.name!=null;
+  };
+
   const filteredPeripheralsArray = peripheralsArray.filter(
-    () => item => {return displayNoNameDevices || item.id!=null},
+    filter(),
   );
 
   
@@ -207,7 +215,7 @@ const RoverScreen = ({navigation}) => {
         <FlatList
           data={filteredPeripheralsArray}
           renderItem={({item}) => (<Item device={item}/>)}
-          keyExtractor={item => item.key}
+          keyExtractor={item => item.id}
         />
       </View>
     </SafeAreaView>
