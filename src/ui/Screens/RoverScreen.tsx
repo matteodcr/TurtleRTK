@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import BleManager, {PeripheralInfo} from 'react-native-ble-manager';
+import { Checkbox } from 'react-native-paper';
 import {
   SafeAreaView,
   View,
@@ -17,6 +18,7 @@ const bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 const RoverScreen = ({navigation}) => {
   const [peripherals, setPeripherals] = useState(new Map<string, PeripheralInfo>());
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [displayNoNameDevices, setDisplayNoNameDevices] = useState<boolean>(false);
 
   const updatePeripherals = (key, value) => {
     setPeripherals(new Map(peripherals.set(key, value)));
@@ -45,7 +47,7 @@ const RoverScreen = ({navigation}) => {
     let peripheral: PeripheralInfo|undefined = peripherals.get(data.peripheral);
     if (peripheral) {
       //peripheral.connected = false;
-      updatePeripherals(peripheral.advertising.manufacturerData?.data, peripheral);
+      updatePeripherals(peripheral.id, peripheral);
     }
     console.log('Disconnected from ' + data.peripheral);
   };
@@ -62,10 +64,7 @@ const RoverScreen = ({navigation}) => {
 
   const handleDiscoverPeripheral = (peripheral) => {
     
-      if(!peripheral.name){
-        peripheral.name = 'NO NAME';
-      }
-      updatePeripherals(peripheral.advertising.localName, peripheral);
+      updatePeripherals(peripheral.id, peripheral);
     
   };
 
@@ -162,12 +161,18 @@ const RoverScreen = ({navigation}) => {
     <View key={device.id} style={styles.item}>
        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'column'}}>
-          <Text style={styles.deviceName}>nom : {device.name}</Text>
-          <Text style={styles.deviceId}>localname : {device.advertising.localName}</Text>
+          <Text style={styles.deviceName}>Name : {device.advertising.localName}</Text>
+          <Text style={styles.deviceId}>Id : {device.id}</Text>
         </View>
-        <Pressable onPress={() => {showBleDeviceDetails(device)}}>
-          <Text style={{color: 'white', fontSize: 25}}>...</Text>
-        </Pressable>
+        <View style={{flexDirection: 'row', columnGap:10}}>
+          <Pressable onPress={() => {togglePeripheralConnection(device)}}>
+            <Text style={{color: 'white', fontSize: 25}}> + </Text>
+          </Pressable>
+          <Pressable onPress={() => {showBleDeviceDetails(device)}}>
+            <Text style={{color: 'white', fontSize: 25}}>...</Text>
+          </Pressable>
+        </View>
+        
       </View>
     </View>
   );
@@ -179,14 +184,28 @@ const RoverScreen = ({navigation}) => {
     };
   });
 
+  const filteredPeripheralsArray = peripheralsArray.filter(
+    () => item => {return displayNoNameDevices || item.id!=null},
+  );
+
   
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
       <View>
+        <View style = {styles.sortButton}>
+          <Text style={{color: 'white', fontSize: 15}}>Display devices with no name : </Text>
+          <Checkbox
+            status={displayNoNameDevices ? 'checked' : 'unchecked'}
+            onPress={() => {
+              setDisplayNoNameDevices(!displayNoNameDevices)
+            }}
+          />
+        </View>
+        
         <Text style={{color: 'white', fontSize: 20}}>Périphériques BLE à proximité :</Text>
         <FlatList
-          data={peripheralsArray}
+          data={filteredPeripheralsArray}
           renderItem={({item}) => (<Item device={item}/>)}
           keyExtractor={item => item.key}
         />
@@ -228,9 +247,20 @@ const styles = StyleSheet.create({
     },
     deviceName: {
       marginRight: 10,
+      color: 'white',
     },
     deviceId: {
       color: 'gray',
+    },
+    sortButton: {
+      flexDirection: 'row',
+      backgroundColor: '#151515',
+      padding: 10,
+      marginHorizontal: 10,
+      marginTop: 10,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'space-between',
     },
   });
 
