@@ -1,60 +1,73 @@
 import {NtripClient} from 'react-native-ntrip-client';
+import Base from './Base';
+import {makeAutoObservable, runInAction} from 'mobx';
 
-class CasterConnection {
-  caster: string;
+interface CasterConnectionOptionsNTRIPv1 {
+  host: string;
+  port: number;
   mountpoint: string;
   username: string;
   password: string;
+  userAgent: string;
+  xyz;
+  interval: number;
+}
 
-  constructor(
-    caster: string,
-    mountpoint: string,
-    username: string,
-    password: string,
-  ) {
-    this.caster = caster;
-    this.mountpoint = mountpoint;
-    this.username = username;
-    this.password = password;
+export class CasterConnection {
+  inputData: string[] = [];
+  casterClientNTRIPv1: NtripClient = null;
+  optionsV1: CasterConnectionOptionsNTRIPv1 | null = null;
+
+  // TODO: Implement NTRIPv2
+  // casterClientNTRIPv2: NtripClient = null;
+  // optionsV2: CasterConnectionOptionsNTRIPv1 | null = null;
+
+  connectedBase: Base | null = null;
+
+  constructor() {
+    makeAutoObservable(this);
   }
-  getNTRIPData() {
-    const options = {
-      host: this.caster,
-      port: 2101,
-      mountpoint: this.mountpoint,
-      username: this.username,
-      password: this.password,
+
+  closeConnection() {
+    this.casterClientNTRIPv1.close();
+  }
+
+  configureConnection(base: Base) {
+    this.optionsV1 = {
+      host: base.parentSourceTable.adress,
+      port: base.parentSourceTable.port,
+      mountpoint: base.mountpoint,
+      username: base.parentSourceTable.username,
+      password: base.parentSourceTable.password,
       userAgent: 'NTRIP',
       xyz: [-1983430.2365, -4937492.4088, 3505683.7925],
       interval: 2000,
     };
+    this.connectedBase = base;
+  }
 
-    const client = new NtripClient(options);
+  resetConnection() {
+    this.optionsV1 = null;
+    this.connectedBase = null;
+  }
 
-    client.on('data', data => {
-      console.log(data);
+  getNTRIPData() {
+    this.casterClientNTRIPv1 = new NtripClient(this.optionsV1);
+
+    this.casterClientNTRIPv1.on('data', data => {
+      runInAction(() => {
+        this.inputData.push(data);
+      });
     });
 
-    client.on('close', () => {
+    this.casterClientNTRIPv1.on('close', () => {
       console.log('client close');
     });
 
-    client.on('error', err => {
+    this.casterClientNTRIPv1.on('error', err => {
       console.log(err);
     });
 
-    client.run();
+    this.casterClientNTRIPv1.run();
   }
 }
-
-async function main() {
-  const connection = new CasterConnection(
-    'caster.centipede.fr',
-    'CRO2',
-    'centipede',
-    'centipede',
-  );
-  connection.getNTRIPData();
-}
-
-main();

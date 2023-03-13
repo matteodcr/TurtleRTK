@@ -50,13 +50,15 @@ function CasterRoute() {
     <CasterStack.Navigator initialRouteName="Caster">
       <CasterStack.Screen
         name="CasterScr"
-        getComponent={() => require('./src/ui/Screens/CasterScreen').default}
+        getComponent={() =>
+          require('./src/ui/Screens/CasterScreen/CasterScreen').default
+        }
         options={{headerShown: false}}
       />
       <CasterStack.Screen
         name="CasterPoolScreen"
         getComponent={() =>
-          require('./src/ui/Screens/CasterPoolScreen').default
+          require('./src/ui/Screens/CasterPoolScreen/CasterPoolScreen').default
         }
         options={{headerShown: false}}
       />
@@ -84,18 +86,17 @@ function RoverRoute() {
 
 const Tab = createMaterialBottomTabNavigator();
 
-export async function requestLocationPermission()
-{
+export async function requestLocationPermission() {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    )
+    );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
     } else {
       Alert.alert("You won't be able to use location and Bluetooth");
     }
   } catch (err) {
-    console.warn(err)
+    console.warn(err);
   }
 }
 export default function App() {
