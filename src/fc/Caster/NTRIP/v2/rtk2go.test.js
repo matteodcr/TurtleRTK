@@ -4,8 +4,8 @@ const options = {
   host: 'rtk2go.com',
   port: 2101,
   mountpoint: '',
-  username: 'test@test.com',
-  password: 'test',
+  username: 'mattdecorsaire@gmail.com',
+  password: 'none',
   xyz: [-1983430.2365, -4937492.4088, 3505683.7925],
   // the interval of send nmea, unit is millisecond
   interval: 2000,

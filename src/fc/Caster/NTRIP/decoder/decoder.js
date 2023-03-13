@@ -126,7 +126,7 @@ class NtripDecoder extends EventEmitter {
     }
     if (
       headerStr.startsWith(config.RESOURCETABLE_PREFIX) ||
-      headerStr.includes('STR')
+      this.buffer.toString().includes('STR')
     ) {
       this.dataType = config.SOURCETABLE_DATA;
     }
