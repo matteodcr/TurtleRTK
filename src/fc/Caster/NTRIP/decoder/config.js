@@ -22,7 +22,6 @@ const RELAY_PREFIX = 'ICY';
 const JPL_PREFIX = 'HTTP/1.1 200 OK';
 // the prefix of source table response
 const RELAY_SOURCETABLE_PREFIX = 'SOURCETABLE 200 OK';
-const JPL_SOURCETABLE_PREFIX = 'HTTP/1.1 200 OK';
 
 // define the sign for rover data
 const ROVER_DATA = 'ROVER';

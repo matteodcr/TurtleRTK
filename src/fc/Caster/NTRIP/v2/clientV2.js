@@ -164,7 +164,7 @@ class NtripClientV2 extends EventEmitter {
       for (const key in this.headers) {
         customHeader += `${key}: ${this.headers[key]}\r\n`;
       }
-      const data = `GET /${mountpoint} HTTP/1.1\r\nConnection: close\r\nNtrip-Version: Ntrip/2.0\r\nAuthorization: Basic ${authorization}\r\nUser-Agent: ${userAgent}\r\n${customHeader}\r\n\r\n`;
+      const data = `GET /${mountpoint} HTTP/1.1\r\nNtrip-Version: Ntrip/2.0\r\nAuthorization: Basic ${authorization}\r\nUser-Agent: ${userAgent}\r\n${customHeader}\r\n\r\n`;
       this.client.write(data);
     });
     this.client.on('data', data => {
