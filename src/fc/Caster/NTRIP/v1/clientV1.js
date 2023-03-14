@@ -3,9 +3,9 @@ const config = require('./config');
 const {NtripDecoder} = require('../decoder/decoder');
 const net = require('net');
 const utils = require('./utils');
-global.Buffer = global.Buffer || require('buffer').Buffer;
+import {Buffer} from 'buffer';
 
-class NtripClientV1 extends EventEmitter {
+export class NtripClientV1 extends EventEmitter {
   /**
    * create a client
    * @param {Object} options client options
@@ -72,7 +72,7 @@ class NtripClientV1 extends EventEmitter {
     /**
      * @member {Boolean} isClose - the status of closed
      */
-    this.isClose = false;
+    this.isClose = true;
     /**
      * @member {Boolean} isReady - check if the ntripcater is ready
      */
@@ -137,6 +137,7 @@ class NtripClientV1 extends EventEmitter {
   _connect() {
     // init ntrip decoder
     this.decoder = new NtripDecoder();
+    this.isClose = false;
     this.decoder.on('data', data => {
       this._onData(data);
     });
@@ -208,13 +209,16 @@ class NtripClientV1 extends EventEmitter {
     }
 
     this.emit('error', err);
-    this._reconnect();
+    if (!this.isClose) {
+      this._reconnect();
+    }
   }
 
   /**
    * reconnect the ntripcaster
    */
   async _reconnect() {
+    console.log(this.isClose);
     if (this.isClose) {
       return;
     }
@@ -228,7 +232,10 @@ class NtripClientV1 extends EventEmitter {
     // do sleep
     await utils.sleep(this.reconnectInterval);
     // begin connect
-    this._connect();
+    console.log('RECONNECTING');
+    if (!this.isClose) {
+      this._connect();
+    }
   }
 
   /**

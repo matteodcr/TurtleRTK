@@ -3,7 +3,7 @@ const config = require('./config');
 const {NtripDecoder} = require('../decoder/decoder');
 const net = require('net');
 const utils = require('./utils');
-
+import {Buffer} from 'buffer';
 class NtripClientV2 extends EventEmitter {
   /**
    * create a client

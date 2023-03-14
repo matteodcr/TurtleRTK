@@ -17,19 +17,15 @@ export class CasterConnection {
   inputData: string[] = [];
   casterClientNTRIPv1;
   optionsV1: CasterConnectionOptionsNTRIPv1 | null = null;
-
-  // TODO: Implement NTRIPv2
-  // casterClientNTRIPv2: NtripClient = null;
-  // optionsV2: CasterConnectionOptionsNTRIPv1 | null = null;
-
   connectedBase: Base | null = null;
+  isClosed = true;
 
   constructor() {
     makeAutoObservable(this);
   }
 
   closeConnection() {
-    this.casterClientNTRIPv1.close();
+    this.isClosed = true;
   }
 
   configureConnection(base: Base) {
@@ -51,18 +47,26 @@ export class CasterConnection {
     this.connectedBase = null;
   }
 
+  clear() {
+    this.inputData = [];
+  }
+
   getNTRIPData() {
     this.casterClientNTRIPv1 = new NtripClientV1(this.optionsV1);
+    this.isClosed = false;
 
     this.casterClientNTRIPv1.on('data', data => {
       runInAction(() => {
-        this.inputData.push(data);
+        if (!this.isClosed) {
+          this.inputData.push(data);
+        } else {
+          this.casterClientNTRIPv1.client.end();
+          this.casterClientNTRIPv1.close();
+        }
       });
     });
 
-    this.casterClientNTRIPv1.on('close', () => {
-      console.log('client close');
-    });
+    this.casterClientNTRIPv1.on('close', () => {});
 
     this.casterClientNTRIPv1.on('error', err => {
       console.log(err);

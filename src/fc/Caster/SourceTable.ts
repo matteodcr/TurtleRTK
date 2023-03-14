@@ -5,7 +5,7 @@ import {NtripClientV1} from './NTRIP/v1/clientV1';
 import waitForEvent from 'wait-for-event-promise';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
-export const FAKE_MOUNTPOINT = 'TEST'; // TODO: find a universal fake mountpoint name
+export const FAKE_MOUNTPOINT = ''; // TODO: find a universal fake mountpoint name
 export const ENDSOURCETABLE = 'ENDSOURCETABLE';
 export const SOURCETABLE_LINE_SEPARATOR = '\n';
 export const STREAM_IDENTIFIER = 'STR';
@@ -84,7 +84,6 @@ export default class SourceTable {
           rawSourceTable + data.toString() + SOURCETABLE_LINE_SEPARATOR;
         if (data.toString().indexOf(ENDSOURCETABLE) !== -1) {
           client.emit('response', rawSourceTable);
-          client.close();
         }
       });
 

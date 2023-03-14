@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react-lite';
-import React, {useState} from 'react';
+import React from 'react';
 import {Button} from 'react-native-paper';
 import {SafeAreaView, View, Text, StyleSheet, ScrollView} from 'react-native';
 import {useStoreContext} from '../../fc/Store';
@@ -34,7 +34,7 @@ export default observer(function RecordingScreen() {
             onPress={() => {
               store.casterConnection.getNTRIPData();
             }}>
-            Debug connection caster - Counter{' '}
+            Connection caster - Counter{' '}
             {store.casterConnection.inputData.length}
           </Button>
           <Button
@@ -45,6 +45,14 @@ export default observer(function RecordingScreen() {
             }}>
             Stop
           </Button>
+          <Button
+            style={{marginVertical: 10}}
+            mode="contained"
+            onPress={() => {
+              store.casterConnection.clear();
+            }}>
+            Clear
+          </Button>
         </View>
         <ScrollView>
           <Text
@@ -54,7 +62,11 @@ export default observer(function RecordingScreen() {
               color: 'white',
               padding: 15,
             }}>
-            {store.casterConnection.inputData}
+            {
+              store.casterConnection.inputData[
+                store.casterConnection.inputData.length - 1
+              ]
+            }
           </Text>
         </ScrollView>
       </View>

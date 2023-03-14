@@ -1,8 +1,7 @@
 const {EventEmitter} = require('events');
 const config = require('./config');
 const {checkRtcmCrc24} = require('./crc24');
-global.Buffer = global.Buffer || require('buffer').Buffer;
-
+import {Buffer} from 'buffer';
 class NtripDecoder extends EventEmitter {
   /**
    * create new instance of NtripDecoder
@@ -139,7 +138,9 @@ class NtripDecoder extends EventEmitter {
     // set buffer data
     this.buffer = this.buffer.slice(idx + separatorBuf.length);
     this.isHeader = true;
-    this._onData(headerBuf);
+
+    // AFFICHER HEADER
+    // this._onData(headerBuf);
 
     this._decodeData();
   }
