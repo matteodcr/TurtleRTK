@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import {
   SafeAreaView,
@@ -5,7 +6,6 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  StatusBar,
   Alert,
 } from 'react-native';
 
@@ -58,4 +58,4 @@ const styles = StyleSheet.create({
     }
   });
 
-export default SettingsScreen;
+  export default SettingsScreen;
