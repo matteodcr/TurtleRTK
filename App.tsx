@@ -1,7 +1,6 @@
 import React from 'react';
 import 'react-native-gesture-handler';
 import {StyleSheet, View, PermissionsAndroid, Alert} from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -9,7 +8,6 @@ import {Provider, MD3DarkTheme} from 'react-native-paper';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
-import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
 
 function createIcon(iconName: string) {
@@ -72,12 +70,12 @@ function RoverRoute() {
     <RoverStack.Navigator initialRouteName="Rover">
       <RoverStack.Screen
         name="RoverScr"
-        getComponent={() => require('./src/ui/Screens/RoverScreen').default}
+        getComponent={() => require('./src/ui/Screens/RoverScreen/RoverScreen').default}
         options={{headerShown: false}}
       />
       <RoverStack.Screen
         name="DetailsBLE"
-        getComponent={() => require('./src/ui/Screens/DetailsBLE').default}
+        getComponent={() => require('./src/ui/Screens/RoverScreen/BLE/DetailsBLE').default}
         options={{headerShown: false}}
       />
     </RoverStack.Navigator>
@@ -99,17 +97,53 @@ export async function requestLocationPermission() {
     console.warn(err);
   }
 }
+
+export async function requestBluetoothScanPermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Bluetooth Scan permission granted');
+    } else {
+      console.log('Bluetooth Scan permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
+export async function requestBluetoothConnectPermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Bluetooth connexion permission granted');
+    } else {
+      console.log('Bluetooth connextion permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
 export default function App() {
   try {
     requestLocationPermission();
   } catch (e) {
     console.log(e);
   }
-  /*try {
+  try {
     requestBluetoothScanPermission();
   } catch (e) {
     console.log(e);
-  }*/
+  }
+  try {
+    requestBluetoothConnectPermission();
+  } catch (e) {
+    console.log(e);
+  }
   return (
     <Provider theme={MD3DarkTheme}>
       <NavigationContainer>
