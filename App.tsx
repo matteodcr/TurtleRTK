@@ -1,13 +1,13 @@
 import React from 'react';
 import 'react-native-gesture-handler';
-import {StyleSheet, View, PermissionsAndroid, Alert} from 'react-native';
+import {PermissionsAndroid, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, MD3DarkTheme} from 'react-native-paper';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
-import SettingsScreen from './src/ui/Screens/SettingsScreen';
+import SettingsScreen from './src/ui/Screens/SettingsScreen/SettingsScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
 
 function createIcon(iconName: string) {
@@ -21,8 +21,32 @@ function SettingsRoute() {
   return (
     <SettingsStack.Navigator initialRouteName="Settings">
       <SettingsStack.Screen
-        name="SettingsScr"
-        component={SettingsScreen}
+        name="SettingsScreen"
+        getComponent={() =>
+          require('./src/ui/Screens/SettingsScreen/SettingsScreen').default
+        }
+        options={{headerShown: false}}
+      />
+      <SettingsStack.Screen
+        name="CasterSettingsScreen"
+        getComponent={() =>
+          require('./src/ui/Screens/SettingsScreen/CasterSettingsScreen')
+            .default
+        }
+        options={{headerShown: false}}
+      />
+      <SettingsStack.Screen
+        name="RoverSettingsScreen"
+        getComponent={() =>
+          require('./src/ui/Screens/SettingsScreen/RoverSettingsScreen').default
+        }
+        options={{headerShown: false}}
+      />
+      <SettingsStack.Screen
+        name="AboutScreen"
+        getComponent={() =>
+          require('./src/ui/Screens/SettingsScreen/AboutScreen').default
+        }
         options={{headerShown: false}}
       />
     </SettingsStack.Navigator>
@@ -70,12 +94,16 @@ function RoverRoute() {
     <RoverStack.Navigator initialRouteName="Rover">
       <RoverStack.Screen
         name="RoverScr"
-        getComponent={() => require('./src/ui/Screens/RoverScreen/RoverScreen').default}
+        getComponent={() =>
+          require('./src/ui/Screens/RoverScreen/RoverScreen').default
+        }
         options={{headerShown: false}}
       />
       <RoverStack.Screen
         name="DetailsBLE"
-        getComponent={() => require('./src/ui/Screens/RoverScreen/BLE/DetailsBLE').default}
+        getComponent={() =>
+          require('./src/ui/Screens/RoverScreen/BLE/DetailsBLE').default
+        }
         options={{headerShown: false}}
       />
     </RoverStack.Navigator>
@@ -83,7 +111,6 @@ function RoverRoute() {
 }
 
 const Tab = createMaterialBottomTabNavigator();
-
 export async function requestLocationPermission() {
   try {
     const granted = await PermissionsAndroid.request(
@@ -111,7 +138,7 @@ export async function requestBluetoothScanPermission() {
   } catch (err) {
     console.warn(err);
   }
-};
+}
 
 export async function requestBluetoothConnectPermission() {
   try {
@@ -126,7 +153,7 @@ export async function requestBluetoothConnectPermission() {
   } catch (err) {
     console.warn(err);
   }
-};
+}
 
 export default function App() {
   try {
@@ -147,7 +174,9 @@ export default function App() {
   return (
     <Provider theme={MD3DarkTheme}>
       <NavigationContainer>
-        <Tab.Navigator initialRouteName="Caster">
+        <Tab.Navigator
+          barStyle={{backgroundColor: '#ffffff'}}
+          initialRouteName="Caster">
           <Tab.Screen
             name="Caster"
             component={CasterRoute}
