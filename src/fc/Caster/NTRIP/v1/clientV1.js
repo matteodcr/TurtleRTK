@@ -173,7 +173,7 @@ export class NtripClientV1 extends EventEmitter {
       this.decoder.decode(data);
     });
     this.client.on('close', () => {
-      this._onError('socket client close');
+      console.log('CLIENT SOCKET CLOSED');
     });
     this.client.on('error', err => {
       this._onError(err);

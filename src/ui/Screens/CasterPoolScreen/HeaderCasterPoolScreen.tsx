@@ -2,13 +2,16 @@ import {Pressable, Text, View} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import React from 'react';
 import {styles} from './CasterPoolScreen';
+import {observer} from 'mobx-react-lite';
+import {useStoreContext} from '../../../fc/Store';
 
 interface HeaderCasterPoolScreenProps {
   toogleForm;
 }
-export default function HeaderCasterPoolScreen({
+export default observer(function HeaderCasterPoolScreen({
   toogleForm,
 }: HeaderCasterPoolScreenProps) {
+  const store = useStoreContext();
   return (
     <View style={styles.headerTab}>
       <Text
@@ -22,11 +25,9 @@ export default function HeaderCasterPoolScreen({
       </Text>
       <Pressable
         style={styles.TabButton}
-        onPress={() => {
-          toogleForm();
-        }}>
+        onPress={() => store.casterPool.setTyping(true)}>
         <MaterialIcons name="add" color={'white'} size={25} />
       </Pressable>
     </View>
   );
-}
+});

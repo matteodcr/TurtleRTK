@@ -5,12 +5,14 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Provider, MD3DarkTheme} from 'react-native-paper';
+import {Provider, MD3DarkTheme, Snackbar} from 'react-native-paper';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
 import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
+import {observer} from 'mobx-react-lite';
+import {useStoreContext} from './src/fc/Store';
 
 function createIcon(iconName: string) {
   return ({color}: {color: string}) => (
@@ -99,7 +101,8 @@ export async function requestLocationPermission() {
     console.warn(err);
   }
 }
-export default function App() {
+export default observer(function App() {
+  var store = useStoreContext();
   try {
     requestLocationPermission();
   } catch (e) {
@@ -148,6 +151,18 @@ export default function App() {
           />
         </Tab.Navigator>
       </NavigationContainer>
+      <Snackbar
+        visible={store.errorManager.isError}
+        onDismiss={() => store.errorManager.modifyErrorVisibility(false)}
+        wrapperStyle={{paddingBottom: 80}}
+        action={{
+          label: 'Close',
+          onPress: () => {
+            store.errorManager.modifyErrorVisibility(false);
+          },
+        }}>
+        {store.errorManager.currentError}
+      </Snackbar>
     </Provider>
   );
-}
+});

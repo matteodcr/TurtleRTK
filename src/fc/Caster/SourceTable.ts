@@ -3,6 +3,8 @@ import Network from './Network';
 import Caster from './Caster';
 import {NtripClientV1} from './NTRIP/v1/clientV1';
 import waitForEvent from 'wait-for-event-promise';
+import {makeAutoObservable} from 'mobx';
+import {CasterPool} from './CasterPool';
 global.Buffer = global.Buffer || require('buffer').Buffer;
 
 export const FAKE_MOUNTPOINT = ''; // TODO: find a universal fake mountpoint name
@@ -19,30 +21,26 @@ export type SourceTableEntries = {
   casterList: Array<Caster>;
 };
 export default class SourceTable {
-  get entries(): SourceTableEntries {
-    return this._entries;
-  }
-
-  set entries(value: SourceTableEntries) {
-    this._entries = value;
-  }
-
-  private _entries: SourceTableEntries;
+  parentCasterPool: CasterPool;
+  entries: SourceTableEntries;
   adress: string;
   port: number;
   username: string;
   password: string;
 
   constructor(
+    parent: CasterPool,
     adress: string,
     port: number,
     username: string,
     password: string,
   ) {
+    this.parentCasterPool = parent;
     this.adress = adress;
     this.port = port;
     this.username = username;
     this.password = password;
+    makeAutoObservable(this);
   }
 
   async getSourceTable(
@@ -80,10 +78,15 @@ export default class SourceTable {
       const rawSourceTablePromise = waitForEvent(client, 'response'); // used to convert an event into a promise
 
       client.on('data', data => {
+        console.log('sourcetable');
         rawSourceTable =
           rawSourceTable + data.toString() + SOURCETABLE_LINE_SEPARATOR;
         if (data.toString().indexOf(ENDSOURCETABLE) !== -1) {
           client.emit('response', rawSourceTable);
+          if (client.client != null) {
+            client.client.end();
+          }
+          client.close();
         }
       });
 
@@ -92,8 +95,15 @@ export default class SourceTable {
       });
 
       client.on('error', err => {
-        console.log(err);
+        console.log('ERROR-DETECTED: ' + err);
         client.close();
+        if (this.parentCasterPool?.parentStore?.errorManager !== null) {
+          this.parentCasterPool?.parentStore?.errorManager.printError(
+            String(err),
+          );
+          this.parentCasterPool.setTyping(false);
+          this.parentCasterPool.setLoading(false);
+        }
       });
 
       client._connect();

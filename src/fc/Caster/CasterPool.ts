@@ -1,18 +1,28 @@
 import SourceTable from './SourceTable';
 import {makeAutoObservable, observable, runInAction} from 'mobx';
+import {AppStore} from '../Store';
+import app from '../../../App';
 
 export class CasterPool {
+  parentStore: AppStore | null = null;
   subscribed: Array<SourceTable> = []; // casters dont les bases sont affichées
   unsubscribed: Array<SourceTable> = []; // casters enregistrés mais dont les bases sont pas affichées
   isLoading: boolean = false;
+  isTyping: boolean = false;
 
-  constructor(subscribed: SourceTable[], unsubscribed: SourceTable[]) {
+  constructor(
+    parentStore: AppStore,
+    subscribed: SourceTable[],
+    unsubscribed: SourceTable[],
+  ) {
+    this.parentStore = parentStore;
     this.subscribed = subscribed;
     this.unsubscribed = unsubscribed;
-    makeAutoObservable(this, {
-      subscribed: observable.shallow,
-      unsubscribed: observable.shallow,
-    });
+    makeAutoObservable(this);
+  }
+
+  setTyping(typing: boolean) {
+    this.isTyping = typing;
   }
 
   setLoading(loading: boolean) {

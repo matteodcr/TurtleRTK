@@ -9,15 +9,11 @@ import {observer} from 'mobx-react-lite';
 interface CasterListItem {
   item: SourceTable;
   showCasterInfo(Caster): void;
-  toogleSnackBar;
-  modifySnackBarError;
 }
 
 export default observer(function CasterListItem({
   item,
   showCasterInfo,
-  toogleSnackBar,
-  modifySnackBarError,
 }: CasterListItem) {
   const store = useStoreContext();
 
@@ -31,10 +27,9 @@ export default observer(function CasterListItem({
 
   function handleShowCasterInfo() {
     if (item.entries.casterList.length === 0) {
-      modifySnackBarError(
+      store.errorManager.printError(
         item.adress + " doesn't provide any informations about the caster.",
       );
-      toogleSnackBar();
       return;
     }
     showCasterInfo(item);

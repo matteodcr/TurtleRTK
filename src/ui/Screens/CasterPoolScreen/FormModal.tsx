@@ -5,7 +5,6 @@ import React from 'react';
 import {styles} from './CasterPoolScreen';
 import {observer} from 'mobx-react-lite';
 import {useStoreContext} from '../../../fc/Store';
-import SourceTable from '../../../fc/Caster/SourceTable';
 
 interface FormModalProps {
   isFormVisible: boolean;
@@ -22,8 +21,6 @@ interface FormModalProps {
 }
 
 export default observer(function FormModal({
-  isFormVisible,
-  toogleForm,
   address,
   handleAddressChange,
   port,
@@ -39,10 +36,10 @@ export default observer(function FormModal({
   return (
     <Modal
       style={styles.modal}
-      isVisible={isFormVisible}
+      isVisible={store.casterPool.isTyping}
       useNativeDriver={true}
-      onBackButtonPress={toogleForm}
-      onSwipeComplete={toogleForm}
+      onBackButtonPress={() => store.casterPool.setTyping(false)}
+      onSwipeComplete={() => store.casterPool.setTyping(false)}
       swipeDirection={['down']}
       animationIn="slideInUp"
       animationOut="slideOutDown">

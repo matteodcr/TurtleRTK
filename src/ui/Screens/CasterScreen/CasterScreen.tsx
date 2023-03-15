@@ -44,7 +44,10 @@ interface Props {
 export default observer(function CasterScreen({navigation}: Props) {
   const store = useStoreContext();
 
-  const mockBase = new Base(new SourceTable('none', 2101, 'none', 'none'), []);
+  const mockBase = new Base(
+    new SourceTable(store.casterPool, 'none', 2101, 'none', 'none'),
+    [],
+  );
 
   const [searchText, onChangeSearch] = useState('');
   const [fav, setFav] = useState(true); //show favorites

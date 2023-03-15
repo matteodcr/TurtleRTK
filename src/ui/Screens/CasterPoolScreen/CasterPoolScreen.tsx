@@ -10,20 +10,23 @@ import HeaderCasterPoolScreen from './HeaderCasterPoolScreen';
 import CasterList from './CasterList';
 import CasterModal from './CasterModal';
 import FormModal from './FormModal';
-import {Snackbar} from 'react-native-paper';
 
 export default observer(function CasterPoolScreen() {
-  const mockSourceTable = new SourceTable('None', 2101, 'None', 'None');
-  mockSourceTable.getMockSourceTable();
   const store = useStoreContext();
+  const mockSourceTable = new SourceTable(
+    store.casterPool,
+    'None',
+    2101,
+    'None',
+    'None',
+  );
+  mockSourceTable.getMockSourceTable();
   const [isFormVisible, setFormVisible] = useState(false);
   const [isInfoVisible, setInfoVisible] = useState(false);
   const [address, setAddress] = useState('caster.centipede.fr');
   const [port, setPort] = useState('2101');
   const [username, setUsername] = useState('centipede');
   const [password, setPassword] = useState('centipede');
-  const [isSnackBarVisible, setSnackBar] = useState(false);
-  const [snackBarError, setSnackBarError] = useState('None');
 
   const [selectedSourceTable, setSelectedSourceTable] =
     useState(mockSourceTable);
@@ -44,17 +47,9 @@ export default observer(function CasterPoolScreen() {
     setPassword(text);
   };
 
-  const toogleSnackBar = () => {
-    setSnackBar(!isSnackBarVisible);
-  };
-
-  const modifySnackBarError = text => {
-    setSnackBarError(text);
-  };
-
   const handleFormSubmit = () => {
-    console.log('FORM SUBMITTED');
     const sourceTable: SourceTable = new SourceTable(
+      store.casterPool,
       address,
       +port,
       username,
@@ -64,8 +59,7 @@ export default observer(function CasterPoolScreen() {
       store.casterPool.addCaster(sourceTable);
     } catch (error) {
       toogleForm();
-      modifySnackBarError(String(error));
-      toogleSnackBar();
+      store.errorManager.printError(String(error));
     }
   };
 
@@ -103,22 +97,7 @@ export default observer(function CasterPoolScreen() {
         handlePasswordChange={handlePasswordChange}
         handleFormSubmit={handleFormSubmit}
       />
-      <CasterList
-        showCasterInfo={showCasterInfo}
-        toogleSnackBar={toogleSnackBar}
-        modifySnackBarError={modifySnackBarError}
-      />
-      <Snackbar
-        visible={isSnackBarVisible}
-        onDismiss={toogleSnackBar}
-        action={{
-          label: 'Close',
-          onPress: () => {
-            toogleSnackBar;
-          },
-        }}>
-        {snackBarError}
-      </Snackbar>
+      <CasterList showCasterInfo={showCasterInfo} />
     </SafeAreaView>
   );
 });
