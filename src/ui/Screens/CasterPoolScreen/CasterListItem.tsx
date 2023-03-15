@@ -26,12 +26,6 @@ export default observer(function CasterListItem({
   }
 
   function handleShowCasterInfo() {
-    if (item.entries.casterList.length === 0) {
-      store.errorManager.printError(
-        item.adress + " doesn't provide any informations about the caster.",
-      );
-      return;
-    }
     showCasterInfo(item);
   }
   return (

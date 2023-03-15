@@ -20,49 +20,49 @@ export default observer(function CasterModal({
   const store = useStoreContext();
   const caster = selectedSourceTable.entries.casterList[0];
   return (
-    <Modal
-      style={styles.modal}
-      isVisible={isInfoVisible}
-      useNativeDriver={true}
-      onBackButtonPress={toogleInfo}
-      onSwipeComplete={toogleInfo}
-      animationIn="slideInUp"
-      animationOut="slideOutDown">
-      <View style={styles.container}>
-        <ScrollView>
-          <View
-            style={{
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-            }}
-          />
-          <Text style={styles.header}>{caster.host}</Text>
-          <View style={styles.container}>
-            <View style={styles.chipsContainer}>
-              <Chip style={styles.chip} icon="dns">
-                Identifier : {caster.identifier}
-              </Chip>
-              <Chip style={styles.chip} icon="router">
-                Port : {caster.port}
-              </Chip>
-              <Chip style={styles.chip}>
-                Operator : {String(caster.operator)}
-              </Chip>
-              <Chip style={styles.chip}>Country : {caster.country}</Chip>
-              <Chip style={styles.chip}>VRS : {String(caster.nmea)}</Chip>
-            </View>
-            <View style={styles.header}>
-              <Paragraph style={styles.title}>
-                Position : {caster.latitude}, {caster.longitude}
-              </Paragraph>
-              <Paragraph style={styles.title}>
-                Fallback IP : {caster.fallbackHost}
-              </Paragraph>
-              <Paragraph style={styles.title}>
-                Fallback host : {caster.fallbackHost}
-              </Paragraph>
-              <Paragraph style={styles.title}>Misc : {caster.misc}</Paragraph>
-            </View>
+    <View>
+      <Modal
+        style={styles.modal}
+        isVisible={isInfoVisible}
+        useNativeDriver={true}
+        onBackButtonPress={toogleInfo}
+        onSwipeComplete={toogleInfo}
+        animationIn="slideInUp"
+        animationOut="slideOutDown">
+        <View style={styles.container}>
+          <ScrollView>
+            <Text style={styles.header}>{selectedSourceTable.adress}</Text>
+            {selectedSourceTable.entries.casterList.length !== 0 && (
+              <View style={styles.container}>
+                <View style={styles.chipsContainer}>
+                  <Chip style={styles.chip} icon="dns">
+                    Identifier : {caster.identifier}
+                  </Chip>
+                  <Chip style={styles.chip} icon="router">
+                    Port : {caster.port}
+                  </Chip>
+                  <Chip style={styles.chip}>
+                    Operator : {String(caster.operator)}
+                  </Chip>
+                  <Chip style={styles.chip}>Country : {caster.country}</Chip>
+                  <Chip style={styles.chip}>VRS : {String(caster.nmea)}</Chip>
+                </View>
+                <View style={styles.header}>
+                  <Paragraph style={styles.title}>
+                    Position : {caster.latitude}, {caster.longitude}
+                  </Paragraph>
+                  <Paragraph style={styles.title}>
+                    Fallback IP : {caster.fallbackHost}
+                  </Paragraph>
+                  <Paragraph style={styles.title}>
+                    Fallback host : {caster.fallbackHost}
+                  </Paragraph>
+                  <Paragraph style={styles.title}>
+                    Misc : {caster.misc}
+                  </Paragraph>
+                </View>
+              </View>
+            )}
             <Button
               style={{marginHorizontal: 100, marginTop: 20}}
               mode="contained"
@@ -73,9 +73,9 @@ export default observer(function CasterModal({
               loading={store.casterPool.isLoading}>
               Remove
             </Button>
-          </View>
-        </ScrollView>
-      </View>
-    </Modal>
+          </ScrollView>
+        </View>
+      </Modal>
+    </View>
   );
 });
