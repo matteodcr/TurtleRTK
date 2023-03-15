@@ -60,6 +60,7 @@ export default observer(function CasterPoolScreen() {
     } catch (error) {
       toogleForm();
       store.errorManager.printError(String(error));
+      store.casterPool.setTyping(false);
     }
   };
 
