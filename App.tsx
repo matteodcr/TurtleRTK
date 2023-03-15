@@ -9,7 +9,6 @@ import {Provider, MD3DarkTheme, Snackbar} from 'react-native-paper';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
 import SettingsScreen from './src/ui/Screens/SettingsScreen';
-import RoverScreen from './src/ui/Screens/RoverScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
 import {observer} from 'mobx-react-lite';
 import {useStoreContext} from './src/fc/Store';
@@ -74,12 +73,12 @@ function RoverRoute() {
     <RoverStack.Navigator initialRouteName="Rover">
       <RoverStack.Screen
         name="RoverScr"
-        getComponent={() => require('./src/ui/Screens/RoverScreen').default}
+        getComponent={() => require('./src/ui/Screens/RoverScreen/RoverScreen').default}
         options={{headerShown: false}}
       />
       <RoverStack.Screen
         name="DetailsBLE"
-        getComponent={() => require('./src/ui/Screens/DetailsBLE').default}
+        getComponent={() => require('./src/ui/Screens/RoverScreen/BLE/DetailsBLE').default}
         options={{headerShown: false}}
       />
     </RoverStack.Navigator>
@@ -101,6 +100,37 @@ export async function requestLocationPermission() {
     console.warn(err);
   }
 }
+
+export async function requestBluetoothScanPermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Bluetooth Scan permission granted');
+    } else {
+      console.log('Bluetooth Scan permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
+export async function requestBluetoothConnectPermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Bluetooth connexion permission granted');
+    } else {
+      console.log('Bluetooth connextion permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
 export default observer(function App() {
   var store = useStoreContext();
   try {
@@ -108,11 +138,11 @@ export default observer(function App() {
   } catch (e) {
     console.log(e);
   }
-  /*try {
-    requestBluetoothScanPermission();
+  try {
+    requestBluetoothConnectPermission();
   } catch (e) {
     console.log(e);
-  }*/
+  }
   return (
     <Provider theme={MD3DarkTheme}>
       <NavigationContainer>

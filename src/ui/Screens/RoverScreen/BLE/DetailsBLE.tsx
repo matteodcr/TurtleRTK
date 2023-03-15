@@ -47,11 +47,17 @@ const DetailsBLE = ({ route, navigation }) => {
         </View>
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>Bytes : </Text>
-          <Text style={styles.details}>{device.advertising.manufacturerData?.bytes}</Text>
-        </View>
+          {device.advertising.manufacturerData?.bytes!=null ?
+            <Text style={styles.details}>{String.fromCharCode.apply(null, Array.from(device.advertising.manufacturerData?.bytes))}</Text>
+            : <Text style={styles.details}>None</Text>
+          }
+        </View>        
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>Data : </Text>
-          <Text style={styles.details}>{device.advertising.manufacturerData?.data}</Text>
+          {device.advertising.manufacturerData?.data!=null ?
+            <Text style={styles.details}>{Array.from(Buffer.from((device.advertising.manufacturerData?.data), 'base64')).join('/')}</Text>
+            : <Text style={styles.details}>None</Text>
+          }
         </View>
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>Service UUIDs : </Text>
