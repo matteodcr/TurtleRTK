@@ -139,6 +139,11 @@ export default observer(function App() {
     console.log(e);
   }
   try {
+    requestBluetoothScanPermission();
+  } catch (e) {
+    console.log(e);
+  }
+  try {
     requestBluetoothConnectPermission();
   } catch (e) {
     console.log(e);
