@@ -23,7 +23,7 @@ export default function RoverSettingsScreen() {
             fontWeight: 'bold',
             color: 'white',
           }}>
-          Settings Screen
+          Rover Settings
         </Text>
         <Pressable style={styles.TabButton} onPress={HeaderMoreButton}>
           <Text style={{color: 'white', fontSize: 25}}>+</Text>

@@ -20,7 +20,7 @@ export default function RoverSettingsScreen() {
             fontWeight: 'bold',
             color: 'white',
           }}>
-          Settings Screen
+          About
         </Text>
       </View>
     );
