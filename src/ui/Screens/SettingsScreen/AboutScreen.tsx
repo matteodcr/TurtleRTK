@@ -6,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  ScrollView,
 } from 'react-native';
 
 export default function RoverSettingsScreen() {
@@ -28,9 +29,16 @@ export default function RoverSettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
-      <View>
+      <ScrollView style={{margin: 20}}>
         <Text style={{color: 'white'}}>Licence MIT</Text>
-      </View>
+        <Text style={{color: 'white'}}>
+          Developers : Mattéo Decorsaire / Paul Grandhomme / Tanguy Delas /
+          Thomas Bousquet
+        </Text>
+        <Text style={{color: 'white'}}>
+          With the help of Yves Pratter and Eric Sibert
+        </Text>
+      </ScrollView>
     </SafeAreaView>
   );
 }
