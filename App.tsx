@@ -1,18 +1,16 @@
 import React from 'react';
 import 'react-native-gesture-handler';
-import {StyleSheet, View, PermissionsAndroid, Alert} from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {PermissionsAndroid, Alert} from 'react-native';
+import {PermissionsAndroid, Alert, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, MD3DarkTheme, Snackbar} from 'react-native-paper';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
-import SettingsScreen from './src/ui/Screens/SettingsScreen/SettingsScreen';
 import RecordingScreen from './src/ui/Screens/RecordingScreen';
 import {observer} from 'mobx-react-lite';
 import {useStoreContext} from './src/fc/Store';
+import {ConnectionStatusBar} from 'react-native-ui-lib';
 
 function createIcon(iconName: string) {
   return ({color}: {color: string}) => (

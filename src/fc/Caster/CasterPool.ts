@@ -9,6 +9,7 @@ export class CasterPool {
   unsubscribed: Array<SourceTable> = []; // casters enregistrés mais dont les bases sont pas affichées
   isLoading: boolean = false;
   isTyping: boolean = false;
+  isNTRIPv1: boolean = true;
 
   constructor(
     parentStore: AppStore,
@@ -19,6 +20,10 @@ export class CasterPool {
     this.subscribed = subscribed;
     this.unsubscribed = unsubscribed;
     makeAutoObservable(this);
+  }
+
+  setProtocol(isNTRIPv1: boolean) {
+    this.isNTRIPv1 = isNTRIPv1;
   }
 
   setTyping(typing: boolean) {

@@ -2,6 +2,8 @@ import Base from './Base';
 import Network from './Network';
 import Caster from './Caster';
 import {NtripClientV1} from './NTRIP/v1/clientV1';
+import {NtripClientV2} from './NTRIP/v2/clientV2';
+
 import waitForEvent from 'wait-for-event-promise';
 import {makeAutoObservable} from 'mobx';
 import {CasterPool} from './CasterPool';
@@ -27,6 +29,7 @@ export default class SourceTable {
   port: number;
   username: string;
   password: string;
+  isNTRIPv1: boolean = true;
 
   constructor(
     parent: CasterPool,
@@ -34,12 +37,14 @@ export default class SourceTable {
     port: number,
     username: string,
     password: string,
+    isNTRIPv1: boolean,
   ) {
     this.parentCasterPool = parent;
     this.adress = adress;
     this.port = port;
     this.username = username;
     this.password = password;
+    this.isNTRIPv1 = isNTRIPv1;
     makeAutoObservable(this);
   }
 
@@ -74,7 +79,13 @@ export default class SourceTable {
         interval: 2000,
       };
 
-      const client = new NtripClientV1(connectionOptions);
+      let client: NtripClientV1 | NtripClientV2 = new NtripClientV1(
+        connectionOptions,
+      );
+      if (!this.isNTRIPv1) {
+        client = new NtripClientV2(connectionOptions);
+      }
+
       const rawSourceTablePromise = waitForEvent(client, 'response'); // used to convert an event into a promise
 
       client.on('data', data => {

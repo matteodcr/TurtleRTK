@@ -2,13 +2,25 @@ import React, {useState} from 'react';
 import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 import {RadioButton, RadioGroup} from 'react-native-ui-lib';
 import Slider from '@react-native-community/slider';
+import {observer} from 'mobx-react-lite';
+import {AppStore, useStoreContext} from '../../../fc/Store';
 
 interface Props {
   navigation: any;
 }
 
-export default function CasterSettingsScreen({navigation}: Props) {
+function matchProtocol(store: AppStore, protocol: string) {
+  if (protocol === 'NTRIPv2') {
+    store.casterPool.setProtocol(false);
+  } else {
+    store.casterPool.setProtocol(true);
+  }
+  console.log(store.casterPool.isNTRIPv1);
+}
+
+export default observer(function CasterSettingsScreen({navigation}: Props) {
   const [sliderValue, setSliderValue] = useState(15);
+  const store = useStoreContext();
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
@@ -40,7 +52,7 @@ export default function CasterSettingsScreen({navigation}: Props) {
           </Text>
           <RadioGroup
             initialValue={'NTRIPv1'}
-            onValueChange={string => console.log(string)}>
+            onValueChange={string => matchProtocol(store, string)}>
             <RadioButton
               value={'NTRIPv1'}
               label={'NTRIPv1'}
@@ -79,7 +91,7 @@ export default function CasterSettingsScreen({navigation}: Props) {
       </View>
     </SafeAreaView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

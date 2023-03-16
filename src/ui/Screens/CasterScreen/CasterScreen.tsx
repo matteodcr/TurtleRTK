@@ -17,6 +17,7 @@ import HeaderCasterScreen from './HeaderCasterScreen';
 import BaseList from './BaseList';
 import BaseModal from './BaseModal';
 import ConnectedBase from './ConnectedBase';
+import {ConnectionStatusBar} from 'react-native-ui-lib';
 
 let latitude = 45.184434;
 let longitude = 5.75397;
@@ -45,7 +46,7 @@ export default observer(function CasterScreen({navigation}: Props) {
   const store = useStoreContext();
 
   const mockBase = new Base(
-    new SourceTable(store.casterPool, 'none', 2101, 'none', 'none'),
+    new SourceTable(store.casterPool, 'none', 2101, 'none', 'none', true),
     [],
   );
 
@@ -103,6 +104,10 @@ export default observer(function CasterScreen({navigation}: Props) {
         toogleInfo={toogleInfo}
       />
       <HeaderCasterScreen navigation={navigation} />
+      <ConnectionStatusBar
+        onConnectionChange={() => console.log('connection changed')}
+      />
+
       <ConnectedBase
         showBaseInfo={showBaseInfo}
         latitude={latitude}
