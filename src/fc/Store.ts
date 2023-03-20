@@ -2,7 +2,7 @@ import {createContext, useContext} from 'react';
 import {CasterConnection} from './Caster/CasterConnection';
 import {CasterPool} from './Caster/CasterPool';
 import {BasePool} from './Caster/BasePool';
-import {bluetoothManager} from './Rover/BLE/BluetoothManager'
+import {bluetoothManager} from './Rover/BLE/BluetoothManager';
 import {ErrorManager} from './Caster/ErrorManager';
 
 export class AppStore {
@@ -33,7 +33,6 @@ function generateStore() {
     new bluetoothManager(),
   );
   appStore.casterPool = new CasterPool(appStore, [], []);
-  console.log(appStore.casterPool.parentStore);
   return appStore;
 }
 

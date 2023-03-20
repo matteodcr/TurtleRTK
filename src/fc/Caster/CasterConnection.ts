@@ -61,7 +61,6 @@ export class CasterConnection {
 
     this.casterClient.on('data', data => {
       runInAction(() => {
-        console.log('connection');
         if (!this.isClosed) {
           this.inputData.push(data);
         } else {

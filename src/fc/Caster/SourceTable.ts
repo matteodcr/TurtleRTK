@@ -89,7 +89,6 @@ export default class SourceTable {
       const rawSourceTablePromise = waitForEvent(client, 'response'); // used to convert an event into a promise
 
       client.on('data', data => {
-        console.log('sourcetable');
         rawSourceTable =
           rawSourceTable + data.toString() + SOURCETABLE_LINE_SEPARATOR;
         if (data.toString().indexOf(ENDSOURCETABLE) !== -1) {

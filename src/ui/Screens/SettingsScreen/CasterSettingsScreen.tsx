@@ -15,7 +15,6 @@ function matchProtocol(store: AppStore, protocol: string) {
   } else {
     store.casterPool.setProtocol(true);
   }
-  console.log(store.casterPool.isNTRIPv1);
 }
 
 export default observer(function CasterSettingsScreen({navigation}: Props) {
