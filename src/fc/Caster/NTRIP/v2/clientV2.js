@@ -4,7 +4,7 @@ const {NtripDecoder} = require('../decoder/decoder');
 const net = require('net');
 const utils = require('./utils');
 import {Buffer} from 'buffer';
-class NtripClientV2 extends EventEmitter {
+export class NtripClientV2 extends EventEmitter {
   /**
    * create a client
    * @param {Object} options client options
@@ -136,6 +136,7 @@ class NtripClientV2 extends EventEmitter {
   _connect() {
     // init ntrip decoder
     this.decoder = new NtripDecoder();
+    this.isClose = false;
     this.decoder.on('data', data => {
       this._onData(data);
     });
@@ -171,7 +172,7 @@ class NtripClientV2 extends EventEmitter {
       this.decoder.decode(data);
     });
     this.client.on('close', () => {
-      this._onError('socket client close');
+      console.log('socket client close');
     });
     this.client.on('error', err => {
       this._onError(err);
@@ -227,7 +228,9 @@ class NtripClientV2 extends EventEmitter {
     // do sleep
     await utils.sleep(this.reconnectInterval);
     // begin connect
-    this._connect();
+    if (!this.isClose) {
+      this._connect();
+    }
   }
 
   /**
@@ -244,7 +247,3 @@ class NtripClientV2 extends EventEmitter {
     this.emit('data', data);
   }
 }
-
-module.exports = {
-  NtripClientV2: NtripClientV2,
-};

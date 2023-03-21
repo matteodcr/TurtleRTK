@@ -10,6 +10,7 @@ import HeaderCasterPoolScreen from './HeaderCasterPoolScreen';
 import CasterList from './CasterList';
 import CasterModal from './CasterModal';
 import FormModal from './FormModal';
+import {ConnectionStatusBar} from 'react-native-ui-lib';
 
 export default observer(function CasterPoolScreen() {
   const store = useStoreContext();
@@ -19,6 +20,7 @@ export default observer(function CasterPoolScreen() {
     2101,
     'None',
     'None',
+    true,
   );
   mockSourceTable.getMockSourceTable();
   const [isFormVisible, setFormVisible] = useState(false);
@@ -54,6 +56,7 @@ export default observer(function CasterPoolScreen() {
       +port,
       username,
       password,
+      store.casterPool.isNTRIPv1,
     );
     try {
       store.casterPool.addCaster(sourceTable);
@@ -80,6 +83,9 @@ export default observer(function CasterPoolScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderCasterPoolScreen toogleForm={toogleForm} />
+      <ConnectionStatusBar
+        onConnectionChange={() => console.log('connection changed')}
+      />
       <CasterModal
         selectedSourceTable={selectedSourceTable}
         isInfoVisible={isInfoVisible}

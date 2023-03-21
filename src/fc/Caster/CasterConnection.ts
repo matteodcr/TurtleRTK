@@ -1,6 +1,7 @@
 import {NtripClientV1} from './NTRIP/v1/clientV1';
 import Base from './Base';
 import {makeAutoObservable, runInAction} from 'mobx';
+import {NtripClientV2} from './NTRIP/v2/clientV2';
 import { AppStore } from '../Store';
 
 interface CasterConnectionOptionsNTRIPv1 {
@@ -16,7 +17,7 @@ interface CasterConnectionOptionsNTRIPv1 {
 
 export class CasterConnection {
   inputData: string[] = [];
-  casterClientNTRIPv1;
+  casterClient: NtripClientV1 | NtripClientV2;
   optionsV1: CasterConnectionOptionsNTRIPv1 | null = null;
   connectedBase: Base | null = null;
   isClosed = true;
@@ -55,27 +56,30 @@ export class CasterConnection {
   }
 
   getNTRIPData() {
-    this.casterClientNTRIPv1 = new NtripClientV1(this.optionsV1);
+    this.casterClient = new NtripClientV1(this.optionsV1);
+    if (!this.connectedBase?.parentSourceTable.isNTRIPv1) {
+      this.casterClient = new NtripClientV2(this.optionsV1);
+    }
     this.isClosed = false;
 
-    this.casterClientNTRIPv1.on('data', data => {
+    this.casterClient.on('data', data => {
       runInAction(() => {
         if (!this.isClosed) {
           this.inputData.push(data);
           this.parentStore?.bluetoothManager.sendInformations(data);
         } else {
-          this.casterClientNTRIPv1.client.end();
-          this.casterClientNTRIPv1.close();
+          this.casterClient.client?.end();
+          this.casterClient.close();
         }
       });
     });
 
-    this.casterClientNTRIPv1.on('close', () => {});
+    this.casterClient.on('close', () => {});
 
-    this.casterClientNTRIPv1.on('error', err => {
+    this.casterClient.on('error', err => {
       console.log(err);
     });
 
-    this.casterClientNTRIPv1.run();
+    this.casterClient.run();
   }
 }
