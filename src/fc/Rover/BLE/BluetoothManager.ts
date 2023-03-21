@@ -2,11 +2,13 @@ import BleManager, {PeripheralInfo} from 'react-native-ble-manager';
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import { makeAutoObservable, runInAction, observable } from 'mobx';
 import Geolocation from '@react-native-community/geolocation';
+import {NmeaMessage, NmeaTransport} from '@gnss/nmea';
+
 
 export class bluetoothManager{
     bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
-    peripherals :Array<PeripheralInfo> = []
+    peripherals :Array<any> = []
     isScanning: boolean = false;
 
     displayNoNameDevices: boolean = false;
@@ -110,7 +112,8 @@ export class bluetoothManager{
             if (peripheral) {
                 this.setPeripheral({...peripheral, ...{connecting: true, connected: false, error: false}});
                 BleManager.connect(peripheral.id).then(() => 
-                runInAction(() => this.setPeripheral({...peripheral, ...{connecting: false, connected: true, error: false}}))).catch(
+                runInAction(() => {this.setPeripheral({...peripheral, ...{connecting: false, connected: true, error: false}});
+                 })).catch(
                     () => {this.setPeripheral({...peripheral, ...{connecting: false, connected: false, error: true}})}
                 );
             }
@@ -119,6 +122,67 @@ export class bluetoothManager{
             this.setPeripheral({...peripheral, ...{connecting: false, connected: false}});
         }
     };
+
+    sendInformations(data){
+        for(let i=0; i<this.peripherals.length; i++){
+            BleManager.isPeripheralConnected(this.peripherals[i].id, []).then((isConnected) =>
+            runInAction(() => {
+                if(isConnected) {
+                    const peripheral = this.peripherals[i];
+                    BleManager.retrieveServices(peripheral.id).then((peripheralInfo) => 
+                    runInAction(() => {
+                        console.log("Envoi de données ...")
+                        const buffer = Buffer.from(data);
+                        if(!peripheralInfo.advertising.serviceUUIDs){
+                            console.log("Error : Write : no service UUID")
+                            return;
+                        }
+                        if(!peripheralInfo.characteristics){
+                            console.log("Error : Write : no service UUID")
+                            return;
+                        }
+                        peripheralInfo.characteristics.forEach(element => {
+                            if(!peripheralInfo.advertising.serviceUUIDs){
+                                console.log("Error : Write : no service UUID")
+                                return;
+                            }
+                            if(element.properties.Write){
+                                BleManager.write(peripheralInfo.id, peripheralInfo.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
+                                runInAction(() => {console.log("Write : "+data)
+                                if(!peripheralInfo.characteristics){
+                                    console.log("Error : Write : no service UUID")
+                                    return;
+                                }
+                                peripheralInfo.characteristics.forEach(element2 => {
+                                    if(!peripheralInfo.advertising.serviceUUIDs){
+                                        console.log("Error : Write : no service UUID")
+                                        return;
+                                    }
+                                    if(element2.properties.Read){
+                                        BleManager.read(peripheralInfo.id, peripheralInfo.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
+                                        runInAction(() => {console.log("Read : "+readData)
+                                        let message: NmeaMessage = NmeaTransport.decode(readData);
+                                        console.log("Message décodé : "+message);
+                                    })).catch(() =>
+                                        runInAction(() => {console.log("Erreur lors du read")}))
+                                    }
+                                });
+                                
+                                
+                                
+                            })).catch((error) =>
+                                runInAction(() => {console.log("Error during writing : "+error)}))
+                            }
+                        });
+                        
+                    })).catch(() => 
+                    runInAction(() => {console.log("Error during retrieveServices of "+peripheral.id)}))
+                }
+            }));
+        }
+
+        
+    }
     
     listeners = [
         this.bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral.bind(this)),

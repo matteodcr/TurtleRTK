@@ -10,31 +10,17 @@ export default function HeaderRoverScreen() {
     const store = useStoreContext();
 
     function scanDevices() {
-        Geolocation.getCurrentPosition(
-          position => {
-            store.bluetoothManager.setIsLocalisationActivated(true);
-            BleManager.enableBluetooth()
-            .then(() => {
-              store.bluetoothManager.setIsBluetoothActivated(true);
-              store.bluetoothManager.scanDevices();
-              })
-            .catch((error) => {
-              store.bluetoothManager.setIsBluetoothActivated(false);
-              store.bluetoothManager.setDisplayBluetoothActivatedError(true);
-            });
-          },
-          error => {
-            store.bluetoothManager.setIsLocalisationActivated(false);
-            store.bluetoothManager.setDisplayLocalisationActivatedError(true);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 1000,
-            distanceFilter: 500,
-          },
-        )
-      }
+      store.bluetoothManager.setIsLocalisationActivated(true);
+      BleManager.enableBluetooth()
+      .then(() => {
+        store.bluetoothManager.setIsBluetoothActivated(true);
+        store.bluetoothManager.scanDevices();
+        })
+      .catch((error) => {
+        store.bluetoothManager.setIsBluetoothActivated(false);
+        store.bluetoothManager.setDisplayBluetoothActivatedError(true);
+      });
+    }
     
   return (
     <View style={styles.headerTab}>

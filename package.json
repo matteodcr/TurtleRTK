@@ -12,6 +12,7 @@
     "connection": "ts-node src/fc/Caster/NTRIP/test.ts"
   },
   "dependencies": {
+    "@gnss/nmea": "^0.1.2",
     "@react-native-community/geolocation": "^3.0.5",
     "@react-navigation/bottom-tabs": "^6.5.5",
     "@react-navigation/material-bottom-tabs": "^6.2.14",
@@ -48,6 +49,7 @@
     "react-navigation": "^4.4.4",
     "recyclerlistview": "^4.2.0",
     "rxjs": "^7.8.0",
+    "stream": "^0.0.2",
     "wait-for-event-promise": "^1.1.0"
   },
   "devDependencies": {
