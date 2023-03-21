@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import {
   SafeAreaView,
@@ -5,14 +6,31 @@ import {
   Text,
   Pressable,
   StyleSheet,
-  StatusBar,
   Alert,
+  NativeModules,
+  Button
 } from 'react-native';
 
 const SettingsScreen = () => {
   const HeaderMoreButton = () => {
     Alert.alert('TODO Screen');
   };
+  const UsbConnect = () => {
+    Alert.alert('WIP');
+  };
+  const {UsbModule} = NativeModules;
+  const onPress = () => {
+    UsbModule.ouaip();
+  };
+  const attachUsb = () => {
+    UsbModule.startUsbConnection();
+  };
+  const sendUsb = () => {
+    UsbModule.sendData("zer");
+  }
+  const detachUsb = () => {
+    UsbModule.disconnect();
+  }
 
   const renderHeaderTab = () => {
     return (
@@ -32,6 +50,25 @@ const SettingsScreen = () => {
       {renderHeaderTab()}
       <View>
         <Text>Settings</Text>
+        <Pressable style={styles.TabButton} onPress={UsbConnect}>
+          <Text style={{color: 'white', fontSize: 25}}>USB</Text>
+        </Pressable>
+        <Button
+        title='test logs'
+        onPress={onPress}
+        />
+        <Button
+        title='connect'
+        onPress={attachUsb}
+        />
+        <Button
+        title='send paquet'
+        onPress={sendUsb}
+        />
+        <Button
+        title='disconnect'
+        onPress={detachUsb}
+        />
       </View>
     </SafeAreaView>
   );
