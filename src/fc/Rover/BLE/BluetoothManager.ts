@@ -3,6 +3,7 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 import { makeAutoObservable, runInAction, observable } from 'mobx';
 import Geolocation from '@react-native-community/geolocation';
 import {NmeaMessage, NmeaTransport} from '@gnss/nmea';
+import {ErrorManager} from '../../Caster/ErrorManager'
 
 
 export class bluetoothManager{
@@ -113,6 +114,7 @@ export class bluetoothManager{
                 this.setPeripheral({...peripheral, ...{connecting: true, connected: false, error: false}});
                 BleManager.connect(peripheral.id).then(() => 
                 runInAction(() => {this.setPeripheral({...peripheral, ...{connecting: false, connected: true, error: false}});
+                //this.sendInformations([0])
                  })).catch(
                     () => {this.setPeripheral({...peripheral, ...{connecting: false, connected: false, error: true}})}
                 );
@@ -122,44 +124,58 @@ export class bluetoothManager{
             this.setPeripheral({...peripheral, ...{connecting: false, connected: false}});
         }
     };
-
+    isSending: boolean = false
     sendInformations(data){
         for(let i=0; i<this.peripherals.length; i++){
-            BleManager.isPeripheralConnected(this.peripherals[i].id, []).then((isConnected) =>
-            runInAction(() => {
-                if(isConnected) {
-                    const peripheral = this.peripherals[i];
+            if(this.peripherals[i].connected){
+                const peripheral: PeripheralInfo = this.peripherals[i];
+                if(true){
                     BleManager.retrieveServices(peripheral.id).then((peripheralInfo) => 
                     runInAction(() => {
-                        console.log("Envoi de données ...")
+                        this.setPeripheral({...peripheralInfo, ...{connected:true}});
                         const buffer = Buffer.from(data);
-                        if(!peripheralInfo.advertising.serviceUUIDs){
-                            console.log("Error : Write : no service UUID")
-                            return;
-                        }
-                        if(!peripheralInfo.characteristics){
-                            console.log("Error : Write : no service UUID")
-                            return;
-                        }
+                        if(!peripheral.advertising.serviceUUIDs)return;
+                        if(!peripheralInfo.characteristics)return;
                         peripheralInfo.characteristics.forEach(element => {
-                            if(!peripheralInfo.advertising.serviceUUIDs){
-                                console.log("Error : Write : no service UUID")
-                                return;
-                            }
-                            if(element.properties.Write){
+                            if(!peripheralInfo.advertising.serviceUUIDs)return;
+                            if(element.properties.Write && !this.isSending){
+                                this.isSending = true;
                                 BleManager.write(peripheralInfo.id, peripheralInfo.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
-                                runInAction(() => {console.log("Write : "+data)
-                                if(!peripheralInfo.characteristics){
-                                    console.log("Error : Write : no service UUID")
-                                    return;
-                                }
-                                peripheralInfo.characteristics.forEach(element2 => {
-                                    if(!peripheralInfo.advertising.serviceUUIDs){
-                                        console.log("Error : Write : no service UUID")
-                                        return;
-                                    }
+                                runInAction(() => {console.log("Write : "+buffer.toJSON().data)
+                                this.isSending = false;
+                                if(!peripheral.characteristics)return;
+                                peripheral.characteristics.forEach(element2 => {
+                                    if(!peripheral.advertising.serviceUUIDs)return;
                                     if(element2.properties.Read){
-                                        BleManager.read(peripheralInfo.id, peripheralInfo.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
+                                        BleManager.read(peripheral.id, peripheral.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
+                                        runInAction(() => {
+                                            let information = Buffer.from(readData).toString();
+                                            if(information.charAt(0)=='$')
+                                                console.log("Read : "+information)
+                                    })).catch(() =>
+                                        runInAction(() => {}))
+                                    }
+                                });
+                            })).catch((error) =>
+                                runInAction(() => {
+                                this.isSending = false}))
+                            }
+                        });
+                    })).catch(() => {});
+                }else{
+                    const buffer = Buffer.from(data);
+                        if(!peripheral.advertising.serviceUUIDs)return;
+                        if(!peripheral.characteristics)return;
+                        peripheral.characteristics.forEach(element => {
+                            if(!peripheral.advertising.serviceUUIDs)return;
+                            if(element.properties.Write){
+                                BleManager.write(peripheral.id, peripheral.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
+                                runInAction(() => {console.log("Write : "+data)
+                                if(!peripheral.characteristics)return;
+                                peripheral.characteristics.forEach(element2 => {
+                                    if(!peripheral.advertising.serviceUUIDs)return;
+                                    if(element2.properties.Read){
+                                        BleManager.read(peripheral.id, peripheral.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
                                         runInAction(() => {console.log("Read : "+readData)
                                         let message: NmeaMessage = NmeaTransport.decode(readData);
                                         console.log("Message décodé : "+message);
@@ -167,21 +183,13 @@ export class bluetoothManager{
                                         runInAction(() => {console.log("Erreur lors du read")}))
                                     }
                                 });
-                                
-                                
-                                
                             })).catch((error) =>
                                 runInAction(() => {console.log("Error during writing : "+error)}))
                             }
                         });
-                        
-                    })).catch(() => 
-                    runInAction(() => {console.log("Error during retrieveServices of "+peripheral.id)}))
                 }
-            }));
+            };
         }
-
-        
     }
     
     listeners = [
