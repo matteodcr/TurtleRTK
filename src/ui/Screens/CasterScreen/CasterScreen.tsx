@@ -51,7 +51,6 @@ export default observer(function CasterScreen({navigation}: Props) {
   );
 
   const [searchText, onChangeSearch] = useState('');
-  const [fav, setFav] = useState(true); //show favorites
   const [sorterFilter, setSorterFilter] = useState(SorterTypes.distance); //sorter type selected
   const [selectedSorter, setSelectedSorter] = useState(SorterKey.mountpoint); //sorter key selected
   const [isInfoVisible, setInfoVisible] = useState(false);
@@ -67,10 +66,6 @@ export default observer(function CasterScreen({navigation}: Props) {
 
   const modifySelectedSorter = (newSelectedSorter: SorterKey) => {
     setSelectedSorter(newSelectedSorter);
-  };
-
-  const modifyFav = (newFav: boolean) => {
-    setFav(newFav);
   };
 
   const toogleInfo = () => {
@@ -120,8 +115,6 @@ export default observer(function CasterScreen({navigation}: Props) {
         modifySorterFilter={modifySorterFilter}
         selectedSorter={selectedSorter}
         modifySelectedSorter={modifySelectedSorter}
-        fav={fav}
-        modifyFav={modifyFav}
       />
       <BaseList
         sortedBaseList={sortedBaseList}
