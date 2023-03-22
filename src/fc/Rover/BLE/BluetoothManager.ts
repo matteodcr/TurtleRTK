@@ -129,73 +129,55 @@ export class bluetoothManager{
         for(let i=0; i<this.peripherals.length; i++){
             if(this.peripherals[i].connected){
                 const peripheral: PeripheralInfo = this.peripherals[i];
-                if(true){
-                    BleManager.retrieveServices(peripheral.id).then((peripheralInfo) => 
-                    runInAction(() => {
-                        this.setPeripheral({...peripheralInfo, ...{connected:true}});
-                        const buffer = Buffer.from(data);
-                        if(!peripheral.advertising.serviceUUIDs)return;
-                        if(!peripheralInfo.characteristics)return;
-                        peripheralInfo.characteristics.forEach(element => {
-                            if(!peripheralInfo.advertising.serviceUUIDs)return;
-                            if(element.properties.Write && !this.isSending){
-                                this.isSending = true;
-                                BleManager.write(peripheralInfo.id, peripheralInfo.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
-                                runInAction(() => {console.log("Write : "+buffer.toJSON().data)
-                                this.isSending = false;
-                                if(!peripheral.characteristics)return;
-                                peripheral.characteristics.forEach(element2 => {
-                                    if(!peripheral.advertising.serviceUUIDs)return;
-                                    if(element2.properties.Read){
-                                        BleManager.read(peripheral.id, peripheral.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
-                                        runInAction(() => {
-                                            let information = Buffer.from(readData).toString();
-                                            if(information.charAt(0)=='$')
-                                                console.log("Read : "+information)
-                                    })).catch(() =>
-                                        runInAction(() => {}))
-                                    }
-                                });
-                            })).catch((error) =>
-                                runInAction(() => {
-                                this.isSending = false}))
-                            }
-                        });
-                    })).catch(() => {});
-                }else{
+                BleManager.retrieveServices(peripheral.id).then((peripheralInfo) => 
+                runInAction(() => {
+                    this.setPeripheral({...peripheralInfo, ...{connected:true}});
                     const buffer = Buffer.from(data);
-                        if(!peripheral.advertising.serviceUUIDs)return;
-                        if(!peripheral.characteristics)return;
-                        peripheral.characteristics.forEach(element => {
-                            if(!peripheral.advertising.serviceUUIDs)return;
-                            if(element.properties.Write){
-                                BleManager.write(peripheral.id, peripheral.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
-                                runInAction(() => {console.log("Write : "+data)
-                                if(!peripheral.characteristics)return;
-                                peripheral.characteristics.forEach(element2 => {
-                                    if(!peripheral.advertising.serviceUUIDs)return;
-                                    if(element2.properties.Read){
-                                        BleManager.read(peripheral.id, peripheral.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
-                                        runInAction(() => {console.log("Read : "+readData)
-                                        let message: NmeaMessage = NmeaTransport.decode(readData);
-                                        console.log("Message décodé : "+message);
-                                    })).catch(() =>
-                                        runInAction(() => {console.log("Erreur lors du read")}))
-                                    }
-                                });
-                            })).catch((error) =>
-                                runInAction(() => {console.log("Error during writing : "+error)}))
-                            }
-                        });
-                }
+                    if(!peripheral.advertising.serviceUUIDs)return;
+                    if(!peripheralInfo.characteristics)return;
+                    peripheralInfo.characteristics.forEach(element => {
+                        if(!peripheralInfo.advertising.serviceUUIDs)return;
+                        if(element.properties.Write && !this.isSending){
+                            this.isSending = true;
+                            BleManager.write(peripheralInfo.id, peripheralInfo.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
+                            runInAction(() => {console.log("Write : "+buffer.toJSON().data)
+                            this.isSending = false;
+                            if(!peripheral.characteristics)return;
+                            peripheral.characteristics.forEach(element2 => {
+                                if(!peripheral.advertising.serviceUUIDs)return;
+                                if(element2.properties.Read){
+                                    BleManager.read(peripheral.id, peripheral.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
+                                    runInAction(() => {
+                                        let information = Buffer.from(readData).toString();
+                                        if(information.charAt(0)=='$')
+                                            console.log("Read : "+information)
+                                })).catch(() =>
+                                    runInAction(() => {}))
+                                }
+                            });
+                        })).catch((error) =>
+                            runInAction(() => {
+                            this.isSending = false}))
+                        }
+                    });
+                })).catch(() => {});
             };
         }
     }
+
+    
     
     listeners = [
         this.bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral.bind(this)),
         this.bleManagerEmitter.addListener('BleManagerStopScan', this.handleStopScan.bind(this)),
         this.bleManagerEmitter.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectedPeripheral.bind(this)),
-        this.bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValueForCharacteristic.bind(this)),
+        //this.bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValueForCharacteristic.bind(this)),
+        this.bleManagerEmitter.addListener(
+            "BleManagerDidUpdateValueForCharacteristic",
+            ({ value, peripheral, characteristic, service }) => {
+              // Convert bytes array to string
+              console.log(`Received ${value} for characteristic ${characteristic}`);
+            }
+          ),
     ];
 }
