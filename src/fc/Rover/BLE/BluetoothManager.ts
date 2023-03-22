@@ -2,11 +2,14 @@ import BleManager, {PeripheralInfo} from 'react-native-ble-manager';
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import { makeAutoObservable, runInAction, observable } from 'mobx';
 import Geolocation from '@react-native-community/geolocation';
+import {NmeaMessage, NmeaTransport} from '@gnss/nmea';
+import {ErrorManager} from '../../Caster/ErrorManager'
+
 
 export class bluetoothManager{
     bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
-    peripherals :Array<PeripheralInfo> = []
+    peripherals :Array<any> = []
     isScanning: boolean = false;
 
     displayNoNameDevices: boolean = false;
@@ -110,7 +113,9 @@ export class bluetoothManager{
             if (peripheral) {
                 this.setPeripheral({...peripheral, ...{connecting: true, connected: false, error: false}});
                 BleManager.connect(peripheral.id).then(() => 
-                runInAction(() => this.setPeripheral({...peripheral, ...{connecting: false, connected: true, error: false}}))).catch(
+                runInAction(() => {this.setPeripheral({...peripheral, ...{connecting: false, connected: true, error: false}});
+                //this.sendInformations([0])
+                 })).catch(
                     () => {this.setPeripheral({...peripheral, ...{connecting: false, connected: false, error: true}})}
                 );
             }
@@ -119,6 +124,73 @@ export class bluetoothManager{
             this.setPeripheral({...peripheral, ...{connecting: false, connected: false}});
         }
     };
+    isSending: boolean = false
+    sendInformations(data){
+        for(let i=0; i<this.peripherals.length; i++){
+            if(this.peripherals[i].connected){
+                const peripheral: PeripheralInfo = this.peripherals[i];
+                if(true){
+                    BleManager.retrieveServices(peripheral.id).then((peripheralInfo) => 
+                    runInAction(() => {
+                        this.setPeripheral({...peripheralInfo, ...{connected:true}});
+                        const buffer = Buffer.from(data);
+                        if(!peripheral.advertising.serviceUUIDs)return;
+                        if(!peripheralInfo.characteristics)return;
+                        peripheralInfo.characteristics.forEach(element => {
+                            if(!peripheralInfo.advertising.serviceUUIDs)return;
+                            if(element.properties.Write && !this.isSending){
+                                this.isSending = true;
+                                BleManager.write(peripheralInfo.id, peripheralInfo.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
+                                runInAction(() => {console.log("Write : "+buffer.toJSON().data)
+                                this.isSending = false;
+                                if(!peripheral.characteristics)return;
+                                peripheral.characteristics.forEach(element2 => {
+                                    if(!peripheral.advertising.serviceUUIDs)return;
+                                    if(element2.properties.Read){
+                                        BleManager.read(peripheral.id, peripheral.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
+                                        runInAction(() => {
+                                            let information = Buffer.from(readData).toString();
+                                            if(information.charAt(0)=='$')
+                                                console.log("Read : "+information)
+                                    })).catch(() =>
+                                        runInAction(() => {}))
+                                    }
+                                });
+                            })).catch((error) =>
+                                runInAction(() => {
+                                this.isSending = false}))
+                            }
+                        });
+                    })).catch(() => {});
+                }else{
+                    const buffer = Buffer.from(data);
+                        if(!peripheral.advertising.serviceUUIDs)return;
+                        if(!peripheral.characteristics)return;
+                        peripheral.characteristics.forEach(element => {
+                            if(!peripheral.advertising.serviceUUIDs)return;
+                            if(element.properties.Write){
+                                BleManager.write(peripheral.id, peripheral.advertising.serviceUUIDs[0], element.characteristic, buffer.toJSON().data).then(() =>
+                                runInAction(() => {console.log("Write : "+data)
+                                if(!peripheral.characteristics)return;
+                                peripheral.characteristics.forEach(element2 => {
+                                    if(!peripheral.advertising.serviceUUIDs)return;
+                                    if(element2.properties.Read){
+                                        BleManager.read(peripheral.id, peripheral.advertising.serviceUUIDs[0], element2.characteristic).then((readData) =>
+                                        runInAction(() => {console.log("Read : "+readData)
+                                        let message: NmeaMessage = NmeaTransport.decode(readData);
+                                        console.log("Message décodé : "+message);
+                                    })).catch(() =>
+                                        runInAction(() => {console.log("Erreur lors du read")}))
+                                    }
+                                });
+                            })).catch((error) =>
+                                runInAction(() => {console.log("Error during writing : "+error)}))
+                            }
+                        });
+                }
+            };
+        }
+    }
     
     listeners = [
         this.bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral.bind(this)),

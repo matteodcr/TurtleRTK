@@ -14,12 +14,10 @@ export class AppStore {
 
   constructor(
     basePool: BasePool,
-    casterConnection: CasterConnection,
     errorManager: ErrorManager,
     bluetoothManager: bluetoothManager,
   ) {
     this.basePool = basePool;
-    this.casterConnection = casterConnection;
     this.errorManager = errorManager;
     this.bluetoothManager = bluetoothManager;
   }
@@ -28,11 +26,12 @@ export class AppStore {
 function generateStore() {
   const appStore = new AppStore(
     new BasePool(),
-    new CasterConnection(),
     new ErrorManager(),
     new bluetoothManager(),
   );
   appStore.casterPool = new CasterPool(appStore, [], []);
+  appStore.casterConnection = new CasterConnection(appStore);
+  console.log(appStore.casterPool.parentStore);
   return appStore;
 }
 

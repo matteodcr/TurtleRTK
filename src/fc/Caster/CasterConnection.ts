@@ -2,6 +2,7 @@ import {NtripClientV1} from './NTRIP/v1/clientV1';
 import Base from './Base';
 import {makeAutoObservable, runInAction} from 'mobx';
 import {NtripClientV2} from './NTRIP/v2/clientV2';
+import { AppStore } from '../Store';
 
 interface CasterConnectionOptionsNTRIPv1 {
   host: string;
@@ -20,9 +21,11 @@ export class CasterConnection {
   optionsV1: CasterConnectionOptionsNTRIPv1 | null = null;
   connectedBase: Base | null = null;
   isClosed = true;
+  parentStore: AppStore | null = null;
 
-  constructor() {
+  constructor(parentStore: AppStore,) {
     makeAutoObservable(this);
+    this.parentStore = parentStore;
   }
 
   closeConnection() {
@@ -63,6 +66,7 @@ export class CasterConnection {
       runInAction(() => {
         if (!this.isClosed) {
           this.inputData.push(data);
+          this.parentStore?.bluetoothManager.sendInformations(data);
         } else {
           this.casterClient.client?.end();
           this.casterClient.close();
