@@ -1,4 +1,4 @@
-import {Pressable, Text, TouchableWithoutFeedback, View} from 'react-native';
+import {Pressable, Text, TouchableWithoutFeedback, View, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CountryFlag from 'react-native-country-flag';
 import {getDistance} from 'geolib';
@@ -8,6 +8,8 @@ import {observer} from 'mobx-react-lite';
 import {useStoreContext} from '../../../fc/Store';
 import Base from '../../../fc/Caster/Base';
 import {styles} from './CasterScreen';
+import { add } from 'react-native-reanimated';
+import { BasePool } from '../../../fc/Caster/BasePool';
 
 const limitCityName = (name: string) => {
   if (name.length < 20) {
@@ -21,6 +23,48 @@ export interface ItemProp {
   latitude: number;
   longitude: number;
 }
+
+const store = useStoreContext();
+
+const addFavAlert = (key : string) => {
+  Alert.alert(
+    'ajouter aux favoris',
+    'Voulez vous ajouter cette base aux favoris ?',
+    [
+      {
+        text: 'Annuler',
+        style : 'cancel'
+      },
+      {
+        text: 'Ajouter',
+        onPress: () => {
+          console.log('ajouté aux favoris');
+          {store.basePool.addFavorite(key);}
+        },
+      },
+    ]
+  );
+};
+
+const suppFavAlert = (key : string) => {
+  Alert.alert(
+    'supprimer un favoris',
+    'Voulez vous supprimer cette base des favoris ?',
+    [
+      {
+        text: 'Annuler',
+        style : 'cancel'
+      },
+      {
+        text: 'Supprimer',
+        onPress: () => {
+          console.log('supprimé des favoris');
+          {store.basePool.suppFavorite(key);}
+        },
+      },
+    ]
+  );
+};
 
 export default observer(function BaseListItem({
   item,
@@ -80,6 +124,25 @@ export default observer(function BaseListItem({
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
+          <View>
+            {store.basePool.favoriteList.includes(item.key) ?
+              <Pressable onPress={() => suppFavAlert(item.key)} >
+                <MaterialCommunityIcons
+                  name="star"
+                  color={'yellow'}
+                  size={30}
+                />
+              </Pressable>
+              :
+              <Pressable onPress={() => addFavAlert(item.key)} >
+                <MaterialCommunityIcons
+                  name="star-outline"
+                  color={'darkgrey'}
+                  size={30}
+                />
+              </Pressable>
+            }
+          </View>
           <View>
             <Pressable
               onPress={() => {

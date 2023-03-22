@@ -5,6 +5,7 @@ import {CasterPool} from './CasterPool';
 export class BasePool {
   baseList: Base[] = [];
   favoriteList: string[] = [];
+  favs: boolean = false;
 
   constructor() {
     makeAutoObservable(this, {
@@ -19,5 +20,17 @@ export class BasePool {
       var sourceTable = casterPool.subscribed[i];
       this.baseList.push(...sourceTable.entries.baseList);
     }
+  }
+
+  addFavorite(key: string) {
+    this.favoriteList.push(key);
+  }
+
+  suppFavorite(key: string) {  
+    this.favoriteList = this.favoriteList.filter((item) => item !== key);
+  }
+  
+  setFavs() {
+    this.favs = !this.favs;
   }
 }
