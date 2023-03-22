@@ -26,10 +26,10 @@ export class BasePool {
     this.favoriteList.push(key);
   }
 
-  suppFavorite(key: string) {  
-    this.favoriteList = this.favoriteList.filter((item) => item !== key);
+  suppFavorite(key: string) {
+    this.favoriteList = this.favoriteList.filter(item => item !== key);
   }
-  
+
   setFavs() {
     this.favs = !this.favs;
   }
