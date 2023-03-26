@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react-lite';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -9,6 +9,10 @@ import {
 } from 'react-native';
 import {Button} from 'react-native-paper';
 import {useStoreContext} from '../../../fc/Store';
+import LogListItem from './LogListItem';
+import LogList from './LogList';
+import LogModal from './LogModal';
+import {ReadDirItem} from 'react-native-fs';
 
 interface Props {
   navigation: any;
@@ -16,9 +20,22 @@ interface Props {
 export default observer(function LogScreen({navigation}: Props) {
   const store = useStoreContext();
 
+  const [selectedLog, setSelectedLog] = useState('');
+  const [isLogVisible, setLogVisibility] = useState(false);
+
+  function modifySelectedLog(path: string) {
+    setSelectedLog(path);
+    modifyLogVisibility(true);
+  }
+
+  function modifyLogVisibility(visible: boolean) {
+    setLogVisibility(visible);
+  }
+
   React.useEffect(() => {
     return navigation.addListener('focus', async () => {
       store.logManager.handleRecordingDirectory();
+      store.logManager.getLogs();
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -52,7 +69,7 @@ export default observer(function LogScreen({navigation}: Props) {
             fontWeight: 'bold',
             color: 'white',
           }}>
-          Recording Screen
+          Logs
         </Text>
       </View>
     );
@@ -61,14 +78,14 @@ export default observer(function LogScreen({navigation}: Props) {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
-      <View>
-        <Button onPress={() => store.logManager.scan(store.logManager.root)}>
-          Scan
-        </Button>
-        <Button onPress={() => store.logManager.write('Stylé')}>
-          Write file
-        </Button>
-      </View>
+      {isLogVisible && (
+        <LogModal
+          selectedLog={selectedLog}
+          isLogVisible={isLogVisible}
+          modifyLogVisibility={modifyLogVisibility}
+        />
+      )}
+      <LogList modifySelectedLog={modifySelectedLog} />
     </SafeAreaView>
   );
 });
