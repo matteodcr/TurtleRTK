@@ -7,10 +7,10 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, MD3DarkTheme, Snackbar} from 'react-native-paper';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 
-import RecordingScreen from './src/ui/Screens/RecordingScreen';
+import RecordingScreen from './src/ui/Screens/RecordingScreen/RecordingScreen';
 import {observer} from 'mobx-react-lite';
 import {useStoreContext} from './src/fc/Store';
-import {ConnectionStatusBar} from 'react-native-ui-lib';
+import LogScreen from './src/ui/Screens/LogScreen/LogScreen';
 
 function createIcon(iconName: string) {
   return ({color}: {color: string}) => (
@@ -62,6 +62,11 @@ function RecordingRoute() {
       <RecordingStack.Screen
         name="RecordingScr"
         component={RecordingScreen}
+        options={{headerShown: false}}
+      />
+      <RecordingStack.Screen
+        name="LogScr"
+        component={LogScreen}
         options={{headerShown: false}}
       />
     </RecordingStack.Navigator>
