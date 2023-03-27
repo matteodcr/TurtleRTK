@@ -17,12 +17,10 @@ export class AppStore {
   constructor(
     basePool: BasePool,
     errorManager: ErrorManager,
-    bluetoothManager: bluetoothManager,
     logManager: LogManager,
   ) {
     this.basePool = basePool;
     this.errorManager = errorManager;
-    this.bluetoothManager = bluetoothManager;
     this.logManager = logManager;
   }
 }
@@ -31,11 +29,11 @@ function generateStore() {
   const appStore = new AppStore(
     new BasePool(),
     new ErrorManager(),
-    new bluetoothManager(),
     new LogManager(),
   );
   appStore.casterPool = new CasterPool(appStore, [], []);
   appStore.casterConnection = new CasterConnection(appStore);
+  appStore.bluetoothManager = new bluetoothManager(appStore);
   return appStore;
 }
 

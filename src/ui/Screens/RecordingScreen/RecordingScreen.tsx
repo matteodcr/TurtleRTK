@@ -63,6 +63,7 @@ export default observer(function RecordingScreen({navigation}: Props) {
               );
               store.casterConnection.clear();
               store.bluetoothManager.clearOutput();
+              store.casterConnection.closeConnection();
             }}>
             Clear & save
           </Button>

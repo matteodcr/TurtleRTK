@@ -1,6 +1,7 @@
 import BleManager, {PeripheralInfo} from 'react-native-ble-manager';
 import {NativeEventEmitter, NativeModules} from 'react-native';
 import {makeAutoObservable, runInAction} from 'mobx';
+import {AppStore} from '../../Store';
 
 export class bluetoothManager {
   bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
@@ -8,7 +9,8 @@ export class bluetoothManager {
   peripheral: PeripheralInfo | null = null;
   isScanning: boolean = false;
   displayNoNameDevices: boolean = false;
-  outputData: Buffer[] = [];
+  outputData: String[] = [];
+  parentStore: AppStore | null = null;
 
   setDisplayNoNameDevices(state: boolean) {
     this.displayNoNameDevices = state;
@@ -33,7 +35,8 @@ export class bluetoothManager {
   }
   // ------- ------- ------- -------
 
-  constructor() {
+  constructor(parentStore: AppStore) {
+    this.parentStore = parentStore;
     BleManager.start({showAlert: false}).then(() => {
       // Success code
       console.log('Module initialized');
@@ -163,16 +166,23 @@ export class bluetoothManager {
     BleManager.retrieveServices(peripheralID, serviceUUIDs)
       .then(peripheralInfo => {
         runInAction(() => {
-          console.log('Retrieve services OK');
           this.setPeripheral({...peripheralInfo, ...{connected: true}});
           this.peripheral = peripheralInfo;
           if (!peripheralInfo.characteristics) {
-            console.log('Error : no characteristics');
+            if (this.parentStore?.errorManager !== null) {
+              this.parentStore?.errorManager.printError(
+                'Error in peripheral characteristics',
+              );
+            }
             return;
           }
           peripheralInfo.characteristics.forEach(element => {
             if (!peripheralInfo.advertising.serviceUUIDs) {
-              console.log('Error : no service UUIDs');
+              if (this.parentStore?.errorManager !== null) {
+                this.parentStore?.errorManager.printError(
+                  'Error in peripheral service UUIDs',
+                );
+              }
               return;
             }
             if (element.properties.Write && !this.isSending) {
@@ -189,7 +199,11 @@ export class bluetoothManager {
       })
       .catch(() => {
         runInAction(() => {
-          console.log('Retrieve services failed');
+          if (this.parentStore?.errorManager !== null) {
+            this.parentStore?.errorManager.printError(
+              'Error in peripheral retrieving services',
+            );
+          }
         });
       });
   }
@@ -213,25 +227,18 @@ export class bluetoothManager {
           peripheralID,
           serviceUUID,
           element.characteristic,
-        )
-          .then(() => {
-            runInAction(() => {
-              console.log('notification started');
-            });
-          })
-          .catch(error => {
-            runInAction(() => {
-              console.log(error);
-            });
-          });
+        ).catch(() => {});
       }
     });
   }
 
   readNotification(event: any) {
-    console.log(
-      `Received ${event.value} for characteristic ${event.characteristic}`,
-    );
+    let buff = String.fromCharCode(...event.value);
+    console.log('Received ' + buff);
+    buff = buff + '\n';
+    runInAction(() => {
+      this.outputData.push(buff);
+    });
   }
 
   write(
@@ -251,14 +258,17 @@ export class bluetoothManager {
     )
       .then(() => {
         runInAction(() => {
-          console.log('Write : ' + buffer.toJSON().data);
           this.isSending = false;
           this.startNotification(peripheralID, serviceUUID);
         });
       })
       .catch(() => {
         this.isSending = false;
-        console.log('Error : write');
+        if (this.parentStore?.errorManager !== null) {
+          this.parentStore?.errorManager.printError(
+            'Error while writing to peripheral',
+          );
+        }
       });
   }
 
