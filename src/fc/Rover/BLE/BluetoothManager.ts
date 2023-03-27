@@ -212,6 +212,15 @@ export class bluetoothManager {
     if (!this.peripheral || !this.peripheral.characteristics) {
       return;
     }
+    BleManager.requestMTU(peripheralID, 512)
+      .then(mtu => {
+        // Success code
+        console.log('MTU size changed to ' + mtu + ' bytes');
+      })
+      .catch(error => {
+        // Failure code
+        console.log(error);
+      });
     this.peripheral.characteristics.forEach(element => {
       if (!this.peripheral) {
         return;
