@@ -1,16 +1,13 @@
 import BleManager, {PeripheralInfo} from 'react-native-ble-manager';
 import {NativeEventEmitter, NativeModules} from 'react-native';
-import {makeAutoObservable, runInAction, observable} from 'mobx';
-import Geolocation from '@react-native-community/geolocation';
-import {NmeaMessage, NmeaTransport} from '@gnss/nmea';
-import {ErrorManager} from '../../Caster/ErrorManager';
+import {makeAutoObservable, runInAction} from 'mobx';
 
 export class bluetoothManager {
   bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
   peripherals: Array<any> = [];
   isScanning: boolean = false;
   displayNoNameDevices: boolean = false;
-  outputData: string[] = [];
+  outputData: Buffer[] = [];
 
   setDisplayNoNameDevices(state: boolean) {
     this.displayNoNameDevices = state;
@@ -53,7 +50,7 @@ export class bluetoothManager {
 
   getPeripheral(peripheralId: string) {
     for (let i = 0; i < this.peripherals.length; i++) {
-      if (this.peripherals[i].id == peripheralId) {
+      if (this.peripherals[i].id === peripheralId) {
         return this.peripherals[i];
       }
     }
@@ -62,7 +59,7 @@ export class bluetoothManager {
 
   setPeripheral(peripheral: PeripheralInfo) {
     for (let i = 0; i < this.peripherals.length; i++) {
-      if (this.peripherals[i].id == peripheral.id) {
+      if (this.peripherals[i].id === peripheral.id) {
         this.peripherals[i] = peripheral;
         return;
       }
@@ -185,6 +182,35 @@ export class bluetoothManager {
                   .then(() =>
                     runInAction(() => {
                       console.log('Write : ' + buffer.toJSON().data);
+                      // @ts-ignore
+                      if (!peripheralInfo.characteristics) {
+                        return;
+                      }
+                      peripheralInfo.characteristics.forEach(element => {
+                        if (!peripheralInfo.advertising.serviceUUIDs) {
+                          return;
+                        }
+                        if (element.properties.Read) {
+                          if (!peripheralInfo.advertising.serviceUUIDs) {
+                            return;
+                          }
+                          BleManager.startNotification(
+                            peripheralInfo.id,
+                            peripheralInfo.advertising.serviceUUIDs[0],
+                            element.characteristic,
+                          )
+                            .then(() => {
+                              runInAction(() => {
+                                console.log('notification started');
+                              });
+                            })
+                            .catch(error => {
+                              runInAction(() => {
+                                console.log(error);
+                              });
+                            });
+                        }
+                      });
                       this.isSending = false;
                       if (!peripheral.characteristics) {
                         return;
@@ -201,12 +227,9 @@ export class bluetoothManager {
                           )
                             .then(readData =>
                               runInAction(() => {
-                                let information =
-                                  Buffer.from(readData).toString();
+                                let information = Buffer.from(readData);
                                 this.outputData.push(information);
-                                if (information.charAt(0) == '$') {
-                                  console.log('Read : ' + information);
-                                }
+                                console.log('Read : ' + information);
                               }),
                             )
                             .catch(() => runInAction(() => {}));
@@ -219,12 +242,9 @@ export class bluetoothManager {
                           )
                             .then(readData =>
                               runInAction(() => {
-                                let information =
-                                  Buffer.from(readData).toString();
+                                let information = Buffer.from(readData);
                                 this.outputData.push(information);
-                                if (information.charAt(0) == '$') {
-                                  console.log('Read : ' + information);
-                                }
+                                console.log('Read : ' + information);
                               }),
                             )
                             .catch(() => runInAction(() => {}));
@@ -232,7 +252,7 @@ export class bluetoothManager {
                       });
                     }),
                   )
-                  .catch(error =>
+                  .catch(() =>
                     runInAction(() => {
                       this.isSending = false;
                     }),
