@@ -23,6 +23,15 @@ import com.facebook.react.common.StandardCharsets;
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
+
+// à l'origine le module était prévu en kotlin, créé à partir de cette vidéo : https://www.youtube.com/watch?v=ICjjG1VsZmw
+// suite à des problème de compatibilité, le module a été recréé en java, le fichier ici présent
+// on s'appuie sur la bibliothèque UsbSerial de ce dépôt git : https://github.com/felHR85/UsbSerial (compatible java/kotlin)
+// il est recommandé de construire un projet à part puis de l'intégrer, tout en gardant en tête que les contextes d'exécution sont assez différents
+
+// Pour déboguer l'app, on s'appuie sur les messages transmits par Log.d(), réceptionnés dans le logcat d'android studio.
+// On est obligé d'utiliser le déboguage sans fil d'android studio dispo à partir d'android 11, car le port usb du téléphone est utilisé par la connection au rover.
+
 public class UsbModule extends ReactContextBaseJavaModule {
 
     private UsbManager m_manager;
@@ -37,16 +46,17 @@ public class UsbModule extends ReactContextBaseJavaModule {
         }
     };
 
+    // adaptation très naïve et probablement incorecte 
     private ReactApplicationContext context;
 
-    
+    // TODO : vérifier si tout se déroule correctement ou pas depuis les Log.d depuis le tel de paul / Elie / clovis
     
     UsbModule(ReactApplicationContext context) {
         super(context);
 
         Log.d("JavaUsb", "ça démarre doucement");
         
-        // à virer si ça plante
+        // il faut un objet de la classe android.content.Context , TODO: trouver un moyen d'importer l'objet s'il existe, ou rendre compatible le contexte react
         this.context = context;
 
         m_manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
@@ -96,8 +106,8 @@ public class UsbModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void ouaip() {
-        Log.d("UsbModule", "zebi, pitié que ça marche");
+    public void test() {
+        Log.d("UsbModule", "test successful");
     }
 
     @ReactMethod

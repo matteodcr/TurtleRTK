@@ -20,16 +20,16 @@ const SettingsScreen = () => {
   };
   const {UsbModule} = NativeModules;
   const onPress = () => {
-    UsbModule.ouaip();
+    UsbModule.test();
   };
   const attachUsb = () => {
-    UsbModule.startUsbConnection();
+    Alert.alert(UsbModule.startUsbConnection());
   };
   const sendUsb = () => {
-    UsbModule.sendData("zer");
+    Alert.alert(UsbModule.sendData("ouaip"));
   }
   const detachUsb = () => {
-    UsbModule.disconnect();
+    Alert.alert(UsbModule.disconnect());
   }
 
   const renderHeaderTab = () => {
