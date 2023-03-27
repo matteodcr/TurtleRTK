@@ -5,6 +5,7 @@ import {makeAutoObservable, runInAction} from 'mobx';
 export class bluetoothManager {
   bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
   peripherals: Array<any> = [];
+  peripheral: PeripheralInfo | null = null;
   isScanning: boolean = false;
   displayNoNameDevices: boolean = false;
   outputData: Buffer[] = [];
@@ -153,6 +154,69 @@ export class bluetoothManager {
     }
   }
   isSending: boolean = false;
+
+  retrieveServices(peripheralID: string, serviceUUIDs?: string[] | undefined) {
+    BleManager.retrieveServices(peripheralID, serviceUUIDs).then(
+      peripheralInfo => {
+        runInAction(() => {
+          this.setPeripheral({...peripheralInfo, ...{connected: true}});
+          this.peripheral = peripheralInfo;
+        });
+      },
+    );
+  }
+
+  startNotification(){
+    peripheralInfo.characteristics.forEach(element => {
+      if (!peripheralInfo.advertising.serviceUUIDs) {
+        return;
+      }
+      if (element.properties.Read) {
+        if (!peripheralInfo.advertising.serviceUUIDs) {
+          return;
+        }
+        BleManager.startNotification(
+          peripheralInfo.id,
+          peripheralInfo.advertising.serviceUUIDs[0],
+          element.characteristic,
+        )
+          .then(() => {
+            runInAction(() => {
+              console.log('notification started');
+            });
+          })
+          .catch(error => {
+            runInAction(() => {
+              console.log(error);
+            });
+          });
+      }
+  }
+
+  write(
+    peripheralID: string,
+    serviceUUID: string,
+    characteristicUUID: string,
+    data: any,
+    maxByteSize?: number | undefined,
+  ) {
+    const buffer = Buffer.from(data);
+    BleManager.write(
+      peripheralID,
+      serviceUUID,
+      characteristicUUID,
+      buffer.toJSON().data,
+      maxByteSize,
+    ).then(() => {
+      runInAction(() => {
+        console.log('Write : ' + buffer.toJSON().data);
+        this.startNotification();
+      })
+    }).catch(() => {
+
+    })
+  }
+
   sendInformations(data) {
     for (let i = 0; i < this.peripherals.length; i++) {
       if (this.peripherals[i].connected) {
