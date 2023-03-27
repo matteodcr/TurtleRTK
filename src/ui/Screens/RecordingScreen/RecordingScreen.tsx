@@ -58,9 +58,13 @@ export default observer(function RecordingScreen({navigation}: Props) {
             style={{marginVertical: 10}}
             mode="contained"
             onPress={() => {
+              store.logManager.write(
+                store.bluetoothManager.outputData.toString(),
+              );
               store.casterConnection.clear();
+              store.bluetoothManager.clearOutput();
             }}>
-            Clear
+            Clear & save
           </Button>
         </View>
         <ScrollView>
@@ -71,11 +75,7 @@ export default observer(function RecordingScreen({navigation}: Props) {
               color: 'white',
               padding: 15,
             }}>
-            {
-              store.casterConnection.inputData[
-                store.casterConnection.inputData.length - 1
-              ]
-            }
+            {store.bluetoothManager.outputData.toString()}
           </Text>
         </ScrollView>
       </View>
