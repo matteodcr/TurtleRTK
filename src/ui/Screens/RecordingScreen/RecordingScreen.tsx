@@ -52,9 +52,10 @@ export default observer(function RecordingScreen({navigation}: Props) {
               store.logManager.write(
                 store.bluetoothManager.outputData.toString(),
               );
-              store.casterConnection.clear();
-              store.bluetoothManager.clearOutput();
               store.casterConnection.closeConnection();
+              store.casterConnection.clear();
+              store.bluetoothManager.stopNotification();
+              store.bluetoothManager.clearOutput();
             }}>
             Clear & save
           </Button>

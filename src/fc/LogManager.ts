@@ -116,15 +116,19 @@ export default class LogManager {
   }
 
   getClearContent(): string {
-    const lines = this.currentFile.content.split('\n'); // séparer les lignes par saut de ligne
+    let output: string = '';
+    let binaryDataAdded = false;
 
-    const validChars = /^[a-zA-Z0-9, $*.]+$/;
-
-    const filteredLines = lines.filter(line => {
-      return validChars.test(line.trim());
+    this.currentFile.content.split('\n').forEach((line: string) => {
+      if (/^[A-Za-z0-9$*,.\s\t]*$/.test(line)) {
+        output += line + '\n';
+        binaryDataAdded = false;
+      } else if (!binaryDataAdded) {
+        output += '<Binary data>\n';
+        binaryDataAdded = true;
+      }
     });
-
-    return filteredLines.join('\n');
+    return output.trim();
   }
 
   modifyInfo(infos: StatResult) {

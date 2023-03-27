@@ -52,26 +52,18 @@ export default observer(function LogModal({
           {store.logManager.currentFile.infos !== undefined && (
             <View style={styles.chipsContainer}>
               <Chip style={styles.chip} icon="dns">
-                Path: {store.logManager.currentFile.infos?.mode}
+                Path: {store.logManager.currentFile.infos?.path}
               </Chip>
               <Chip style={styles.chip} icon="dns">
-                Ctime: {store.logManager.currentFile.infos?.ctime.toString()}
-              </Chip>
-              <Chip style={styles.chip} icon="dns">
-                Mtime: {store.logManager.currentFile.infos?.mtime.toString()}
+                Modif: {store.logManager.currentFile.infos?.mtime.toString()}
               </Chip>
               <Chip style={styles.chip} icon="dns">
                 Size: {store.logManager.currentFile.infos?.size}
               </Chip>
             </View>
           )}
-          <Button
-            onPress={() =>
-              console.log(store.logManager.getClearContent())
-            }>
-            View
-          </Button>
-          <ScrollView>
+
+          <ScrollView style={{padding: 20}}>
             <Text style={{color: 'white'}}>
               {store.logManager.getClearContent()}
             </Text>
