@@ -1,10 +1,11 @@
 import Base from './Base';
 import {makeAutoObservable, observable} from 'mobx';
 import {CasterPool} from './CasterPool';
+import { persist } from "mobx-persist";
 
 export class BasePool {
   baseList: Base[] = [];
-  favoriteList: string[] = [];
+  @persist('list', String) favoriteList: string[] = [];
   favs: boolean = false;
 
   constructor() {

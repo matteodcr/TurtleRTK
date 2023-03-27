@@ -1,9 +1,16 @@
 import {createContext, useContext} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CasterConnection} from './Caster/CasterConnection';
 import {CasterPool} from './Caster/CasterPool';
 import {BasePool} from './Caster/BasePool';
 import {bluetoothManager} from './Rover/BLE/BluetoothManager';
 import {ErrorManager} from './Caster/ErrorManager';
+import { create } from 'mobx-persist';
+
+const hydrate = create({
+  storage: AsyncStorage,
+  jsonify: true,
+});
 
 export class AppStore {
   casterPool: CasterPool;
@@ -22,6 +29,10 @@ export class AppStore {
     this.casterConnection = casterConnection;
     this.errorManager = errorManager;
     this.bluetoothManager = bluetoothManager;
+    
+    Promise.all([
+      hydrate('fav', this.basePool),
+      hydrate('caster', this.casterPool),])
   }
 }
 

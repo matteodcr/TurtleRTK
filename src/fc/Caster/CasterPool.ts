@@ -2,11 +2,12 @@ import SourceTable from './SourceTable';
 import {makeAutoObservable, observable, runInAction} from 'mobx';
 import {AppStore} from '../Store';
 import app from '../../../App';
+import {persist} from 'mobx-persist';
 
 export class CasterPool {
   parentStore: AppStore | null = null;
-  subscribed: Array<SourceTable> = []; // casters dont les bases sont affichées
-  unsubscribed: Array<SourceTable> = []; // casters enregistrés mais dont les bases sont pas affichées
+  @persist('list', SourceTable) @observable subscribed: Array<SourceTable> = []; // casters dont les bases sont affichées
+  @persist('list', SourceTable) @observable unsubscribed: Array<SourceTable> = []; // casters enregistrés mais dont les bases sont pas affichées
   isLoading: boolean = false;
   isTyping: boolean = false;
   isNTRIPv1: boolean = true;
