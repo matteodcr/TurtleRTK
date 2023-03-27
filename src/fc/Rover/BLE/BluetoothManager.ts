@@ -244,7 +244,6 @@ export class bluetoothManager {
   readNotification(event: any) {
     let buff = String.fromCharCode(...event.value);
     console.log('Received ' + buff);
-    buff = buff + '\n';
     runInAction(() => {
       this.outputData.push(buff);
     });

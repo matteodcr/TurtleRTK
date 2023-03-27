@@ -2,22 +2,40 @@ import {makeAutoObservable, runInAction} from 'mobx';
 import RNFS, {ReadDirItem, StatResult} from 'react-native-fs';
 
 export interface FileInfos {
-  content: string | null;
+  content: string;
   infos: StatResult | null;
+}
+
+function hasNonPrintableChars(str: string): boolean {
+  const regex = /[^\x20-\x7E]/g;
+  return regex.test(str);
+}
+
+function removeEmptyLines(input: string): string {
+  const lines = input.split('\n'); // Diviser la chaîne en tableau de lignes
+  const output: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trim() !== '') {
+      // Vérifier si la ligne n'est pas vide
+      output.push(lines[i]); // Ajouter la ligne à la sortie
+    }
+  }
+
+  return output.join('\n'); // Rejoindre le tableau de lignes en une chaîne et renvoyer
 }
 export default class LogManager {
   logList: ReadDirItem[] = [];
   root = RNFS.ExternalDirectoryPath;
   recordingPath = this.root + '/recordings';
   currentFile: FileInfos = {
-    content: null,
+    content: 'null',
     infos: null,
   };
   isLoading: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
-    this.write('first');
   }
 
   setLogList(list: ReadDirItem[]) {
@@ -97,13 +115,25 @@ export default class LogManager {
     this.currentFile.content = content;
   }
 
+  getClearContent(): string {
+    const lines = this.currentFile.content.split('\n'); // séparer les lignes par saut de ligne
+
+    const validChars = /^[a-zA-Z0-9, $*.]+$/;
+
+    const filteredLines = lines.filter(line => {
+      return validChars.test(line.trim());
+    });
+
+    return filteredLines.join('\n');
+  }
+
   modifyInfo(infos: StatResult) {
     this.currentFile.infos = infos;
   }
 
   getFile(path: string) {
     runInAction(() => RNFS.readFile(path))
-      .then(content => {
+      .then((content: string) => {
         this.modifyContent(content);
       })
       .then(() => RNFS.stat(path))
