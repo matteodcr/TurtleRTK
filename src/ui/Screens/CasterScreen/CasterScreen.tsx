@@ -18,6 +18,8 @@ import BaseList from './BaseList';
 import BaseModal from './BaseModal';
 import ConnectedBase from './ConnectedBase';
 import {ConnectionStatusBar} from 'react-native-ui-lib';
+import {styleCaster} from '../Styles';
+export const styles = styleCaster;
 
 let latitude = 45.184434;
 let longitude = 5.75397;
@@ -124,99 +126,4 @@ export default observer(function CasterScreen({navigation}: Props) {
       />
     </SafeAreaView>
   );
-});
-
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#222',
-  },
-  item: {
-    backgroundColor: '#3F4141',
-    padding: 12,
-    marginVertical: 2,
-    marginHorizontal: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderRadius: 20,
-  },
-  itemConnected: {
-    backgroundColor: 'green',
-    padding: 12,
-    marginTop: 10,
-    marginHorizontal: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  title: {
-    fontSize: 20,
-    color: 'white',
-  },
-  baseText: {
-    fontSize: 20,
-    color: 'white',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  modal: {
-    margin: 0, // This is the important style you need to set
-  },
-  sortButton: {
-    flex: 1,
-    backgroundColor: '#151515',
-    padding: 10,
-    marginHorizontal: 10,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-  },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  textinput: {
-    height: 50,
-    borderColor: '#919191',
-    borderWidth: 1,
-    margin: 10,
-    paddingLeft: 15,
-    borderRadius: 10,
-    color: 'white',
-  },
-  TabButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  headerTab: {
-    backgroundColor: '#111111',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    borderBottomColor: '#151515',
-    borderBottomWidth: 1,
-    height: 50,
-    alignItems: 'center',
-  },
-  chipsContainer: {
-    paddingTop: 10,
-    paddingHorizontal: 15,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  chip: {
-    margin: 4,
-  },
-  header: {
-    fontSize: 25,
-    color: 'white',
-    marginLeft: 15,
-    paddingTop: 20,
-    paddingBottom: 5,
-  },
 });

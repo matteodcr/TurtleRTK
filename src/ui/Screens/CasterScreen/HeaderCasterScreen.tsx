@@ -14,12 +14,7 @@ export default function HeaderCasterScreen({navigation}: HeaderProps) {
   return (
     <View style={styles.headerTab}>
       <Text
-        style={{
-          marginLeft: 15,
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: 'white',
-        }}>
+        style={styles.boldText}>
         Caster Screen
       </Text>
       <Pressable style={styles.TabButton} onPress={HeaderButton}>

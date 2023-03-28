@@ -3,9 +3,10 @@ import {
   SafeAreaView,
   View,
   Text,
-  StyleSheet
 } from 'react-native';
 import { PeripheralInfo } from 'react-native-ble-manager';
+import {details_bleStyle} from '../../Styles';
+const styles = details_bleStyle;
 
 const DetailsBLE = ({ route, navigation }) => {
 
@@ -80,35 +81,5 @@ const DetailsBLE = ({ route, navigation }) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#222',
-      },
-    TabButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 32,
-    },
-    headerTab: {
-      backgroundColor: '#111111',
-      justifyContent: 'space-between',
-      flexDirection: 'row',
-      borderBottomColor: '#151515',
-      borderBottomWidth: 1,
-      height: 50,
-      alignItems: 'center'
-    },
-    detailsTitle: {
-      fontSize: 18,
-      color: 'white',
-      fontWeight: 'bold',
-    },
-    details: {
-      fontSize: 15,
-      color: 'white'
-    }
-  });
 
 export default DetailsBLE;

@@ -2,6 +2,8 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useStoreContext } from "../../../../fc/Store";
+import {errorStyle} from "../../Styles";
+const styles = errorStyle;
 
 export enum ErrorType {
     BLUETOOTH,
@@ -57,21 +59,3 @@ export default observer(function ErrorPopUp({error, title, desc}: ErrorPopUpProp
         </Modal>
     );
 })
-
-const styles = StyleSheet.create({
-    errorView: {
-      margin: 20,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-  });

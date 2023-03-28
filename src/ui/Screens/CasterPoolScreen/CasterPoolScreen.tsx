@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import {useStoreContext} from '../../../fc/Store';
 
 import SourceTable from '../../../fc/Caster/SourceTable';
@@ -11,6 +11,9 @@ import CasterList from './CasterList';
 import CasterModal from './CasterModal';
 import FormModal from './FormModal';
 import {ConnectionStatusBar} from 'react-native-ui-lib';
+
+import {casterPoolStyle} from '../Styles';
+export const styles = casterPoolStyle;
 
 export default observer(function CasterPoolScreen() {
   const store = useStoreContext();
@@ -107,79 +110,4 @@ export default observer(function CasterPoolScreen() {
       <CasterList showCasterInfo={showCasterInfo} />
     </SafeAreaView>
   );
-});
-
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#222',
-  },
-  modal: {
-    margin: 0, // This is the important style you need to set
-  },
-  item: {
-    backgroundColor: '#3F4141',
-    padding: 12,
-    marginVertical: 2,
-    marginHorizontal: 10,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-  },
-  header: {
-    fontSize: 25,
-    color: 'white',
-    marginLeft: 15,
-    paddingTop: 20,
-    paddingBottom: 5,
-  },
-
-  title: {
-    marginHorizontal: 10,
-    marginVertical: 5,
-    fontSize: 20,
-    color: 'white',
-  },
-  sortButton: {
-    flex: 1,
-    backgroundColor: '#151515',
-    padding: 10,
-    marginHorizontal: 10,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-  },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  textinput: {
-    margin: 10,
-  },
-  TabButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  headerTab: {
-    backgroundColor: '#111111',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    borderBottomColor: '#151515',
-    borderBottomWidth: 1,
-    height: 50,
-    alignItems: 'center',
-  },
-  chipsContainer: {
-    paddingLeft: 15,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  chip: {
-    margin: 4,
-  },
 });
