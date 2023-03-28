@@ -1,5 +1,6 @@
-import SourceTable from './SourceTable';
 import {countryToAlpha2} from 'country-to-iso';
+
+import SourceTable from './SourceTable';
 
 /**
  * Represent an STR entry in an NTRIP SourceTable
