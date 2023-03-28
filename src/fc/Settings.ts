@@ -3,7 +3,7 @@ export default class Settings {
 
 
     constructor() {
-        this.darkTheme = false;
+        this.darkTheme = true;
       }
 
     changeTheme() {

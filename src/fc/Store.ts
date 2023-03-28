@@ -5,6 +5,7 @@ import {BasePool} from './Caster/BasePool';
 import {bluetoothManager} from './Rover/BLE/BluetoothManager';
 import {ErrorManager} from './Caster/ErrorManager';
 import Settings from './Settings';
+import LogManager from './LogManager';
 
 export class AppStore {
   casterPool: CasterPool;
@@ -13,16 +14,17 @@ export class AppStore {
   bluetoothManager: bluetoothManager;
   errorManager: ErrorManager;
   settings: Settings;
+  logManager: LogManager;
 
   constructor(
     basePool: BasePool,
     errorManager: ErrorManager,
-    bluetoothManager: bluetoothManager,
+    logManager: LogManager,
     settings: Settings,
   ) {
     this.basePool = basePool;
     this.errorManager = errorManager;
-    this.bluetoothManager = bluetoothManager;
+    this.logManager = logManager;
     this.settings = settings;
   }
 }
@@ -31,12 +33,12 @@ function generateStore() {
   const appStore = new AppStore(
     new BasePool(),
     new ErrorManager(),
-    new bluetoothManager(),
+    new LogManager(),
     new Settings(),
   );
   appStore.casterPool = new CasterPool(appStore, [], []);
   appStore.casterConnection = new CasterConnection(appStore);
-  console.log(appStore.casterPool.parentStore);
+  appStore.bluetoothManager = new bluetoothManager(appStore);
   return appStore;
 }
 
