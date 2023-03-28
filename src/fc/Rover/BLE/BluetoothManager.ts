@@ -212,6 +212,15 @@ export class bluetoothManager {
     if (!this.peripheral || !this.peripheral.characteristics) {
       return;
     }
+    BleManager.requestMTU(peripheralID, 512)
+      .then(mtu => {
+        // Success code
+        console.log('MTU size changed to ' + mtu + ' bytes');
+      })
+      .catch(error => {
+        // Failure code
+        console.log(error);
+      });
     this.peripheral.characteristics.forEach(element => {
       if (!this.peripheral) {
         return;
@@ -232,10 +241,43 @@ export class bluetoothManager {
     });
   }
 
+  stopNotification() {
+    if (
+      this.peripheral != null &&
+      this.peripheral.characteristics !== undefined
+    ) {
+      this.peripheral.characteristics.forEach(element => {
+        if (
+          this.peripheral != null &&
+          !this.peripheral.advertising.serviceUUIDs
+        ) {
+          if (this.parentStore?.errorManager !== null) {
+            this.parentStore?.errorManager.printError(
+              'Error in peripheral service UUIDs',
+            );
+          }
+          return;
+        }
+        if (
+          this.peripheral != null &&
+          this.peripheral.advertising.serviceUUIDs != null &&
+          element.properties.Write &&
+          !this.isSending
+        ) {
+          this.isSending = true;
+          BleManager.stopNotification(
+            this.peripheral.id,
+            this.peripheral.advertising.serviceUUIDs[0],
+            element.characteristic,
+          );
+        }
+      });
+    }
+  }
+
   readNotification(event: any) {
     let buff = String.fromCharCode(...event.value);
     console.log('Received ' + buff);
-    buff = buff + '\n';
     runInAction(() => {
       this.outputData.push(buff);
     });
