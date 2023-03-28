@@ -2,13 +2,17 @@ import React from 'react';
 import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 import {PeripheralInfo} from 'react-native-ble-manager';
 
+export interface PeripheralProp {
+  device: PeripheralInfo;
+}
 /**
  * Creates the screen to see details of the BLE device
  * @param route - contains route.params with the device
  */
-const DetailsBLE = ({route}) => {
-  const {device}: {device: PeripheralInfo} = route.params;
+const DetailsBLE = ({device}: PeripheralProp) => {
+  //const {device}: {device: PeripheralInfo} = route.params;
 
+  console.log(device);
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flexDirection: 'column', margin: 15, marginRight: 100}}>

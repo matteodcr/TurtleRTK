@@ -20,14 +20,14 @@ export default observer(function PeripheralList({
 }: PeripheralListProps) {
   const store = useStoreContext();
 
-  const peripheralsArray = Array.from(store.bluetoothManager.peripherals).map(
-    (item, index) => {
+  const peripheralsArray = store.bluetoothManager
+    .getDiscoveredPeripherals()
+    .map((item, index) => {
       return {
         ...item,
         key: index.toString(),
       };
-    },
-  );
+    });
 
   const filter = () => item => {
     return store.bluetoothManager.displayNoNameDevices || item.name != null;

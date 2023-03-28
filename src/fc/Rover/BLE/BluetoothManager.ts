@@ -6,12 +6,13 @@ import {AppStore} from '../../Store';
 
 export class bluetoothManager {
   bleManagerEmitter = new NativeEventEmitter(NativeModules.BleManager);
-  peripherals: Array<any> = [];
-  peripheral: PeripheralInfo | null = null;
+  discoveredPeripherals: Map<string, PeripheralInfo> = new Map(); //<Peripheral ID,Peripheral>
+  connectedPeripherals: Map<string, PeripheralInfo> = new Map(); //<Peripheral ID,Peripheral>
+  ongoingNotifications: Map<string, string[][]> = new Map(); //<Peripheral ID,[[service UUID, characteristic UUID],...]>
   isScanning: boolean = false;
   isSending: boolean = false;
   displayNoNameDevices: boolean = false;
-  outputData: String[] = [];
+  outputData: string[] = [];
   parentStore: AppStore | null = null;
 
   /**
@@ -20,6 +21,16 @@ export class bluetoothManager {
    */
   setDisplayNoNameDevices(state: boolean) {
     this.displayNoNameDevices = state;
+  }
+
+  /**
+   * Prints an error at the bottom of the screen
+   * @param message - the message to display
+   */
+  printError(message: string) {
+    if (this.parentStore?.errorManager !== null) {
+      this.parentStore?.errorManager.printError(message);
+    }
   }
 
   // ------- For ErrorPopUp -------
@@ -44,9 +55,7 @@ export class bluetoothManager {
   constructor(parentStore: AppStore) {
     this.parentStore = parentStore;
     BleManager.start({showAlert: false}).catch(() => {
-      if (this.parentStore?.errorManager !== null) {
-        this.parentStore?.errorManager.printError('Error while starting BLE');
-      }
+      this.printError('Error while starting BLE');
     });
     makeAutoObservable(this);
   }
@@ -62,44 +71,23 @@ export class bluetoothManager {
    * Returns detected peripherals
    * @returns peripherals
    */
-  getPeripherals(): Array<PeripheralInfo> {
-    return this.peripherals;
+  getDiscoveredPeripherals(): Array<PeripheralInfo> {
+    return Array.from(this.discoveredPeripherals.values());
   }
 
   /**
-   * Returns the peripheral detected with this Id, null if none
-   * @param peripheralId - the searched Id
-   * @returns peripheral
+   * Returns connected peripherals
+   * @returns peripherals
    */
-  getPeripheral(peripheralId: String): PeripheralInfo | null {
-    for (let i = 0; i < this.peripherals.length; i++) {
-      if (this.peripherals[i].id === peripheralId) {
-        return this.peripherals[i];
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Updates the peripheral with the same Id in the discovered list with the given peripheral.
-   * If none found, adds the peripheral to the list
-   * @param peripheral the new peripheral
-   */
-  setPeripheral(peripheral: PeripheralInfo) {
-    for (let i = 0; i < this.peripherals.length; i++) {
-      if (this.peripherals[i].id === peripheral.id) {
-        this.peripherals[i] = peripheral;
-        return;
-      }
-    }
-    this.peripherals.push(peripheral);
+  getConnectedPeripherals(): Array<PeripheralInfo> {
+    return Array.from(this.connectedPeripherals.values());
   }
 
   /**
    * Starts scanning nerby peripherals for 5s
    */
   scanDevices() {
-    this.peripherals = [];
+    this.discoveredPeripherals.clear();
     if (!this.isScanning) {
       this.isScanning = true;
       try {
@@ -122,7 +110,9 @@ export class bluetoothManager {
    * @param peripheral - the peripheral
    */
   handleDiscoverPeripheral(peripheral: PeripheralInfo) {
-    this.setPeripheral(peripheral);
+    runInAction(() => {
+      this.discoveredPeripherals.set(peripheral.id, peripheral);
+    });
   }
 
   /**
@@ -137,8 +127,8 @@ export class bluetoothManager {
    * Toggle the connection of the given peripheral (connected/disconnected)
    * @param peripheral - the peripheral to toggle
    */
-  togglePeripheralConnection(peripheral /*: PeripheralInfo*/) {
-    if (peripheral.connected) {
+  togglePeripheralConnection(peripheral: PeripheralInfo) {
+    if (this.connectedPeripherals.has(peripheral.id)) {
       this.disconnectPeripheral(peripheral);
     } else {
       this.connectPeripheral(peripheral);
@@ -149,14 +139,16 @@ export class bluetoothManager {
    * Disconnects the given peripheral
    * @param peripheral - the peripheral to disconnect
    */
-  disconnectPeripheral(peripheral /*: PeripheralInfo*/) {
-    if (peripheral.connected) {
-      BleManager.disconnect(peripheral.id);
-      this.setPeripheral({
-        ...peripheral,
-        ...{connecting: false, connected: false, error: false},
-      });
-    }
+  disconnectPeripheral(peripheral: PeripheralInfo) {
+    this.stopNotification(peripheral.id);
+    BleManager.disconnect(peripheral.id)
+      .then(() => {
+        runInAction(() => {
+          this.connectedPeripherals.delete(peripheral.id);
+          this.isSending = false;
+        });
+      })
+      .catch(() => {});
   }
 
   /**
@@ -164,24 +156,14 @@ export class bluetoothManager {
    * @param peripheral - the peripheral to connect to
    */
   connectPeripheral(peripheral: PeripheralInfo) {
-    this.setPeripheral({
-      ...peripheral,
-      ...{connecting: true, connected: false, error: false},
-    });
     BleManager.connect(peripheral.id)
       .then(() =>
         runInAction(() => {
-          this.setPeripheral({
-            ...peripheral,
-            ...{connecting: false, connected: true, error: false},
-          });
+          this.connectedPeripherals.set(peripheral.id, peripheral);
         }),
       )
       .catch(() => {
-        this.setPeripheral({
-          ...peripheral,
-          ...{connecting: false, connected: false, error: true},
-        });
+        this.connectedPeripherals.delete(peripheral.id);
       });
   }
 
@@ -197,32 +179,24 @@ export class bluetoothManager {
     serviceUUIDs?: string[] | undefined,
   ) {
     BleManager.retrieveServices(peripheralID, serviceUUIDs)
-      .then(peripheralInfo => {
+      .then(peripheral => {
         runInAction(() => {
-          this.setPeripheral({...peripheralInfo, ...{connected: true}});
-          this.peripheral = peripheralInfo;
-          if (!peripheralInfo.characteristics) {
-            if (this.parentStore?.errorManager !== null) {
-              this.parentStore?.errorManager.printError(
-                'Error in peripheral characteristics',
-              );
-            }
+          this.connectedPeripherals.set(peripheral.id, peripheral);
+          this.discoveredPeripherals.set(peripheral.id, peripheral);
+          if (!peripheral.characteristics) {
+            this.printError('Error in peripheral characteristics');
             return;
           }
-          peripheralInfo.characteristics.forEach(element => {
-            if (!peripheralInfo.advertising.serviceUUIDs) {
-              if (this.parentStore?.errorManager !== null) {
-                this.parentStore?.errorManager.printError(
-                  'Error in peripheral service UUIDs',
-                );
-              }
+          peripheral.characteristics.forEach(element => {
+            if (!peripheral.advertising.serviceUUIDs) {
+              this.printError('Error in peripheral service UUIDs');
               return;
             }
             if (element.properties.Write && !this.isSending) {
               this.isSending = true;
               this.write(
-                peripheralInfo.id,
-                peripheralInfo.advertising.serviceUUIDs[0],
+                peripheral.id,
+                peripheral.advertising.serviceUUIDs[0],
                 element.characteristic,
                 data,
               );
@@ -232,49 +206,70 @@ export class bluetoothManager {
       })
       .catch(() => {
         runInAction(() => {
-          if (this.parentStore?.errorManager !== null) {
-            this.parentStore?.errorManager.printError(
-              'Error in peripheral retrieving services',
-            );
-          }
+          this.printError('Error in peripheral retrieving services');
         });
       });
   }
 
   /**
-   * Start notifications on 'Read' characteristics of the given peripheral
+   * Start notifications on 'Read' characteristics of the given peripheral if not already done
    * @param peripheralID - the given peripheral Id
    * @param serviceUUID - the given peripheral service UUID
    */
   startNotification(peripheralID: string, serviceUUID: string) {
-    if (!this.peripheral || !this.peripheral.characteristics) {
+    let peripheral = this.connectedPeripherals.get(peripheralID);
+    if (!peripheral || !peripheral.characteristics) {
       return;
     }
-    BleManager.requestMTU(peripheralID, 512)
-      .then(mtu => {
-        // Success code
-        console.log('MTU size changed to ' + mtu + ' bytes');
-      })
-      .catch(error => {
-        // Failure code
-        console.log(error);
+    if (!this.ongoingNotifications.has(peripheralID)) {
+      BleManager.requestMTU(peripheralID, 512).catch(() => {
+        this.printError('Unable to change BLE device MTU');
       });
-    this.peripheral.characteristics.forEach(element => {
-      if (!this.peripheral) {
-        return;
-      }
-      if (!this.peripheral.advertising.serviceUUIDs) {
+    }
+
+    peripheral.characteristics.forEach(element => {
+      if (!peripheral || !peripheral.advertising.serviceUUIDs) {
         return;
       }
       if (element.properties.Read) {
-        if (!this.peripheral.advertising.serviceUUIDs) {
+        if (!peripheral.advertising.serviceUUIDs) {
           return;
         }
-        BleManager.startNotification(
-          peripheralID,
-          serviceUUID,
-          element.characteristic,
-        ).catch(() => {});
+        let notifications = this.ongoingNotifications.get(peripheral.id);
+        if (!notifications) {
+          BleManager.startNotification(
+            peripheralID,
+            serviceUUID,
+            element.characteristic,
+          ).catch(() => {});
+          this.ongoingNotifications.set(peripheralID, [
+            [serviceUUID, element.characteristic],
+          ]);
+        } else {
+          let notificationPresent = false;
+          notifications.forEach(not => {
+            if (not[0] === serviceUUID && not[1] === element.characteristic) {
+              notificationPresent = true;
+            }
+          });
+          if (!notificationPresent) {
+            BleManager.startNotification(
+              peripheralID,
+              serviceUUID,
+              element.characteristic,
+            )
+              .then(() => {
+                runInAction(() => {
+                  if (!notifications || !peripheral) {
+                    return;
+                  }
+                  notifications.push([serviceUUID, element.characteristic]);
+                  this.ongoingNotifications.set(peripheral.id, notifications);
+                });
+              })
+              .catch(() => {});
+          }
+        }
       }
     });
   }
@@ -291,7 +286,33 @@ export class bluetoothManager {
     });
   }
 
-  stopNotification() {}
+  /**
+   * Stops notifications of all characteristics of the given peripheral ID
+   * @param peripheralID - the given paripheral ID
+   */
+  stopNotification(peripheralID: string) {
+    let notifications = this.ongoingNotifications.get(peripheralID);
+    if (notifications) {
+      notifications.forEach(notification => {
+        BleManager.stopNotification(
+          peripheralID,
+          notification[0],
+          notification[1],
+        ).catch(() => {});
+      });
+    }
+    this.ongoingNotifications.delete(peripheralID);
+  }
+
+  /**
+   * Stops all notifications of all peripherals
+   */
+  stopAllNotifications() {
+    for (const peripheralId in this.ongoingNotifications.keys) {
+      this.stopNotification(peripheralId);
+    }
+    this.ongoingNotifications.clear();
+  }
 
   /**
    * Sends the datas to the given peripheral then starts notification on 'Read' properties of the peripheral
@@ -324,11 +345,7 @@ export class bluetoothManager {
       })
       .catch(() => {
         this.isSending = false;
-        if (this.parentStore?.errorManager !== null) {
-          this.parentStore?.errorManager.printError(
-            'Error while writing to peripheral',
-          );
-        }
+        this.printError('Error while writing to peripheral');
       });
   }
 
@@ -337,12 +354,9 @@ export class bluetoothManager {
    * @param data - the data to transfer
    */
   sendInformations(data) {
-    for (let i = 0; i < this.peripherals.length; i++) {
-      if (this.peripherals[i].connected) {
-        const peripheral: PeripheralInfo = this.peripherals[i];
-        this.startCommunication(data, peripheral.id);
-      }
-    }
+    this.getConnectedPeripherals().forEach(peripheral => {
+      this.startCommunication(data, peripheral.id);
+    });
   }
 
   listeners = [

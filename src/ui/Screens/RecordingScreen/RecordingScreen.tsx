@@ -54,7 +54,7 @@ export default observer(function RecordingScreen({navigation}: Props) {
               );
               store.casterConnection.closeConnection();
               store.casterConnection.clear();
-              store.bluetoothManager.stopNotification();
+              store.bluetoothManager.stopAllNotifications();
               store.bluetoothManager.clearOutput();
             }}>
             Clear & save

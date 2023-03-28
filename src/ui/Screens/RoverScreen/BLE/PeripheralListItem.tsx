@@ -38,9 +38,9 @@ export default observer(function PeripheralListItem({
         key={device.id}
         style={[
           styles.item,
-          device.connecting && {backgroundColor: 'orange'},
-          device.connected && {backgroundColor: 'lightblue'},
-          device.error && {backgroundColor: 'red'},
+          store.bluetoothManager.connectedPeripherals.has(device.id) && {
+            backgroundColor: 'lightblue',
+          },
         ]}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <View style={{flexDirection: 'column'}}>
