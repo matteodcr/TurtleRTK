@@ -1,6 +1,7 @@
 import BleManager, {PeripheralInfo} from 'react-native-ble-manager';
 import {NativeEventEmitter, NativeModules} from 'react-native';
 import {makeAutoObservable, runInAction} from 'mobx';
+
 import {AppStore} from '../../Store';
 
 export class bluetoothManager {
@@ -8,10 +9,15 @@ export class bluetoothManager {
   peripherals: Array<any> = [];
   peripheral: PeripheralInfo | null = null;
   isScanning: boolean = false;
+  isSending: boolean = false;
   displayNoNameDevices: boolean = false;
   outputData: String[] = [];
   parentStore: AppStore | null = null;
 
+  /**
+   * Configures if devices with no name are shown in the screen list
+   * @param {boolean} state - the desired configuration
+   */
   setDisplayNoNameDevices(state: boolean) {
     this.displayNoNameDevices = state;
   }
@@ -19,40 +25,53 @@ export class bluetoothManager {
   // ------- For ErrorPopUp -------
   isBluetoothActivated: boolean = false;
   displayBluetoothActivatedError: boolean = false;
-  isLocalisationActivated: boolean = false;
-  displayLocalisationActivatedError: boolean = false;
+  /**
+   * Sets the state of bluetooth flag
+   * @param {boolean} state - sets the flag
+   */
   setIsBluetoothActivated(state: boolean) {
     this.isBluetoothActivated = state;
   }
+  /**
+   * Sets the flag for showing bluetooth error
+   * @param state - sets the flag
+   */
   setDisplayBluetoothActivatedError(state: boolean) {
     this.displayBluetoothActivatedError = state;
-  }
-  setIsLocalisationActivated(state: boolean) {
-    this.isLocalisationActivated = state;
-  }
-  setDisplayLocalisationActivatedError(state: boolean) {
-    this.displayLocalisationActivatedError = state;
   }
   // ------- ------- ------- -------
 
   constructor(parentStore: AppStore) {
     this.parentStore = parentStore;
-    BleManager.start({showAlert: false}).then(() => {
-      // Success code
-      console.log('Module initialized');
+    BleManager.start({showAlert: false}).catch(() => {
+      if (this.parentStore?.errorManager !== null) {
+        this.parentStore?.errorManager.printError('Error while starting BLE');
+      }
     });
     makeAutoObservable(this);
   }
 
+  /**
+   * Clears BLE output datas
+   */
   clearOutput() {
     this.outputData = [];
   }
 
-  getPeripherals() {
+  /**
+   * Returns detected peripherals
+   * @returns peripherals
+   */
+  getPeripherals(): Array<PeripheralInfo> {
     return this.peripherals;
   }
 
-  getPeripheral(peripheralId: string) {
+  /**
+   * Returns the peripheral detected with this Id, null if none
+   * @param peripheralId - the searched Id
+   * @returns peripheral
+   */
+  getPeripheral(peripheralId: String): PeripheralInfo | null {
     for (let i = 0; i < this.peripherals.length; i++) {
       if (this.peripherals[i].id === peripheralId) {
         return this.peripherals[i];
@@ -61,6 +80,11 @@ export class bluetoothManager {
     return null;
   }
 
+  /**
+   * Updates the peripheral with the same Id in the discovered list with the given peripheral.
+   * If none found, adds the peripheral to the list
+   * @param peripheral the new peripheral
+   */
   setPeripheral(peripheral: PeripheralInfo) {
     for (let i = 0; i < this.peripherals.length; i++) {
       if (this.peripherals[i].id === peripheral.id) {
@@ -71,12 +95,14 @@ export class bluetoothManager {
     this.peripherals.push(peripheral);
   }
 
+  /**
+   * Starts scanning nerby peripherals for 5s
+   */
   scanDevices() {
     this.peripherals = [];
     if (!this.isScanning) {
       this.isScanning = true;
       try {
-        console.log('Scanning...');
         BleManager.scan([], 5, false);
       } catch (error) {
         console.error(error);
@@ -84,80 +110,87 @@ export class bluetoothManager {
     }
   }
 
+  /**
+   * Called when the scan is stopped.
+   */
   handleStopScan() {
     this.isScanning = false;
-    console.log('Scan is stopped');
   }
 
-  handleDisconnectedPeripheral(data) {
-    let peripheral = this.getPeripheral(data.peripheral.id);
-    if (peripheral) {
-      //peripheral.connected = false;
-      this.setPeripheral(peripheral);
-    }
-    console.log('Disconnected from ' + peripheral);
-  }
-
-  handleUpdateValueForCharacteristic(data) {
-    console.log(
-      'Received data from ' +
-        data.peripheral +
-        ' characteristic ' +
-        data.characteristic,
-      data.value,
-    );
-  }
-
-  handleDiscoverPeripheral(peripheral) {
+  /**
+   * Called when a peripheral is discovered by scanning
+   * @param peripheral - the peripheral
+   */
+  handleDiscoverPeripheral(peripheral: PeripheralInfo) {
     this.setPeripheral(peripheral);
   }
 
-  togglePeripheralConnection(peripheral) {
-    if (peripheral && peripheral.connected) {
-      BleManager.disconnect(peripheral.id);
-      this.setPeripheral({
-        ...peripheral,
-        ...{connecting: false, connected: false, error: false},
-      });
+  /**
+   * Called when a peripheral is disconnected
+   * @param data - contains deta.peripheral
+   */
+  handleDisconnectedPeripheral(data) {
+    this.disconnectPeripheral(data.peripheral);
+  }
+
+  /**
+   * Toggle the connection of the given peripheral (connected/disconnected)
+   * @param peripheral - the peripheral to toggle
+   */
+  togglePeripheralConnection(peripheral /*: PeripheralInfo*/) {
+    if (peripheral.connected) {
+      this.disconnectPeripheral(peripheral);
     } else {
       this.connectPeripheral(peripheral);
     }
   }
 
-  connectPeripheral(peripheral) {
-    try {
-      if (peripheral) {
-        this.setPeripheral({
-          ...peripheral,
-          ...{connecting: true, connected: false, error: false},
-        });
-        BleManager.connect(peripheral.id)
-          .then(() =>
-            runInAction(() => {
-              this.setPeripheral({
-                ...peripheral,
-                ...{connecting: false, connected: true, error: false},
-              });
-              //this.sendInformations([0])
-            }),
-          )
-          .catch(() => {
-            this.setPeripheral({
-              ...peripheral,
-              ...{connecting: false, connected: false, error: true},
-            });
-          });
-      }
-    } catch (error) {
-      console.log('Connection error', error);
+  /**
+   * Disconnects the given peripheral
+   * @param peripheral - the peripheral to disconnect
+   */
+  disconnectPeripheral(peripheral /*: PeripheralInfo*/) {
+    if (peripheral.connected) {
+      BleManager.disconnect(peripheral.id);
       this.setPeripheral({
         ...peripheral,
-        ...{connecting: false, connected: false},
+        ...{connecting: false, connected: false, error: false},
       });
     }
   }
-  isSending: boolean = false;
 
+  /**
+   * Connects to the given peripheral
+   * @param peripheral - the peripheral to connect to
+   */
+  connectPeripheral(peripheral: PeripheralInfo) {
+    this.setPeripheral({
+      ...peripheral,
+      ...{connecting: true, connected: false, error: false},
+    });
+    BleManager.connect(peripheral.id)
+      .then(() =>
+        runInAction(() => {
+          this.setPeripheral({
+            ...peripheral,
+            ...{connecting: false, connected: true, error: false},
+          });
+        }),
+      )
+      .catch(() => {
+        this.setPeripheral({
+          ...peripheral,
+          ...{connecting: false, connected: false, error: true},
+        });
+      });
+  }
+
+  /**
+   * Starts communication with the given peripheral
+   * @param data - datas to transfer
+   * @param peripheralID - destination peripheral Id
+   * @param serviceUUIDs - destination peripheral service UUIDs
+   */
   startCommunication(
     data,
     peripheralID: string,
@@ -208,6 +241,11 @@ export class bluetoothManager {
       });
   }
 
+  /**
+   * Start notifications on 'Read' characteristics of the given peripheral
+   * @param peripheralID - the given peripheral Id
+   * @param serviceUUID - the given peripheral service UUID
+   */
   startNotification(peripheralID: string, serviceUUID: string) {
     if (!this.peripheral || !this.peripheral.characteristics) {
       return;
@@ -232,15 +270,26 @@ export class bluetoothManager {
     });
   }
 
-  readNotification(event: any) {
+  /**
+   * Called when the value of the characteristic you notified changed
+   * Adds the new value to the outputData list
+   * @param event - contains event.(value/peripheral/characteristic/service)
+   */
+  handleUpdateValueForCharacteristic(event) {
     let buff = String.fromCharCode(...event.value);
-    console.log('Received ' + buff);
-    buff = buff + '\n';
     runInAction(() => {
-      this.outputData.push(buff);
+      this.outputData.push(buff + '\n');
     });
   }
 
+  /**
+   * Sends the datas to the given peripheral then starts notification on 'Read' properties of the peripheral
+   * @param peripheralID - the peripheral Id
+   * @param serviceUUID - the peripheral UUID
+   * @param characteristicUUID - the peripheral characteristic UUID
+   * @param data - the data to transfer
+   * @param maxByteSize (optional) - the maximum size of data
+   */
   write(
     peripheralID: string,
     serviceUUID: string,
@@ -272,6 +321,10 @@ export class bluetoothManager {
       });
   }
 
+  /**
+   * Allows to transfer the data to all connected peripherals
+   * @param data - the data to transfer
+   */
   sendInformations(data) {
     for (let i = 0; i < this.peripherals.length; i++) {
       if (this.peripherals[i].connected) {
@@ -296,7 +349,7 @@ export class bluetoothManager {
     ),
     this.bleManagerEmitter.addListener(
       'BleManagerDidUpdateValueForCharacteristic',
-      this.readNotification.bind(this),
+      this.handleUpdateValueForCharacteristic.bind(this),
     ),
   ];
 }
