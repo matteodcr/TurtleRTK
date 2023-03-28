@@ -3,7 +3,7 @@ import {CasterConnection} from './Caster/CasterConnection';
 import {CasterPool} from './Caster/CasterPool';
 import {BasePool} from './Caster/BasePool';
 import {bluetoothManager} from './Rover/BLE/BluetoothManager';
-import {ErrorManager} from './Caster/ErrorManager';
+import {ErrorManager} from './ErrorManager';
 import LogManager from './LogManager';
 
 export class AppStore {
