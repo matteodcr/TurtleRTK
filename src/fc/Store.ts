@@ -6,6 +6,9 @@ import {bluetoothManager} from './Rover/BLE/BluetoothManager';
 import {ErrorManager} from './ErrorManager';
 import LogManager from './LogManager';
 
+/**
+ * MobX store to manage the global state of the app
+ */
 export class AppStore {
   casterPool: CasterPool;
   basePool: BasePool;
