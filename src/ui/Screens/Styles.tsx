@@ -46,9 +46,19 @@ const ajouts_details_ble = StyleSheet.create({
     color: store.settings.darkTheme ? 'white' : 'dark',
     fontWeight: 'bold',
   },
+  detailsSection: {
+    fontSize: 18,
+    color:store.settings.darkTheme ? 'white' : 'dark',
+    marginTop: 15
+  },
   details: {
     fontSize: 15,
     color: store.settings.darkTheme ? 'white' : 'dark',
+  },
+  Title: {
+    fontSize: 30,
+    color:store.settings.darkTheme ? 'white' : 'dark',
+    marginBottom: 20
   },
 });
 

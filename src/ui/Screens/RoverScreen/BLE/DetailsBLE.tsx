@@ -15,7 +15,7 @@ const DetailsBLE = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flexDirection: 'column', margin: 15, marginRight: 100}}>
-        <Text style={{fontSize: 30, color:'white', marginBottom: 20}}>Details :</Text>
+        <Text style={styles.Title}>Details :</Text>
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>Name : </Text>
           <Text style={styles.details}>{device.name}</Text>
@@ -32,7 +32,7 @@ const DetailsBLE = ({ route, navigation }) => {
           <Text style={styles.detailsTitle}>RSSI : </Text>
           <Text style={styles.details}>{device.rssi}</Text>
         </View>
-        <Text style={{fontSize: 18, color:'white', marginTop: 15}}>Advertising</Text>
+        <Text style={styles.detailsSection}>Advertising</Text>
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>Is connectable : </Text>
           <Text style={styles.details}>{(String) (device.advertising.isConnectable)}</Text>
@@ -41,7 +41,7 @@ const DetailsBLE = ({ route, navigation }) => {
           <Text style={styles.detailsTitle}>Tx power level : </Text>
           <Text style={styles.details}>{device.advertising.txPowerLevel}</Text>
         </View>
-        <Text style={{fontSize: 18, color:'white', marginTop: 15}}>Manufacturer data</Text>
+        <Text style={styles.detailsSection}>Manufacturer data</Text>
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>CDV type : </Text>
           <Text style={styles.details}>{device.advertising.manufacturerData?.CDVType}</Text>
@@ -64,7 +64,7 @@ const DetailsBLE = ({ route, navigation }) => {
           <Text style={styles.detailsTitle}>Service UUIDs : </Text>
           <Text style={styles.details}>{device.advertising.serviceUUIDs}</Text>
         </View>
-        <Text style={{fontSize: 18, color:'white', marginTop: 15}}>Service data</Text>
+        <Text style={styles.detailsSection}}>Service data</Text>
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>CDV type : </Text>
           <Text style={styles.details}>{device.advertising.serviceData?.CDVType}</Text>
