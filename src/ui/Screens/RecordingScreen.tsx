@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react-lite';
 import React from 'react';
 import {Button} from 'react-native-paper';
-import {SafeAreaView, View, Text, StyleSheet, ScrollView} from 'react-native';
+import {SafeAreaView, View, Text, ScrollView} from 'react-native';
 import {useStoreContext} from '../../fc/Store';
 import {recStyle} from './Styles';
 const styles = recStyle;
@@ -12,7 +12,7 @@ export default observer(function RecordingScreen() {
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
-        <Text style={styles.text}>Recording Screen</Text>
+        <Text style={styles.boldText}>Recording Screen</Text>
       </View>
     );
   };
@@ -49,7 +49,7 @@ export default observer(function RecordingScreen() {
           </Button>
         </View>
         <ScrollView>
-          <Text style={styles.text}>
+          <Text style={styles.boldText}>
             {
               store.casterConnection.inputData[
                 store.casterConnection.inputData.length - 1

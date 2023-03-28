@@ -29,7 +29,7 @@ export default observer(function RoverScreen({navigation}:RoverScreenProps){
       <ErrorPopUp error={ErrorType.BLUETOOTH} title={"Bluetooth deactivated"} desc={"Please enable bluetooth for scanning peripherals."}/>
       <ErrorPopUp error={ErrorType.LOCALISATION} title={"Localisation deactivated"} desc={"Please enable localisation for scanning peripherals."}/>
       <View style = {styles.sortButton}>
-        <Text style={{color: 'white', fontSize: 15}}>Display devices with no name : </Text>
+        <Text style={styles.text}>Display devices with no name : </Text>
         <Checkbox
           status={store.bluetoothManager.displayNoNameDevices ? 'checked' : 'unchecked'}
           onPress={() => {
@@ -37,7 +37,7 @@ export default observer(function RoverScreen({navigation}:RoverScreenProps){
           }}
         />
       </View>
-      <Text style={{color: 'white', fontSize: 20, textAlign: 'center', marginVertical: 15}}>Périphériques BLE à proximité :</Text>
+      <Text style={{color: store.settings.darkTheme ? 'white' : 'dark', fontSize: 20, textAlign: 'center', marginVertical: 15}}>Périphériques BLE à proximité :</Text>
       <PeripheralList navigation={navigation}/>
     </SafeAreaView>
   );

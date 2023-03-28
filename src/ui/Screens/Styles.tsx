@@ -3,12 +3,16 @@ import React from 'react';
 import {
     StyleSheet,
 } from 'react-native';
+import { useStoreContext } from '../../fc/Store';
+
+
+const store = useStoreContext();
 
 // styles de base, globaux à toute l'application
 export const baseStyle = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222',
+    backgroundColor: store.settings.darkTheme ? '#222' : '#FCFCFC',
   },
   TabButton: {
     alignItems: 'center',
@@ -16,10 +20,10 @@ export const baseStyle = StyleSheet.create({
     paddingHorizontal: 32,
   },
   headerTab: {
-    backgroundColor: '#111111',
+    backgroundColor: store.settings.darkTheme ? '#111111' : '#dedcdc',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    borderBottomColor: '#151515',
+    borderBottomColor: store.settings.darkTheme ? '#151515' : '#E0E0E0',
     borderBottomWidth: 1,
     height: 50,
     alignItems: 'center',
@@ -28,10 +32,10 @@ export const baseStyle = StyleSheet.create({
     marginLeft: 15,
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'white',
+    color: store.settings.darkTheme ? 'white' : 'dark',
   },
   text:{
-    color: 'purple'
+    color: store.settings.darkTheme ? 'white' : 'dark',
   }
 });
 
@@ -39,12 +43,12 @@ export const baseStyle = StyleSheet.create({
 const ajouts_details_ble = StyleSheet.create({
   detailsTitle: {
     fontSize: 18,
-    color: 'white',
+    color: store.settings.darkTheme ? 'white' : 'dark',
     fontWeight: 'bold',
   },
   details: {
     fontSize: 15,
-    color: 'white',
+    color: store.settings.darkTheme ? 'white' : 'dark',
   },
 });
 
@@ -57,7 +61,7 @@ const ajouts_recording_screen = StyleSheet.create({
     margin: 0, // This is the important style you need to set
   },
   item: {
-    backgroundColor: '#3F4141',
+    backgroundColor: store.settings.darkTheme ? '#3F4141' : '#3F728B',
     padding: 12,
     marginVertical: 2,
     marginHorizontal: 10,
@@ -67,7 +71,7 @@ const ajouts_recording_screen = StyleSheet.create({
   },
   header: {
     fontSize: 25,
-    color: 'white',
+    color: store.settings.darkTheme ? 'white' : 'dark',
     marginLeft: 15,
     paddingTop: 20,
     paddingBottom: 5,
@@ -76,11 +80,11 @@ const ajouts_recording_screen = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 5,
     fontSize: 20,
-    color: 'white',
+    color: store.settings.darkTheme ? 'white' : 'dark',
   },
   sortButton: {
     flex: 1,
-    backgroundColor: '#151515',
+    backgroundColor: store.settings.darkTheme ? '#151515' : '#82B5CE',
     padding: 10,
     marginHorizontal: 10,
     borderRadius: 20,
@@ -96,6 +100,7 @@ const ajouts_recording_screen = StyleSheet.create({
   },
   textinput: {
     margin: 10,
+    backgroundColor: store.settings.darkTheme ? '#151515' : '#82B5CE',
   },
   TabButton: {
     alignItems: 'center',
@@ -109,7 +114,7 @@ export const recStyle = StyleSheet.flatten([baseStyle, ajouts_recording_screen])
 const ajoutsRover = StyleSheet.create({
   sortButton: {
     flexDirection: 'row',
-    backgroundColor: '#151515',
+    backgroundColor: store.settings.darkTheme ? '#151515' : '#82B5CE',
     padding: 10,
     marginHorizontal: 10,
     marginTop: 10,
@@ -123,10 +128,6 @@ export const RoverStyle = StyleSheet.flatten([baseStyle, ajoutsRover]);
 
 // specs de la vue caster pool
 const ajouts_caster_pool = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#222',
-    },
     modal: {
       margin: 0, // This is the important style you need to set
     },
@@ -157,7 +158,8 @@ export const ajoutsCaster = StyleSheet.create({
         margin: 10,
         paddingLeft: 15,
         borderRadius: 10,
-        color: 'white',
+        color: store.settings.darkTheme ? 'white' : 'dark',
+        backgroundColor: store.settings.darkTheme ? '#151515' : '#82B5CE',
       },
       itemConnected: {
         backgroundColor: 'green',
@@ -171,7 +173,7 @@ export const ajoutsCaster = StyleSheet.create({
       },
       baseText: {
         fontSize: 20,
-        color: 'white',
+        color: store.settings.darkTheme ? 'white' : 'dark',
         paddingHorizontal: 10,
         paddingVertical: 5,
       },
@@ -210,7 +212,7 @@ export const PeripheralListItemStyle = StyleSheet.create({
   },
   deviceName: {
     marginRight: 10,
-    color: 'white',
+    color: store.settings.darkTheme ? 'white' : 'dark',
   },
   deviceId: {
     color: 'gray',

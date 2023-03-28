@@ -7,8 +7,9 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import {List} from 'react-native-paper';
+import {List, Button, Switch} from 'react-native-paper';
 import {baseStyle} from '../Styles';
+import {useStoreContext} from '../../../fc/Store';
 const styles = baseStyle;
 
 interface Props {
@@ -16,7 +17,6 @@ interface Props {
 }
 
 export default function SettingsScreen({navigation}: Props) {
-  darkTheme: boolean = true;
 
 
   const renderHeaderTab = () => {
@@ -26,6 +26,8 @@ export default function SettingsScreen({navigation}: Props) {
       </View>
     );
   };
+  
+  const store = useStoreContext();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -33,21 +35,34 @@ export default function SettingsScreen({navigation}: Props) {
       <View>
         <List.Item
           title="Caster"
+          titleStyle={styles.text}
           description="NTRIP, Auto-connect, ..."
+          descriptionStyle={styles.text}
           left={props => <List.Icon {...props} icon="server" />}
           onPress={() => navigation.navigate('CasterSettingsScreen')}
         />
         <List.Item
           title="Rover"
+          titleStyle={styles.text}
           description="BLE, Bluetooth, USB, ..."
+          descriptionStyle={styles.text}
           left={props => <List.Icon {...props} icon="antenna" />}
           onPress={() => navigation.navigate('RoverSettingsScreen')}
         />
         <List.Item
           title="About"
+          titleStyle={styles.text}
           left={props => <List.Icon {...props} icon="information" />}
           onPress={() => navigation.navigate('AboutScreen')}
         />
+        <Button
+          style={{marginVertical: 10}}
+          mode="contained"
+          onPress={() => {
+            store.settings.changeTheme();
+          }}>
+          Switch appearence
+        </Button>
       </View>
     </SafeAreaView>
   );
