@@ -21,7 +21,7 @@ export default function HeaderCasterScreen({navigation}: HeaderProps) {
         Caster Screen
       </Text>
       <Pressable style={styles.TabButton} onPress={HeaderButton}>
-        <MaterialIcons name="library-add" color={store.settings.darkTheme ? 'white' : 'green'} size={25} />
+        <MaterialIcons name="library-add" color={store.settings.darkTheme ? 'white' : 'green'} size={store.settings.bigFontEnabled ? 40 : 25} />
       </Pressable>
     </View>
   );

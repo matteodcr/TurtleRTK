@@ -88,7 +88,7 @@ export default observer(function BaseListItem({
               <MaterialCommunityIcons
                 name="map-marker-question-outline"
                 color={'white'}
-                size={30}
+                size={store.settings.bigFontEnabled ? 45 : 30}
               />
             ) : (
               <CountryFlag isoCode={item.country} size={21} />
@@ -97,15 +97,11 @@ export default observer(function BaseListItem({
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text
-              style={{fontStyle: 'italic', fontSize: 15, color: 'lightgrey'}}>
+              style={styles.textCity}>
               {limitCityName(item.identifier)}
             </Text>
             <Text
-              style={{
-                fontStyle: 'italic',
-                fontSize: 15,
-                color: 'darksalmon',
-              }}>
+              style={styles.textDistance}>
               {' '}
               {Math.floor(
                 getDistance(

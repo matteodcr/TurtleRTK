@@ -37,7 +37,7 @@ export default observer(function RoverScreen({navigation}:RoverScreenProps){
           }}
         />
       </View>
-      <Text style={{color: store.settings.darkTheme ? 'white' : 'dark', fontSize: 20, textAlign: 'center', marginVertical: 15}}>Périphériques BLE à proximité :</Text>
+      <Text style={styles.centeredText}>Périphériques BLE à proximité :</Text>
       <PeripheralList navigation={navigation}/>
     </SafeAreaView>
   );

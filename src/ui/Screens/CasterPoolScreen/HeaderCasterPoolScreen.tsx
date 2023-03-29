@@ -18,7 +18,7 @@ export default observer(function HeaderCasterPoolScreen({
       <Pressable
         style={styles.TabButton}
         onPress={() => store.casterPool.setTyping(true)}>
-        <MaterialIcons name="add" color={store.settings.darkTheme ? 'white' : 'green'} size={25} />
+        <MaterialIcons name="add" color={store.settings.darkTheme ? 'white' : 'green'} size={store.settings.bigFontEnabled ? 40 : 25} />
       </Pressable>
     </View>
   );

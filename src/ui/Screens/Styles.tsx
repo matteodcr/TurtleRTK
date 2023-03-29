@@ -25,16 +25,17 @@ export const baseStyle = StyleSheet.create({
     flexDirection: 'row',
     borderBottomColor: store.settings.darkTheme ? '#151515' : '#E0E0E0',
     borderBottomWidth: 1,
-    height: 50,
+    height: store.settings.bigFontEnabled ? 70 : 50,
     alignItems: 'center',
   },
   boldText:{
     marginLeft: 15,
-    fontSize: 18,
+    fontSize: store.settings.bigFontEnabled ? 40 : 18,
     fontWeight: 'bold',
     color: store.settings.darkTheme ? 'white' : 'dark',
   },
   text:{
+    fontSize: store.settings.bigFontEnabled ? 25 : 15,
     color: store.settings.darkTheme ? 'white' : 'dark',
   }
 });
@@ -42,23 +43,23 @@ export const baseStyle = StyleSheet.create({
 // specs de la classe details ble
 const ajouts_details_ble = StyleSheet.create({
   detailsTitle: {
-    fontSize: 18,
+    fontSize: store.settings.bigFontEnabled ? 28 : 18,
     color: store.settings.darkTheme ? 'white' : 'dark',
     fontWeight: 'bold',
   },
   detailsSection: {
-    fontSize: 18,
+    fontSize: store.settings.bigFontEnabled ? 28 : 18,
     color:store.settings.darkTheme ? 'white' : 'dark',
-    marginTop: 15
+    marginTop: 15,
   },
   details: {
-    fontSize: 15,
+    fontSize: store.settings.bigFontEnabled ? 25 : 15,
     color: store.settings.darkTheme ? 'white' : 'dark',
   },
   Title: {
-    fontSize: 30,
+    fontSize: store.settings.bigFontEnabled ? 45 : 30,
     color:store.settings.darkTheme ? 'white' : 'dark',
-    marginBottom: 20
+    marginBottom: 20,
   },
 });
 
@@ -80,7 +81,7 @@ const ajouts_recording_screen = StyleSheet.create({
     flexDirection: 'row',
   },
   header: {
-    fontSize: 25,
+    fontSize: store.settings.bigFontEnabled ? 40 : 25,
     color: store.settings.darkTheme ? 'white' : 'dark',
     marginLeft: 15,
     paddingTop: 20,
@@ -89,7 +90,7 @@ const ajouts_recording_screen = StyleSheet.create({
   title: {
     marginHorizontal: 10,
     marginVertical: 5,
-    fontSize: 20,
+    fontSize: store.settings.bigFontEnabled ? 32 : 20,
     color: store.settings.darkTheme ? 'white' : 'dark',
   },
   sortButton: {
@@ -131,7 +132,13 @@ const ajoutsRover = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
-  }
+  },
+  centeredText: {
+    color: store.settings.darkTheme ? 'white' : 'dark',
+    fontSize: store.settings.bigFontEnabled ? 35 : 20,
+    textAlign: 'center',
+    marginVertical: 15,
+},
 })
 
 export const RoverStyle = StyleSheet.flatten([baseStyle, ajoutsRover]);
@@ -182,10 +189,20 @@ export const ajoutsCaster = StyleSheet.create({
         borderRadius: 20,
       },
       baseText: {
-        fontSize: 20,
+        fontSize: store.settings.bigFontEnabled ? 30 : 20,
         color: store.settings.darkTheme ? 'white' : 'dark',
         paddingHorizontal: 10,
         paddingVertical: 5,
+      },
+      textCity: {
+        fontStyle: 'italic',
+        fontSize: store.settings.bigFontEnabled ? 22 : 15,
+        color: 'lightgrey',
+      },
+      textDistance: {
+        fontStyle: 'italic',
+        fontSize: store.settings.bigFontEnabled ? 22 : 15,
+        color: 'darksalmon',
       },
 });
 

@@ -63,6 +63,14 @@ export default function SettingsScreen({navigation}: Props) {
           }}>
           Switch appearence
         </Button>
+        <Button
+          style={{marginVertical: 10}}
+          mode="contained"
+          onPress={() => {
+            store.settings.changeFontSize();
+          }}>
+          Switch font size
+        </Button>
       </View>
     </SafeAreaView>
   );

@@ -64,7 +64,7 @@ const DetailsBLE = ({ route, navigation }) => {
           <Text style={styles.detailsTitle}>Service UUIDs : </Text>
           <Text style={styles.details}>{device.advertising.serviceUUIDs}</Text>
         </View>
-        <Text style={styles.detailsSection}}>Service data</Text>
+        <Text style={styles.detailsSection}>Service data</Text>
         <View style={{flexDirection:'row'}}>
           <Text style={styles.detailsTitle}>CDV type : </Text>
           <Text style={styles.details}>{device.advertising.serviceData?.CDVType}</Text>
