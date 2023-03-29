@@ -1,8 +1,10 @@
 import SourceTable from './SourceTable';
 
+/**
+ * Represent a CAS entry in an NTRIP SourceTable
+ */
 export default class Caster {
   parentSourceTable: SourceTable;
-
   host: string; //  host name or IP address
   port: number; //  port number
   identifier: string; // SourceTable Identifier - Name of SourceTable or SourceTable provider

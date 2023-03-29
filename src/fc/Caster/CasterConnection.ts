@@ -1,8 +1,9 @@
-import {NtripClientV1} from './NTRIP/v1/clientV1';
-import Base from './Base';
 import {makeAutoObservable, runInAction} from 'mobx';
+
+import {NtripClientV1} from './NTRIP/v1/clientV1';
 import {NtripClientV2} from './NTRIP/v2/clientV2';
-import { AppStore } from '../Store';
+import {AppStore} from '../Store';
+import Base from './Base';
 
 interface CasterConnectionOptionsNTRIPv1 {
   host: string;
@@ -15,23 +16,33 @@ interface CasterConnectionOptionsNTRIPv1 {
   interval: number;
 }
 
+/**
+ * Manage the connection to an NTRIP connection to get position data
+ */
 export class CasterConnection {
-  inputData: string[] = [];
+  inputData: string[] = []; // RTCM data
   casterClient: NtripClientV1 | NtripClientV2;
   optionsV1: CasterConnectionOptionsNTRIPv1 | null = null;
   connectedBase: Base | null = null;
   isClosed = true;
   parentStore: AppStore | null = null;
 
-  constructor(parentStore: AppStore,) {
+  constructor(parentStore: AppStore) {
     makeAutoObservable(this);
     this.parentStore = parentStore;
   }
 
+  /**
+   * Close the caster connection
+   */
   closeConnection() {
     this.isClosed = true;
   }
 
+  /**
+   * Configure the client connection to a NTRIP caster for the base
+   * @param base - is the moutnpoint where we try to connect
+   */
   configureConnection(base: Base) {
     this.optionsV1 = {
       host: base.parentSourceTable.adress,
@@ -46,15 +57,24 @@ export class CasterConnection {
     this.connectedBase = base;
   }
 
+  /**
+   * Reset the caster connection
+   */
   resetConnection() {
     this.optionsV1 = null;
     this.connectedBase = null;
   }
 
+  /**
+   * Clear the received RTCM data array
+   */
   clear() {
     this.inputData = [];
   }
 
+  /**
+   * Handle the connection to the caster, configureConnection is necessary before
+   */
   getNTRIPData() {
     this.casterClient = new NtripClientV1(this.optionsV1);
     if (!this.connectedBase?.parentSourceTable.isNTRIPv1) {

@@ -1,5 +1,8 @@
 import SourceTable from './SourceTable';
 
+/**
+ * Represent a NET entry in an NTRIP SourceTable
+ */
 export default class Network {
   parentSourceTable: SourceTable;
   identifier: string; // Network Identifier - Name of station network
@@ -9,7 +12,7 @@ export default class Network {
   webNet: string; // Web address for network information
   webStr: string; // Web address for stream information
   webReg: string; // Web or mail address for registration
-  misc: string; //
+  misc: string; // Miscellaneous
 
   constructor(sourceTable: SourceTable, line: string[]) {
     if (line.length === 9) {

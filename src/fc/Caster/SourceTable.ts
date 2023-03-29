@@ -1,15 +1,14 @@
+import waitForEvent from 'wait-for-event-promise';
+import {makeAutoObservable} from 'mobx';
+
 import Base from './Base';
 import Network from './Network';
 import Caster from './Caster';
+import {CasterPool} from './CasterPool';
 import {NtripClientV1} from './NTRIP/v1/clientV1';
 import {NtripClientV2} from './NTRIP/v2/clientV2';
 
-import waitForEvent from 'wait-for-event-promise';
-import {makeAutoObservable} from 'mobx';
-import {CasterPool} from './CasterPool';
-global.Buffer = global.Buffer || require('buffer').Buffer;
-
-export const FAKE_MOUNTPOINT = ''; // TODO: find a universal fake mountpoint name
+export const FAKE_MOUNTPOINT = '';
 export const ENDSOURCETABLE = 'ENDSOURCETABLE';
 export const SOURCETABLE_LINE_SEPARATOR = '\n';
 export const STREAM_IDENTIFIER = 'STR';
@@ -17,11 +16,18 @@ export const NETWORK_IDENTIFIER = 'NET';
 export const CASTER_IDENTIFIER = 'CAS';
 export const CSV_SEPARATOR = ';';
 
+/**
+ * All the entries of a source table
+ */
 export type SourceTableEntries = {
   baseList: Array<Base>;
   networkList: Array<Network>;
   casterList: Array<Caster>;
 };
+
+/**
+ * Represent all the data we have on a caster
+ */
 export default class SourceTable {
   parentCasterPool: CasterPool;
   entries: SourceTableEntries;
@@ -48,6 +54,13 @@ export default class SourceTable {
     makeAutoObservable(this);
   }
 
+  /**
+   * Make a NTRIP source table request, get, parse the response and fill the class
+   * @param adress - is the adress of the caster
+   * @param port - is the port of the caster
+   * @param username - is your username
+   * @param password - is your password
+   */
   async getSourceTable(
     adress?: string,
     port?: number,
@@ -124,6 +137,10 @@ export default class SourceTable {
     }
   }
 
+  /**
+   * Parse a raw NTRIP source table
+   * @param rawSourceTable - is the NTRIP response
+   */
   parseSourceTable(rawSourceTable: string) {
     const entries: SourceTableEntries = {
       baseList: [],
@@ -167,18 +184,34 @@ export default class SourceTable {
     return entries;
   }
 
+  /**
+   * Check if line is a caster entry
+   * @param line - is the source table entry
+   */
   isCasterEntry(line: string): boolean {
     return line.startsWith(CASTER_IDENTIFIER);
   }
 
+  /**
+   * Check if line is a network entry
+   * @param line - is the source table entry
+   */
   isNetworkEntry(line: string): boolean {
     return line.startsWith(NETWORK_IDENTIFIER);
   }
 
+  /**
+   * Check if line is a stream entry
+   * @param line - is the source table entry
+   */
   isStreamEntry(line: string): boolean {
     return line.startsWith(STREAM_IDENTIFIER);
   }
 
+  /**
+   * Check if line is a source table entry
+   * @param line - is the source table entry
+   */
   isSourceTableEntry(line: string): boolean {
     return (
       this.isCasterEntry(line) ||
@@ -187,13 +220,16 @@ export default class SourceTable {
     );
   }
 
+  /**
+   * Build a fake source table
+   */
   getMockSourceTable() {
     this.entries = {
       baseList: [],
       casterList: [],
       networkList: [],
     };
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       this.entries.networkList.push(new Network(this, []));
       this.entries.baseList.push(new Base(this, []));
       this.entries.casterList.push(new Caster(this, []));
