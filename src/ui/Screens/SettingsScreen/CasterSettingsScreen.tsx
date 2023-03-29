@@ -4,7 +4,8 @@ import {RadioButton, RadioGroup} from 'react-native-ui-lib';
 import Slider from '@react-native-community/slider';
 import {observer} from 'mobx-react-lite';
 import {AppStore, useStoreContext} from '../../../fc/Store';
-
+import {baseStyle} from '../Styles';
+const styles = baseStyle;
 interface Props {
   navigation: any;
 }
@@ -23,15 +24,7 @@ export default observer(function CasterSettingsScreen({navigation}: Props) {
   const renderHeaderTab = () => {
     return (
       <View style={styles.headerTab}>
-        <Text
-          style={{
-            marginLeft: 15,
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: 'white',
-          }}>
-          Caster Settings
-        </Text>
+        <Text style={styles.boldText}>Caster Settings</Text>
       </View>
     );
   };
@@ -90,26 +83,4 @@ export default observer(function CasterSettingsScreen({navigation}: Props) {
       </View>
     </SafeAreaView>
   );
-});
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#222',
-  },
-  slider: {},
-  TabButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-  },
-  headerTab: {
-    backgroundColor: '#111111',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    borderBottomColor: '#151515',
-    borderBottomWidth: 1,
-    height: 50,
-    alignItems: 'center',
-  },
 });

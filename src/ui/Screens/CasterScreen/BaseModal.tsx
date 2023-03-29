@@ -27,15 +27,7 @@ export default function BaseModal({
       animationIn="slideInUp"
       animationOut="slideOutDown">
       <View style={styles.headerTab}>
-        <Text
-          style={{
-            marginLeft: 15,
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: 'white',
-          }}>
-          {base.mountpoint}
-        </Text>
+        <Text style={styles.boldText}>{base.mountpoint}</Text>
       </View>
       <View style={styles.container}>
         <ScrollView>

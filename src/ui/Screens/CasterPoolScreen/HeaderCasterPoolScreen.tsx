@@ -14,19 +14,11 @@ export default observer(function HeaderCasterPoolScreen({
   const store = useStoreContext();
   return (
     <View style={styles.headerTab}>
-      <Text
-        style={{
-          marginLeft: 15,
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: 'white',
-        }}>
-        Manage casters
-      </Text>
+      <Text style={styles.boldText}>Manage casters</Text>
       <Pressable
         style={styles.TabButton}
         onPress={() => store.casterPool.setTyping(true)}>
-        <MaterialIcons name="add" color={'white'} size={25} />
+        <MaterialIcons name="add" color={store.settings.darkTheme ? 'white' : 'green'} size={25} />
       </Pressable>
     </View>
   );
