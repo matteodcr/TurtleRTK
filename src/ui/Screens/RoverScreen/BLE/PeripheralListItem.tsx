@@ -1,10 +1,8 @@
-import {Pressable, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {observer} from 'mobx-react-lite';
 
 import {useStoreContext} from '../../../../fc/Store';
-import {PeripheralListItemStyle} from '../../Styles';
-const styles = PeripheralListItemStyle;
 import {PeripheralInfo} from 'react-native-ble-manager';
 
 /**
@@ -59,4 +57,21 @@ export default observer(function PeripheralListItem({
       </View>
     </Pressable>
   );
+});
+
+const styles = StyleSheet.create({
+  item: {
+    backgroundColor: '#3F4141',
+    padding: 20,
+    marginVertical: 2,
+    marginHorizontal: 10,
+    borderRadius: 20,
+  },
+  deviceName: {
+    marginRight: 10,
+    color: 'white',
+  },
+  deviceId: {
+    color: 'gray',
+  },
 });

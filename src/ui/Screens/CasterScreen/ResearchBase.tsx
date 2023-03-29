@@ -213,7 +213,7 @@ export default function ResearchBase({
         style={styles.textinput}
         onChangeText={newText => modifySearch(newText)}
         placeholder="Caster identifier ..."
-        placeholderTextColor={store.settings.darkTheme ? 'white' : 'dark'}
+        placeholderTextColor={'white'}
         value={search}
       />
 
@@ -271,7 +271,7 @@ export default function ResearchBase({
           }}>
           <MaterialCommunityIcons
             name="star"
-            color={store.basePool.favs ? 'yellow' : store.settings.darkTheme ? 'darkgrey' : 'white'}
+            color={store.basePool.favs ? 'yellow' : 'darkgrey'}
             size={30}
           />
         </Pressable>

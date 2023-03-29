@@ -136,7 +136,7 @@ export default observer(function BaseListItem({
               <Pressable onPress={() => addFavAlert(store, item.key)}>
                 <MaterialCommunityIcons
                   name="star-outline"
-                  color={store.settings.darkTheme ? 'darkgrey' : 'white'}
+                  color={'darkgrey'}
                   size={30}
                 />
               </Pressable>

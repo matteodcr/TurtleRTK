@@ -1,9 +1,7 @@
-import {Pressable, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BleManager from 'react-native-ble-manager';
 import React from 'react';
-import {baseStyle} from '../../Styles';
-const styles = baseStyle;
 
 import {useStoreContext} from '../../../../fc/Store';
 
@@ -28,14 +26,35 @@ export default function HeaderRoverScreen() {
 
   return (
     <View style={styles.headerTab}>
-      <Text style={styles.boldText}>Rover Screen</Text>
+      <Text
+        style={{
+          marginLeft: 15,
+          fontSize: 18,
+          fontWeight: 'bold',
+          color: 'white',
+        }}>
+        Rover Screen
+      </Text>
       <Pressable style={styles.TabButton} onPress={scanDevices}>
-        <MaterialCommunityIcons
-          name="reload"
-          color={store.settings.darkTheme ? 'white' : 'dark'}
-          size={25}
-        />
+        <MaterialCommunityIcons name="reload" color={'white'} size={25} />
       </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  TabButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  headerTab: {
+    backgroundColor: '#111111',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderBottomColor: '#151515',
+    borderBottomWidth: 1,
+    height: 50,
+    alignItems: 'center',
+  },
+});
