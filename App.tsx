@@ -107,9 +107,9 @@ function RoverRoute() {
         options={{headerShown: false}}
       />
       <RoverStack.Screen
-        name="DetailsBLE"
+        name="BLEModal"
         getComponent={() =>
-          require('./src/ui/Screens/RoverScreen/BLE/DetailsBLE').default
+          require('./src/ui/Screens/RoverScreen/BLE/BLEModal').default
         }
         options={{headerShown: false}}
       />

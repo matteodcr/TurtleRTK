@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Checkbox} from 'react-native-paper';
 import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 import {observer} from 'mobx-react-lite';
@@ -7,19 +7,24 @@ import {useStoreContext} from '../../../fc/Store';
 import ErrorPopUp, {ErrorType} from './BLE/ErrorPopUp';
 import HeaderRoverScreen from './BLE/HeaderRoverScreen';
 import PeripheralList from './BLE/PeripheralList';
-
-/**
- * Describes the props of the RoverScreen class
- */
-interface RoverScreenProps {
-  navigation;
-}
+import BLEModal from './BLE/BLEModal';
+import {PeripheralInfo} from 'react-native-ble-manager';
 
 /**
  * Creates the screen
  */
-export default observer(function RoverScreen({navigation}: RoverScreenProps) {
+export default observer(function RoverScreen() {
   const store = useStoreContext();
+  const [selectedDevice, setSelectedDevice] = useState<PeripheralInfo>({
+    id: 'exemple',
+    rssi: 0,
+    advertising: {},
+  });
+  const [visibleModal, setVisibleModal] = useState<boolean>(false);
+
+  const toggleVisibleModal = () => {
+    setVisibleModal(!visibleModal);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -28,6 +33,11 @@ export default observer(function RoverScreen({navigation}: RoverScreenProps) {
         error={ErrorType.BLUETOOTH}
         title={'Bluetooth deactivated'}
         desc={'Please enable bluetooth for scanning peripherals.'}
+      />
+      <BLEModal
+        device={selectedDevice}
+        isVisible={visibleModal}
+        toogleVisibility={toggleVisibleModal}
       />
       <View style={styles.sortButton}>
         <Text style={{color: 'white', fontSize: 15}}>
@@ -55,7 +65,10 @@ export default observer(function RoverScreen({navigation}: RoverScreenProps) {
         }}>
         Périphériques BLE à proximité :
       </Text>
-      <PeripheralList navigation={navigation} />
+      <PeripheralList
+        setSelectedDevice={setSelectedDevice}
+        toggleVisibleModal={toggleVisibleModal}
+      />
     </SafeAreaView>
   );
 });

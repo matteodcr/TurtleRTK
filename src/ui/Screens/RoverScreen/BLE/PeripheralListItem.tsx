@@ -3,13 +3,15 @@ import React from 'react';
 import {observer} from 'mobx-react-lite';
 
 import {useStoreContext} from '../../../../fc/Store';
+import {PeripheralInfo} from 'react-native-ble-manager';
 
 /**
  * Describes the props of the PeripheralListItem class
  */
 export interface ItemProp {
   device;
-  navigation;
+  setSelectedDevice(device: PeripheralInfo);
+  toggleVisibleModal();
 }
 
 /**
@@ -17,17 +19,10 @@ export interface ItemProp {
  */
 export default observer(function PeripheralListItem({
   device,
-  navigation,
+  setSelectedDevice,
+  toggleVisibleModal,
 }: ItemProp) {
   const store = useStoreContext();
-
-  /**
-   * Shows a screen with details of the given peripheral
-   * @param peripheral the given peripheral
-   */
-  function showBleDeviceDetails(peripheral) {
-    navigation.navigate('DetailsBLE', {peripheral});
-  }
 
   return (
     <Pressable
@@ -52,7 +47,8 @@ export default observer(function PeripheralListItem({
           <View style={{flexDirection: 'row', columnGap: 10}}>
             <Pressable
               onPress={() => {
-                showBleDeviceDetails(device);
+                setSelectedDevice(device);
+                toggleVisibleModal();
               }}>
               <Text style={{color: 'white', fontSize: 25}}>...</Text>
             </Pressable>
