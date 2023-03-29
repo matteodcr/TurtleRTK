@@ -125,7 +125,7 @@ export default observer(function BaseListItem({
                 <MaterialCommunityIcons
                   name="star"
                   color={'yellow'}
-                  size={30}
+                  size={store.settings.bigFontEnabled ? 45 : 30}
                 />
               </Pressable>
             ) : (
@@ -133,7 +133,7 @@ export default observer(function BaseListItem({
                 <MaterialCommunityIcons
                   name="star-outline"
                   color={store.settings.darkTheme ? 'darkgrey' : 'white'}
-                  size={30}
+                  size={store.settings.bigFontEnabled ? 45 : 30}
                 />
               </Pressable>
             )}
@@ -143,7 +143,7 @@ export default observer(function BaseListItem({
               onPress={() => {
                 showBaseInfo(item);
               }}>
-              <MaterialIcons name="more-horiz" color={'white'} size={40} />
+              <MaterialIcons name="more-horiz" color={'white'} size={store.settings.bigFontEnabled ? 50 : 40} />
             </Pressable>
           </View>
         </View>
