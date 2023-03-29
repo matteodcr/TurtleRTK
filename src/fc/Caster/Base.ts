@@ -1,6 +1,10 @@
-import SourceTable from './SourceTable';
 import {countryToAlpha2} from 'country-to-iso';
 
+import SourceTable from './SourceTable';
+
+/**
+ * Represent an STR entry in an NTRIP SourceTable
+ */
 export default class Base {
   parentSourceTable: SourceTable;
   mountpoint: string; // Datastream mountpoint

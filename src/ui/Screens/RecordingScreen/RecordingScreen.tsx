@@ -37,16 +37,7 @@ export default observer(function RecordingScreen({navigation}: Props) {
             onPress={() => {
               store.casterConnection.getNTRIPData();
             }}>
-            Connection caster - Counter{' '}
-            {store.casterConnection.inputData.length}
-          </Button>
-          <Button
-            style={{marginVertical: 10}}
-            mode="contained"
-            onPress={() => {
-              store.casterConnection.closeConnection();
-            }}>
-            Stop
+            Connection caster
           </Button>
           <Button
             style={{marginVertical: 10}}
@@ -55,16 +46,29 @@ export default observer(function RecordingScreen({navigation}: Props) {
               store.logManager.write(
                 store.bluetoothManager.outputData.toString(),
               );
-              store.casterConnection.clear();
-              store.bluetoothManager.clearOutput();
               store.casterConnection.closeConnection();
+              store.casterConnection.clear();
+              store.bluetoothManager.stopNotification();
+              store.bluetoothManager.clearOutput();
             }}>
             Clear & save
           </Button>
+          <Text style={styles.data}>
+            {'RTCM files received from caster : '}
+            {store.casterConnection.inputData.length}
+          </Text>
+          <Text style={styles.data}>
+            {'NMEA messages received from rover : '}
+            {store.bluetoothManager.outputData.length}
+          </Text>
         </View>
         <ScrollView>
-          <Text style={styles.boldText}>
-            {store.bluetoothManager.outputData.toString()}
+          <Text style={styles.data}>
+            {
+              store.bluetoothManager.outputData[
+                store.bluetoothManager.outputData.length - 1
+              ]
+            }
           </Text>
         </ScrollView>
       </View>

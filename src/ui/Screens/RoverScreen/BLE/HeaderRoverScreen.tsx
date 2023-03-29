@@ -28,7 +28,7 @@ export default function HeaderRoverScreen() {
     <View style={styles.headerTab}>
         <Text style={styles.boldText}>Rover Screen</Text>
         <Pressable style={styles.TabButton} onPress= {scanDevices}>
-          <MaterialCommunityIcons name="reload" color={store.settings.darkTheme ? 'white' : 'dark'} size={25} />
+          <MaterialCommunityIcons name="reload" color={store.settings.darkTheme ? 'white' : 'dark'} size={store.settings.bigFontEnabled ? 40 : 25} />
         </Pressable>
       </View>
   );

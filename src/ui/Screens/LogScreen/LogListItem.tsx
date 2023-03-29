@@ -34,8 +34,12 @@ export default observer(function BaseListItem({
       <Pressable
         delayLongPress={300}
         // onLongPress={() => showBaseInfo(item)}
-        // onPress={itemOnConnect(item)}
-      >
+        onPress={() => {
+          console.log(item.path);
+          store.logManager.getFile(item.path);
+          console.log(store.logManager.currentFile.infos);
+          modifySelectedLog(item.path);
+        }}>
         <View style={styles.item}>
           <View style={{flexDirection: 'column'}}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>

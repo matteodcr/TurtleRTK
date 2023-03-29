@@ -118,6 +118,12 @@ const ajouts_recording_screen = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 50,
   },
+  data: {
+    fontStyle: 'italic',
+    fontSize: store.settings.bigFontEnabled ? 25 : 15,
+    color: store.settings.darkTheme ? 'white' : 'black',
+    padding: 15,
+  }
 });
 
 export const recStyle = StyleSheet.flatten([baseStyle, ajouts_recording_screen]);
