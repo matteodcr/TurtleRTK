@@ -97,9 +97,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.newntripcli"
+    namespace "com.turtle.rtk"
     defaultConfig {
-        applicationId "com.newntripcli"
+        applicationId "com.turtle.rtk"
         minSdkVersion 21
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

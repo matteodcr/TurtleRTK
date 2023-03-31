@@ -1,4 +1,4 @@
-package com.newntripcli;
+package com.turtle.rtk;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

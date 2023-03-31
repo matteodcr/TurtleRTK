@@ -1,6 +1,6 @@
 {
-  "name": "OpenNtrip",
-  "displayName": "openNtrip",
+  "name": "TurtleRTK",
+  "displayName": "TurtleRTK",
     "packagerOpts": {
       "sourceExts": [
         "js",

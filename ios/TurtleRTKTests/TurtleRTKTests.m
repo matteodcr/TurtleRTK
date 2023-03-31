@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface openNtripTests : XCTestCase
+@interface TurtleRTKTests : XCTestCase
 
 @end
 
-@implementation openNtripTests
+@implementation TurtleRTKTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
