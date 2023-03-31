@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import 'react-native-gesture-handler';
 import {PermissionsAndroid, Alert, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,6 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, MD3DarkTheme, Snackbar} from 'react-native-paper';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
+import SplashScreen from 'react-native-splash-screen';
 
 import RecordingScreen from './src/ui/Screens/RecordingScreen/RecordingScreen';
 import {observer} from 'mobx-react-lite';
@@ -163,6 +164,9 @@ export async function requestBluetoothConnectPermission() {
 }
 
 export default observer(function App() {
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
   var store = useStoreContext();
   try {
     requestLocationPermission();
