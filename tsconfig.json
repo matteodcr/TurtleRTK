@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
+    "jsx": "react",
     "strictPropertyInitialization": false,
     "noImplicitAny": false,
     "types": [

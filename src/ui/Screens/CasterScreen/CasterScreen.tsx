@@ -78,7 +78,7 @@ export default observer(function CasterScreen({navigation}: Props) {
   }
 
   const filteredBaseList: Base[] = store.basePool.baseList.filter(
-    filter(selectedSorter, searchText),
+    filter(selectedSorter, searchText, latitude, longitude),
   );
 
   const sortedBaseList: Base[] = filteredBaseList.sort(

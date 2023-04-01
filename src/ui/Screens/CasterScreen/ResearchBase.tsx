@@ -123,49 +123,66 @@ export const sorter =
 
 const store = useStoreContext();
 
+
 export const filter =
-  (selectedSorterType: SorterKey, searchText: string) => item => {
+  (selectedSorterType: SorterKey, searchText: string, latitude: number, longitude: number,) => item => {
     if (store.basePool.favs == true) {
       if (store.basePool.favoriteList.includes(item.key)) {
-        switch (selectedSorterType) {
-          case SorterKey.city:
-            return item.identifier
-              .toLowerCase()
-              .includes(searchText.toLowerCase());
-          case SorterKey.country:
-            if (item.country != null) {
-              return item.country
-                .toLowerCase()
-                .includes(searchText.toLowerCase());
-            } else {
-              return false;
-            }
-          case SorterKey.mountpoint:
-            return item.mountpoint
-              .toLowerCase()
-              .includes(searchText.toLowerCase());
+        if (store.basePool.favsDisplayDistance == true) {
+          switch (selectedSorterType) {
+            case SorterKey.city:
+              return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+            case SorterKey.country:
+              if (item.country != null) {
+                return item.country.toLowerCase().includes(searchText.toLowerCase());
+              }
+              else {
+                return false;
+              }
+            case SorterKey.mountpoint:
+              return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+          }
+        } else if (getDistance(
+          { latitude: item.latitude, longitude: item.longitude },
+          { latitude: latitude, longitude: longitude },
+        ) / 1000 <= store.basePool.distance) {
+          switch (selectedSorterType) {
+            case SorterKey.city:
+              return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+            case SorterKey.country:
+              if (item.country != null) {
+                return item.country.toLowerCase().includes(searchText.toLowerCase());
+              } else {
+                return false;
+              }
+            case SorterKey.mountpoint:
+              return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+          }
+        } else {
+          return false;
         }
       } else {
         return false;
       }
     } else {
-      switch (selectedSorterType) {
-        case SorterKey.city:
-          return item.identifier
-            .toLowerCase()
-            .includes(searchText.toLowerCase());
-        case SorterKey.country:
-          if (item.country != null) {
-            return item.country
-              .toLowerCase()
-              .includes(searchText.toLowerCase());
-          } else {
-            return false;
-          }
-        case SorterKey.mountpoint:
-          return item.mountpoint
-            .toLowerCase()
-            .includes(searchText.toLowerCase());
+      if (getDistance(
+        { latitude: item.latitude, longitude: item.longitude },
+        { latitude: latitude, longitude: longitude },
+      ) / 1000 <= store.basePool.distance) {
+        switch (selectedSorterType) {
+          case SorterKey.city:
+            return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+          case SorterKey.country:
+            if (item.country != null) {
+              return item.country.toLowerCase().includes(searchText.toLowerCase());
+            } else {
+              return false;
+            }
+          case SorterKey.mountpoint:
+            return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+        }
+      } else {
+        return false;
       }
     }
   };

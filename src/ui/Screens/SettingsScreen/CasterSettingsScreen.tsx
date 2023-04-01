@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
-import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet,} from 'react-native';
 import {RadioButton, RadioGroup} from 'react-native-ui-lib';
 import Slider from '@react-native-community/slider';
 import {observer} from 'mobx-react-lite';
 import {AppStore, useStoreContext} from '../../../fc/Store';
+import { Checkbox} from 'react-native-paper';
+
 
 interface Props {
   navigation: any;
@@ -75,7 +77,7 @@ export default observer(function CasterSettingsScreen({navigation}: Props) {
         </Text>
         <View style={styles.slider}>
           <Text style={{color: 'white'}}>
-            Value of slider is : {sliderValue}
+            Base searching area : {store.basePool.distance} km
           </Text>
           <Slider
             maximumValue={1000}
@@ -83,9 +85,18 @@ export default observer(function CasterSettingsScreen({navigation}: Props) {
             minimumTrackTintColor="#5215d6"
             maximumTrackTintColor="#000000"
             step={10}
-            value={sliderValue}
-            onValueChange={sliderValue => setSliderValue(sliderValue)}
+            value={store.basePool.distance}
+            onValueChange={sliderValue => store.basePool.setDistance(sliderValue)}
           />
+        </View>
+        <View style = {styles.sortButton}>
+        <Text style={{color: 'white', fontSize: 15}}>Display favorites devices outside of range ? : </Text>
+        <Checkbox
+          status={store.basePool.favsDisplayDistance ? 'checked' : 'unchecked'}
+          onPress={() => {
+            store.basePool.setFavsDisplayDistance();
+          }}
+        />
         </View>
       </View>
     </SafeAreaView>
@@ -111,5 +122,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     height: 50,
     alignItems: 'center',
+  },
+  sortButton: {
+    flexDirection: 'row',
+    backgroundColor: '#151515',
+    padding: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
