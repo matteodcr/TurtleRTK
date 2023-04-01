@@ -24,15 +24,15 @@ export interface ItemProp {
 
 const addFavAlert = (store: AppStore, key: string) => {
   Alert.alert(
-    'ajouter aux favoris',
-    'Voulez vous ajouter cette base aux favoris ?',
+    'Add to favorites',
+    'Do you want to add this base to favorite ?',
     [
       {
-        text: 'Annuler',
+        text: 'Cancel',
         style: 'cancel',
       },
       {
-        text: 'Ajouter',
+        text: 'Add',
         onPress: () => {
           {
             store.basePool.addFavorite(key);
@@ -45,15 +45,15 @@ const addFavAlert = (store: AppStore, key: string) => {
 
 const suppFavAlert = (store: AppStore, key: string) => {
   Alert.alert(
-    'supprimer un favoris',
-    'Voulez vous supprimer cette base des favoris ?',
+    'Delete from favorites',
+    'Do you want to delete this base from favorite ?',
     [
       {
-        text: 'Annuler',
+        text: 'Cancel',
         style: 'cancel',
       },
       {
-        text: 'Supprimer',
+        text: 'Delete',
         onPress: () => {
           console.log('supprimé des favoris');
           {

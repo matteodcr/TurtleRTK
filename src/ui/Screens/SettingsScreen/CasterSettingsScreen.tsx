@@ -77,7 +77,7 @@ export default observer(function CasterSettingsScreen({navigation}: Props) {
         </Text>
         <View style={styles.slider}>
           <Text style={{color: 'white'}}>
-            searching area : {store.basePool.distance} km
+            Base searching area : {store.basePool.distance} km
           </Text>
           <Slider
             maximumValue={1000}
