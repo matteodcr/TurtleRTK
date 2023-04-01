@@ -102,4 +102,20 @@ export class CasterConnection {
 
     this.casterClient.run();
   }
+
+  generateIcon() {
+    if (this.isClosed) {
+      return 'play';
+    } else {
+      return 'pause';
+    }
+  }
+
+  generateText() {
+    if (this.isClosed) {
+      return 'Start';
+    } else {
+      return 'Stop & Save';
+    }
+  }
 }

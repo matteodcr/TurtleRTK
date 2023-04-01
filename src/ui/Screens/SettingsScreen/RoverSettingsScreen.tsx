@@ -7,8 +7,12 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import {observer} from 'mobx-react-lite';
+import {useStoreContext} from '../../../fc/Store';
+import {Checkbox} from 'react-native-paper';
 
-export default function RoverSettingsScreen() {
+export default observer(function RoverSettingsScreen() {
+  const store = useStoreContext();
   const HeaderMoreButton = () => {
     Alert.alert('TODO Screen');
   };
@@ -35,17 +39,41 @@ export default function RoverSettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeaderTab()}
-      <View>
-        <Text style={{color: 'white'}}>Rover Settings</Text>
+      <View style={styles.sortButton}>
+        <Text style={{color: 'white', fontSize: 15}}>
+          Display devices with no name :{' '}
+        </Text>
+        <Checkbox
+          status={
+            store.bluetoothManager.displayNoNameDevices
+              ? 'checked'
+              : 'unchecked'
+          }
+          onPress={() => {
+            store.bluetoothManager.setDisplayNoNameDevices(
+              !store.bluetoothManager.displayNoNameDevices,
+            );
+          }}
+        />
       </View>
     </SafeAreaView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#222',
+  },
+  sortButton: {
+    flexDirection: 'row',
+    backgroundColor: '#151515',
+    padding: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   TabButton: {
     alignItems: 'center',

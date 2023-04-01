@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react-lite';
-import React from 'react';
+import React, {useState} from 'react';
 import {Button} from 'react-native-paper';
 import {SafeAreaView, View, Text, StyleSheet, ScrollView} from 'react-native';
 import {useStoreContext} from '../../../fc/Store';
@@ -10,6 +10,9 @@ interface Props {
 
 export default observer(function RecordingScreen({navigation}: Props) {
   const store = useStoreContext();
+
+  const [isRunning, setRunning] = useState(false);
+  const [buttonText, setButtonText] = useState('Run');
 
   const HeaderButton = () => {
     navigation.navigate('LogScr');
@@ -41,24 +44,31 @@ export default observer(function RecordingScreen({navigation}: Props) {
             style={{marginVertical: 10}}
             mode="contained"
             onPress={() => {
-              store.casterConnection.getNTRIPData();
+              if (isRunning) {
+                store.logManager.write(
+                  store.bluetoothManager.outputData.toString(),
+                );
+                store.casterConnection.closeConnection();
+                store.casterConnection.clear();
+                store.bluetoothManager.stopNotification();
+                store.bluetoothManager.clearOutput();
+                setRunning(false);
+                setButtonText('Run');
+              } else {
+                if (store.casterConnection.connectedBase !== null) {
+                  setRunning(true);
+                  setButtonText('Pause');
+                  store.casterConnection.getNTRIPData();
+                } else {
+                  store.errorManager.printError(
+                    'Select a base before running.',
+                  );
+                }
+              }
             }}>
-            Connection caster
+            {buttonText}
           </Button>
-          <Button
-            style={{marginVertical: 10}}
-            mode="contained"
-            onPress={() => {
-              store.logManager.write(
-                store.bluetoothManager.outputData.toString(),
-              );
-              store.casterConnection.closeConnection();
-              store.casterConnection.clear();
-              store.bluetoothManager.stopNotification();
-              store.bluetoothManager.clearOutput();
-            }}>
-            Clear & save
-          </Button>
+
           <Text
             style={{
               fontStyle: 'italic',
@@ -66,7 +76,7 @@ export default observer(function RecordingScreen({navigation}: Props) {
               color: 'white',
               padding: 15,
             }}>
-            {'RTCM files received from caster : '}
+            {'RTCM messsages received from caster : '}
             {store.casterConnection.inputData.length}
           </Text>
           <Text

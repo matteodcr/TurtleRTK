@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {Dropdown} from 'react-native-element-dropdown';
 import {styles} from './CasterScreen';
 import {BasePool} from '../../../fc/Caster/BasePool';
-import { useStoreContext } from '../../../fc/Store';
+import {useStoreContext} from '../../../fc/Store';
 
 export enum SorterKey {
   city = 'city',
@@ -124,40 +124,51 @@ export const sorter =
 const store = useStoreContext();
 
 export const filter =
-  (selectedSorterType: SorterKey, searchText: string, ) => item => {
+  (selectedSorterType: SorterKey, searchText: string) => item => {
     if (store.basePool.favs == true) {
       if (store.basePool.favoriteList.includes(item.key)) {
         switch (selectedSorterType) {
           case SorterKey.city:
-            return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+            return item.identifier
+              .toLowerCase()
+              .includes(searchText.toLowerCase());
           case SorterKey.country:
             if (item.country != null) {
-              return item.country.toLowerCase().includes(searchText.toLowerCase());
+              return item.country
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
             } else {
               return false;
             }
           case SorterKey.mountpoint:
-            return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+            return item.mountpoint
+              .toLowerCase()
+              .includes(searchText.toLowerCase());
         }
-      }else{
+      } else {
         return false;
       }
-    }else{
+    } else {
       switch (selectedSorterType) {
         case SorterKey.city:
-          return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+          return item.identifier
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
         case SorterKey.country:
           if (item.country != null) {
-            return item.country.toLowerCase().includes(searchText.toLowerCase());
+            return item.country
+              .toLowerCase()
+              .includes(searchText.toLowerCase());
           } else {
             return false;
           }
         case SorterKey.mountpoint:
-          return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+          return item.mountpoint
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
       }
     }
   };
-
 
 const sortertypesIcon = (sorting: SorterTypes) => {
   switch (sorting) {
@@ -194,7 +205,6 @@ export interface ResearchBaseProps {
   modifySorterFilter: (SorterTypes) => void;
   selectedSorter: SorterKey;
   modifySelectedSorter: (SorterKey) => void;
-
 }
 
 export default function ResearchBase({
@@ -204,15 +214,21 @@ export default function ResearchBase({
   modifySorterFilter,
   selectedSorter,
   modifySelectedSorter,
-
 }: ResearchBaseProps) {
   return (
     <View>
       {/*Research bar*/}
       <Searchbar
-        style={styles.textinput}
+        style={{
+          height: 50,
+          borderWidth: 1,
+          margin: 10,
+          paddingLeft: 15,
+          borderRadius: 10,
+          color: 'white',
+        }}
         onChangeText={newText => modifySearch(newText)}
-        placeholder="Caster identifier ..."
+        placeholder="Search"
         placeholderTextColor={'white'}
         value={search}
       />
