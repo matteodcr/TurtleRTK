@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "145139985451",
+    "project_id": "turtle-rtk",
+    "storage_bucket": "turtle-rtk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145139985451:android:f355572e2afc4eb01ece6e",
+        "android_client_info": {
+          "package_name": "com.turtle.rtk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145139985451-2a5bcf1sc2cne2rggrnc0eku916rjj99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsHgiGaidN1yAVynbK3PpSUjT0Ns5Q2qs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145139985451-2a5bcf1sc2cne2rggrnc0eku916rjj99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
