@@ -1,6 +1,6 @@
 {
   "name": "turtlertk",
-  "version": "0.0.1",
+  "version": "0.0.2-0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -12,7 +12,6 @@
     "connection": "ts-node src/fc/Caster/NTRIP/test.ts",
     "np": "np --no-publish",
     "postversion": "react-native-version"
-
   },
   "dependencies": {
     "@gnss/nmea": "^0.1.2",
