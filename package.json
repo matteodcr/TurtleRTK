@@ -11,7 +11,7 @@
     "sourcetable": "ts-node-esm src/fc/Caster/SourceTable.ts",
     "connection": "ts-node src/fc/Caster/NTRIP/test.ts",
     "np": "np --no-publish",
-    "postversion": "react-native-version"
+    "postversion": "react-native-version --target android"
   },
   "dependencies": {
     "@gnss/nmea": "^0.1.2",
