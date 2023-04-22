@@ -107,8 +107,8 @@ android {
         applicationId "com.turtle.rtk"
         minSdkVersion 21
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "0.0.2"
+        versionCode 4
+        versionName "0.0.3"
     }
 
     splits {
