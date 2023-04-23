@@ -1,6 +1,6 @@
 import Modal from 'react-native-modal';
 import {ScrollView, Text, View} from 'react-native';
-import {Button, Chip} from 'react-native-paper';
+import {Chip} from 'react-native-paper';
 import React from 'react';
 import {styles} from '../CasterScreen/CasterScreen';
 import {observer} from 'mobx-react-lite';
@@ -13,7 +13,6 @@ interface LogModalProps {
 }
 
 export default observer(function LogModal({
-  selectedLog,
   isLogVisible,
   modifyLogVisibility,
 }: LogModalProps) {

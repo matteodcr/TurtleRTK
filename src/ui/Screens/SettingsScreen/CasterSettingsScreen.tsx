@@ -1,15 +1,10 @@
-import React, {useState} from 'react';
-import {SafeAreaView, View, Text, StyleSheet,} from 'react-native';
+import React from 'react';
+import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 import {RadioButton, RadioGroup} from 'react-native-ui-lib';
 import Slider from '@react-native-community/slider';
 import {observer} from 'mobx-react-lite';
 import {AppStore, useStoreContext} from '../../../fc/Store';
-import { Checkbox} from 'react-native-paper';
-
-
-interface Props {
-  navigation: any;
-}
+import {Checkbox} from 'react-native-paper';
 
 function matchProtocol(store: AppStore, protocol: string) {
   if (protocol === 'NTRIPv2') {
@@ -19,8 +14,7 @@ function matchProtocol(store: AppStore, protocol: string) {
   }
 }
 
-export default observer(function CasterSettingsScreen({navigation}: Props) {
-  const [sliderValue, setSliderValue] = useState(15);
+export default observer(function CasterSettingsScreen() {
   const store = useStoreContext();
   const renderHeaderTab = () => {
     return (
@@ -86,17 +80,23 @@ export default observer(function CasterSettingsScreen({navigation}: Props) {
             maximumTrackTintColor="#000000"
             step={10}
             value={store.basePool.distance}
-            onValueChange={sliderValue => store.basePool.setDistance(sliderValue)}
+            onValueChange={sliderValue =>
+              store.basePool.setDistance(sliderValue)
+            }
           />
         </View>
-        <View style = {styles.sortButton}>
-        <Text style={{color: 'white', fontSize: 15}}>Display favorites devices outside of range ? : </Text>
-        <Checkbox
-          status={store.basePool.favsDisplayDistance ? 'checked' : 'unchecked'}
-          onPress={() => {
-            store.basePool.setFavsDisplayDistance();
-          }}
-        />
+        <View style={styles.sortButton}>
+          <Text style={{color: 'white', fontSize: 15}}>
+            Display favorites devices outside of range ? :{' '}
+          </Text>
+          <Checkbox
+            status={
+              store.basePool.favsDisplayDistance ? 'checked' : 'unchecked'
+            }
+            onPress={() => {
+              store.basePool.setFavsDisplayDistance();
+            }}
+          />
         </View>
       </View>
     </SafeAreaView>

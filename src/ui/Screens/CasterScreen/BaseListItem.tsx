@@ -34,9 +34,7 @@ const addFavAlert = (store: AppStore, key: string) => {
       {
         text: 'Add',
         onPress: () => {
-          {
-            store.basePool.addFavorite(key);
-          }
+          store.basePool.addFavorite(key);
         },
       },
     ],
@@ -44,25 +42,20 @@ const addFavAlert = (store: AppStore, key: string) => {
 };
 
 const suppFavAlert = (store: AppStore, key: string) => {
-  Alert.alert(
-    'Delete from favorites',
-    'Do you want to delete this base from favorite ?',
-    [
-      {
-        text: 'Cancel',
-        style: 'cancel',
+  Alert.alert('Delete', 'Do you want to delete this base from favorite ?', [
+    {
+      text: 'Cancel',
+      style: 'cancel',
+    },
+    {
+      text: 'Delete',
+      onPress: () => {
+        console.log('supprimé des favoris');
+
+        store.basePool.suppFavorite(key);
       },
-      {
-        text: 'Delete',
-        onPress: () => {
-          console.log('supprimé des favoris');
-          {
-            store.basePool.suppFavorite(key);
-          }
-        },
-      },
-    ],
-  );
+    },
+  ]);
 };
 
 export default observer(function BaseListItem({

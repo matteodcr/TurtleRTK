@@ -20,10 +20,7 @@ const checkXyz = xyz => {
   if (!Array.isArray(xyz) || xyz.length !== 3) {
     return false;
   }
-  if (xyz[0] !== 0.0 && xyz[1] !== 0.0 && xyz[2] !== 0.0) {
-    return true;
-  }
-  return false;
+  return xyz[0] !== 0.0 && xyz[1] !== 0.0 && xyz[2] !== 0.0;
 };
 
 /**

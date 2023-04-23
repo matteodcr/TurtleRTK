@@ -6,8 +6,7 @@ import {Searchbar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Dropdown} from 'react-native-element-dropdown';
 import {styles} from './CasterScreen';
-import {BasePool} from '../../../fc/Caster/BasePool';
-import {useStoreContext} from '../../../fc/Store';
+import {AppStore, useStoreContext} from '../../../fc/Store';
 
 export enum SorterKey {
   city = 'city',
@@ -121,42 +120,61 @@ export const sorter =
     }
   };
 
-const store = useStoreContext();
-
-
 export const filter =
-  (selectedSorterType: SorterKey, searchText: string, latitude: number, longitude: number,) => item => {
-    if (store.basePool.favs == true) {
+  (
+    store: AppStore,
+    selectedSorterType: SorterKey,
+    searchText: string,
+    latitude: number,
+    longitude: number,
+  ) =>
+  item => {
+    if (store.basePool.favs) {
       if (store.basePool.favoriteList.includes(item.key)) {
-        if (store.basePool.favsDisplayDistance == true) {
+        if (store.basePool.favsDisplayDistance) {
           switch (selectedSorterType) {
             case SorterKey.city:
-              return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+              return item.identifier
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
             case SorterKey.country:
               if (item.country != null) {
-                return item.country.toLowerCase().includes(searchText.toLowerCase());
-              }
-              else {
-                return false;
-              }
-            case SorterKey.mountpoint:
-              return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
-          }
-        } else if (getDistance(
-          { latitude: item.latitude, longitude: item.longitude },
-          { latitude: latitude, longitude: longitude },
-        ) / 1000 <= store.basePool.distance) {
-          switch (selectedSorterType) {
-            case SorterKey.city:
-              return item.identifier.toLowerCase().includes(searchText.toLowerCase());
-            case SorterKey.country:
-              if (item.country != null) {
-                return item.country.toLowerCase().includes(searchText.toLowerCase());
+                return item.country
+                  .toLowerCase()
+                  .includes(searchText.toLowerCase());
               } else {
                 return false;
               }
             case SorterKey.mountpoint:
-              return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+              return item.mountpoint
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
+          }
+        } else if (
+          getDistance(
+            {latitude: item.latitude, longitude: item.longitude},
+            {latitude: latitude, longitude: longitude},
+          ) /
+            1000 <=
+          store.basePool.distance
+        ) {
+          switch (selectedSorterType) {
+            case SorterKey.city:
+              return item.identifier
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
+            case SorterKey.country:
+              if (item.country != null) {
+                return item.country
+                  .toLowerCase()
+                  .includes(searchText.toLowerCase());
+              } else {
+                return false;
+              }
+            case SorterKey.mountpoint:
+              return item.mountpoint
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
           }
         } else {
           return false;
@@ -165,21 +183,31 @@ export const filter =
         return false;
       }
     } else {
-      if (getDistance(
-        { latitude: item.latitude, longitude: item.longitude },
-        { latitude: latitude, longitude: longitude },
-      ) / 1000 <= store.basePool.distance) {
+      if (
+        getDistance(
+          {latitude: item.latitude, longitude: item.longitude},
+          {latitude: latitude, longitude: longitude},
+        ) /
+          1000 <=
+        store.basePool.distance
+      ) {
         switch (selectedSorterType) {
           case SorterKey.city:
-            return item.identifier.toLowerCase().includes(searchText.toLowerCase());
+            return item.identifier
+              .toLowerCase()
+              .includes(searchText.toLowerCase());
           case SorterKey.country:
             if (item.country != null) {
-              return item.country.toLowerCase().includes(searchText.toLowerCase());
+              return item.country
+                .toLowerCase()
+                .includes(searchText.toLowerCase());
             } else {
               return false;
             }
           case SorterKey.mountpoint:
-            return item.mountpoint.toLowerCase().includes(searchText.toLowerCase());
+            return item.mountpoint
+              .toLowerCase()
+              .includes(searchText.toLowerCase());
         }
       } else {
         return false;
@@ -232,6 +260,7 @@ export default function ResearchBase({
   selectedSorter,
   modifySelectedSorter,
 }: ResearchBaseProps) {
+  const store = useStoreContext();
   return (
     <View>
       {/*Research bar*/}

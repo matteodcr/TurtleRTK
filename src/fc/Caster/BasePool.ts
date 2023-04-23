@@ -18,14 +18,12 @@ export class BasePool {
     this.loadFromStorage();
   }
 
-
   async loadFromStorage() {
     try {
       const storedData = await AsyncStorage.getItem('BasePoolData');
       if (storedData) {
-        const { favoriteList, favs, distance, favsDisplayDistance } = JSON.parse(
-          storedData
-        );
+        const {favoriteList, favs, distance, favsDisplayDistance} =
+          JSON.parse(storedData);
         this.favoriteList = favoriteList;
         this.favs = favs;
         this.distance = distance;
@@ -52,8 +50,8 @@ export class BasePool {
 
   generate(casterPool: CasterPool) {
     this.baseList = [];
-    for (var i = 0; i < casterPool.subscribed.length; i++) {
-      var sourceTable = casterPool.subscribed[i];
+    for (let i = 0; i < casterPool.subscribed.length; i++) {
+      const sourceTable = casterPool.subscribed[i];
       this.baseList.push(...sourceTable.entries.baseList);
     }
   }

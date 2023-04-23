@@ -1,13 +1,5 @@
-import {observer} from 'mobx-react-lite';
 import React from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 import {List} from 'react-native-paper';
 
 interface Props {

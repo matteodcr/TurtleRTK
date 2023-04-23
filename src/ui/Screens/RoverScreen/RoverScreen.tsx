@@ -1,8 +1,6 @@
 import React from 'react';
-import {Checkbox} from 'react-native-paper';
-import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import {observer} from 'mobx-react-lite';
-import {useStoreContext} from '../../../fc/Store';
 import ErrorPopUp, {ErrorType} from './BLE/ErrorPopUp';
 import HeaderRoverScreen from './BLE/HeaderRoverScreen';
 import PeripheralList from './BLE/PeripheralList';
@@ -12,8 +10,6 @@ interface RoverScreenProps {
 }
 
 export default observer(function RoverScreen({navigation}: RoverScreenProps) {
-  const store = useStoreContext();
-
   return (
     <SafeAreaView style={styles.container}>
       <HeaderRoverScreen />

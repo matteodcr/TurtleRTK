@@ -36,13 +36,6 @@ class NtripDecoder extends EventEmitter {
   }
 
   /**
-   * close the decoder
-   */
-  close() {
-    this._clear();
-  }
-
-  /**
    * concat buffer
    * @param {Buffer} data data to be decoded
    */
@@ -208,6 +201,7 @@ class NtripDecoder extends EventEmitter {
      *   |<-- 8 --->|<- 6 -->|<-- 10 --->|<--- length x 8 --->|<-- 24 -->|
      */
     const rtcmLenBuf = Buffer.from([this.buffer[1], this.buffer[2]]);
+    // eslint-disable-next-line no-bitwise
     const rtcmLen = rtcmLenBuf.readUInt16BE(0) & 0x03ff;
     const rtcmFullLen = rtcmLen + config.RTCM_ADD_LENGTH;
     if (this.buffer.length < rtcmFullLen) {

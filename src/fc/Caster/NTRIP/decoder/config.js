@@ -1,4 +1,4 @@
-global.Buffer = global.Buffer || require('buffer').Buffer;
+import {Buffer} from 'buffer';
 
 // header data separator
 const HEADER_SEPARATOR_BUFF = Buffer.from('\r\n\r\n');

@@ -7,12 +7,9 @@ import {
   StyleSheet,
   PermissionsAndroid,
 } from 'react-native';
-import {Button} from 'react-native-paper';
 import {useStoreContext} from '../../../fc/Store';
-import LogListItem from './LogListItem';
 import LogList from './LogList';
 import LogModal from './LogModal';
-import {ReadDirItem} from 'react-native-fs';
 
 interface Props {
   navigation: any;

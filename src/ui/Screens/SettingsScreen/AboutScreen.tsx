@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Alert,
-  ScrollView,
-} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet, ScrollView} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 export default function RoverSettingsScreen() {

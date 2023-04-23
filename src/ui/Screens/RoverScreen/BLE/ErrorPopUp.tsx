@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react-lite';
-import React, {useState} from 'react';
+import React from 'react';
 import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useStoreContext} from '../../../../fc/Store';
 

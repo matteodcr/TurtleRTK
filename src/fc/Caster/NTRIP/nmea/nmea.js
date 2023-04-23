@@ -1,4 +1,5 @@
 const {geoToEcef, ecefToGeo} = require('./ecef');
+import {Buffer} from 'buffer';
 
 /**
  * regex for GGA valid data
@@ -34,7 +35,7 @@ const {geoToEcef, ecefToGeo} = require('./ecef');
  * Link: https://gpsd.gitlab.io/gpsd/NMEA.html#_gga_global_positioning_system_fix_data
  */
 // const ggaRegex = /^\$((G\w{1})?GGA),(\d{6}([.]\d+)?),(\d{4}[.]\d+,[NS]),(\d{5}[.]\d+,[WE]),([0-8]),(\d{1,2}),(\d{1,3}[.]\d{1,3})?,([-]?\d+([.]\d+)?)?,(\w*)?,(\d+([.]\d+)?)?,(\w*)?,?([-]?\d+([.]\d+)?)?,?(\d{4})?\*([0-9a-fA-F]{2})(\r\n)?$/;
-const ggaRegex = /^\$((G\w{1})?GGA).*(\r\n)?$/;
+const ggaRegex = /^\$((G\w)?GGA).*(\r\n)?$/;
 
 const pad = (n, width, z) => {
   n = n + '';
@@ -55,6 +56,7 @@ const getChecksum = data => {
   checksum = data
     .slice(idx1 + 1, idx2)
     .split('')
+    // eslint-disable-next-line no-bitwise
     .reduce((y, x) => y ^ x.charCodeAt(0), 0);
   return checksum;
 };
@@ -192,7 +194,7 @@ const decodeGGA = nmea => {
   }
   data.refStationId = null;
   if (arr.length >= 16) {
-    data.refStationId = parseInt(arr[14]);
+    data.refStationId = parseInt(arr[14], 10);
   }
 
   return data;
@@ -222,7 +224,7 @@ const encodeGGA = data => {
   if (data.refStationId) {
     result.push(
       data.refStationId
-        ? pad(parseInt(data.refStationId), 4, 0)
+        ? pad(parseInt(data.refStationId, 10), 4, 0)
         : data.refStationId,
     );
   }
