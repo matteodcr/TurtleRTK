@@ -8,6 +8,7 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 
 export default function RoverSettingsScreen() {
   const renderHeaderTab = () => {
@@ -38,6 +39,7 @@ export default function RoverSettingsScreen() {
         <Text style={{color: 'white'}}>
           With the help of Yves Pratter and Eric Sibert
         </Text>
+        <Text style={{color: 'white'}}>Version: {DeviceInfo.getVersion()}</Text>
       </ScrollView>
     </SafeAreaView>
   );

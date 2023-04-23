@@ -43,6 +43,7 @@
     "react-native-ble-manager": "^8.8.0",
     "react-native-ble-plx": "^2.0.3",
     "react-native-country-flag": "^1.1.9",
+    "react-native-device-info": "^10.6.0",
     "react-native-element-dropdown": "^2.6.0",
     "react-native-flags": "^1.0.0",
     "react-native-fontawesome": "^7.0.0",
