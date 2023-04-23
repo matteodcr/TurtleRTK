@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  Prettier & ESLint:
+  Prettier/ESLint:
     runs-on: ${{ matrix.os }}
 
     strategy:
