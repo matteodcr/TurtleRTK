@@ -28,7 +28,7 @@ export class AppStore {
   }
 }
 
-function generateStore() {
+export function generateStore() {
   const appStore = new AppStore(
     new BasePool(),
     new ErrorManager(),

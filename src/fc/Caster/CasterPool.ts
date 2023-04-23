@@ -15,7 +15,7 @@ export class CasterPool {
   isNTRIPv1: boolean = true;
 
   constructor(
-    parentStore: AppStore,
+    parentStore: AppStore | null,
     subscribed: SourceTable[],
     unsubscribed: SourceTable[],
   ) {
