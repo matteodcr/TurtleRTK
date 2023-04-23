@@ -8,6 +8,8 @@ on:
 jobs:
   android-build:
     name: Android Build
+    permissions:
+      contents: write
     runs-on: ubuntu-latest # using ubuntu latest version / or you can use a specific version
 
     steps:
@@ -74,9 +76,5 @@ jobs:
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{steps.sign_app.outputs.signedReleaseFile}}
-          asset_name: mything
-          tag: ${{ github.ref }}
-          overwrite: true
-          body: "This is my release text"
+
