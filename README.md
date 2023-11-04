@@ -10,7 +10,7 @@ Turtle RTK is a GNSS RTK client built with React Native and TypeScript. It enabl
 
 ## Installation
 
-The app is currently available only on Android. You can get the latest release here.
+The app is currently available only on Android. You can get the latest release [here](https://github.com/matteodcr/TurtleRTK/releases). 
 > For iOS, it is possible to have a functional version within a few hours of debugging.
 
 ## Functionalities
